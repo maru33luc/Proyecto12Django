@@ -1,0 +1,48 @@
+{% extends 'clinica_app/patient/base_patient.html' %}
+{% load static %}
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static 'css/style_signin.css' %}" />
+{% endblock %}
+{% block title %}Pacientes {% endblock %}
+{% block main %}
+
+
+
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Registrarse</h1>
+            <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="{% url 'log_in' %}" class="h4 text-white">Log in</a>
+        </div>
+    </div>
+  </div>
+  <!-- Hero End -->
+
+
+
+
+
+<div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Detalle del paciente</h1>
+        <hr>
+        <p><strong>Nombre:</strong> {{ patient.user.first_name }}</p>
+        <p><strong>Apellido:</strong> {{ patient.user.last_name }}</p>
+        <p><strong>Fecha de nacimiento:</strong> {{ patient.date_of_birth }}</p>
+        <p><strong>Teléfono:</strong> {{ patient.phone }}</p>
+        <p><strong>Email:</strong> {{ patient.user.email }}</p>
+        <p><strong>Dirección:</strong> {{ patient.address }}</p>
+        <p><strong>Localidad:</strong> {{ patient.city }}</p>
+        <p><strong>Obra Social:</strong> {{ patient.social_work }}</p>
+        <p><strong>N de afiliado:</strong> {{ patient.sw_number }}</p>
+        <a href="{% url 'patient_update' patient.pk %}" class="btn btn-warning">Editar paciente</a>
+        <a href="{% url 'patients' %}" class="btn btn-primary">Volver a la lista de pacientes</a>
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}

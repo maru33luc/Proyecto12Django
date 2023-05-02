@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}
+	<title>Listado de Médicos</title>
+{% endblock title %}
+{% block content %}
+  <h1 class="mb-3">Médicos</h1>
+  <table class="table table-striped">
+
+    <thead>
+    
+    <tr>
+    
+    <th scope="col">nombre</th>
+    <th scope="col">Apellido</th>
+    <th scope="col">Email</th>
+    <th scope="col">DNI</th>
+    <th scope="col">Teléfono</th>
+    <th scope="col">N° Matrícula</th>
+    <th scope="col">Especialidad</th>
+       
+    <th scope="col">Action</th>
+    
+    </tr>
+    
+    </thead>
+    
+    <tbody>
+    
+    {% for doctor in doctors %}
+    
+    <tr>
+    
+    <th scope="row">{{ doctor.first_name }}</th>
+    <td>{{ doctor.last_name }}</td>
+    <td>{{ doctor.email }}</td>   
+    <td>{{ doctor.dni }}</td>
+    <td>{{ doctor.phone }}</td>
+    <td>{{ doctor.specialist.name }}</td>
+    <td>
+    
+    <a style="margin-right: 30px;" href="{% url 'specialist_update' specialist.id %}">Edit</a>
+    
+    <a href="{% url 'specialist_delete' specialist.id %}">Remove</a>
+    
+    </td>
+    
+    </tr>
+    
+    
+    {% empty %}
+      <p>No doctors found.</p>
+    {% endfor %}
+    </tbody>
+    
+    </table>
+    
+    <div class="text-center">
+    
+    <a href="{% url 'specialist_create' %}"><button type="button" class="btn btn-primary mb_3">Add Specialist</button></a>
+    
+    </div>
+    
+
+
+
+
+
+{% endblock %}

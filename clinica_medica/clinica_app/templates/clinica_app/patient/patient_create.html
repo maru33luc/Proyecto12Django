@@ -1,0 +1,34 @@
+{% extends 'clinica_app/base1.html' %}
+{% load static %}
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static 'css/style_signin.css' %}" />
+{% endblock %}
+
+{% block title %}Alta paciente {% endblock %}
+
+{% block main %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Alta Paciente</h1>
+            <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+            <!-- <i class="far fa-circle text-white px-2"></i>
+            <a href="{% url 'log_in' %}" class="h4 text-white">Log in</a> -->
+        </div>
+    </div>
+  </div>
+  <!-- Hero End -->
+{% if message %}
+    <div>{{message}}</div>
+{% endif %}
+<div class="container">
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    
+    <input type="submit" value="Save">
+</form>
+</div>
+
+{% endblock %}

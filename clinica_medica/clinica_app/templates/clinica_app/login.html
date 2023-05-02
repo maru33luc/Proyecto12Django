@@ -1,0 +1,122 @@
+{% extends 'clinica_app/base1.html' %}
+{% load static %}
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static 'css/style_login.css' %}" />
+{% endblock %}
+{% block title %}Log In {% endblock %}
+{% block main %}
+
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+  <div class="row py-3">
+      <div class="col-12 text-center">
+          <h1 class="display-3 text-white animated zoomIn">LOG IN</h1>
+          <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+          <i class="far fa-circle text-white px-2"></i>
+          <a href="{% url 'log_in' %}" class="h4 text-white">Log in</a>
+      </div>
+  </div>
+</div>
+<!-- Hero End -->
+
+
+
+
+    <div class="container_login">
+        <div class="forms-container">
+          <div class="signin-signup">
+            <form action="#" class="sign-in-form" method="POST">
+              {% csrf_token %}
+              <h2 class="title">Log In</h2>
+              <div class="input-field">
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Nombre de usuario" />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Password" />
+              </div>
+              <input type="submit" value="Login" class="btn solid" />
+              <p class="social-text">O visite nuestras redes</p>
+              <div class="social-media">
+                <a href="#" class="social-icon">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-icon">
+                  <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-icon">
+                  <i class="fab fa-google"></i>
+                </a>
+                <a href="#" class="social-icon">
+                  <i class="fab fa-linkedin-in"></i>
+                </a>
+              </div>
+            </form>
+            <form action="#" class="sign-up-form">
+              <h2 class="title">Registrarse</h2>
+              <div class="input-field">
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Nombre de usuario" />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-envelope"></i>
+                <input type="email" placeholder="Email" />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Password" />
+              </div>
+              <input type="submit" class="btn" value="Sign up" />
+              <p class="social-text">O visite nuestras redes</p>
+              <div class="social-media">
+                <a href="#" class="social-icon">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-icon">
+                  <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-icon">
+                  <i class="fab fa-google"></i>
+                </a>
+                <a href="#" class="social-icon">
+                  <i class="fab fa-linkedin-in"></i>
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+  
+        <div class="panels-container">
+          <div class="panel left-panel">
+            <div class="content">
+              <h3>Aún no se registro como usuario?</h3>
+              <p>
+                A partir de que cree su cuenta podrá acceder al sistema de reservas de turnos!
+              </p>
+              <button class="btn transparent" id="sign-up-btn">
+                Sign up
+              </button>
+            </div>
+            <img src="img/log.svg" class="image" alt="" />
+          </div>
+          <div class="panel right-panel">
+            <div class="content">
+              <h3>Ya tiene nombre de ususario ?</h3>
+              <p>
+               Ingrese en el sistema así podrá acceder a la reserva de turnos.
+              </p>
+              <button class="btn transparent" id="sign-in-btn">
+                Ingresar
+              </button>
+            </div>
+            <img src="img/register.svg" class="image" alt="" />
+          </div>
+        </div>
+      </div>
+
+
+
+
+<script  src="{% static 'js/script.js' %}"></script>
+{% endblock %}

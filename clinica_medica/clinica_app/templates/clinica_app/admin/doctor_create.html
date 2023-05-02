@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}
+	<title>Alta Médico</title>
+{% endblock title %}
+{% block content %}
+
+<main class="container">
+    <div class="row">
+        <div class="col-md-4 offset-md-4 mt-5">
+            
+<form action="/doctor_create/" method="POST" class="card card-body">
+    <h1>Alta Médico</h1>
+    {{ error }}
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{% url 'specialist_list' %}" class="btn btn-default">Cancel</a>
+        </div>
+      </div>
+</form>
+        </div>
+    </div>
+</main>
+{% endblock %}

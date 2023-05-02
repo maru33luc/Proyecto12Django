@@ -1,0 +1,47 @@
+{% extends 'clinica_app/base1.html' %}
+{% block title %} Acerca de {% endblock %}
+{% block main %}
+{% load static %}
+
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+  <div class="row py-3">
+      <div class="col-12 text-center">
+          <h1 class="display-3 text-white animated zoomIn">Acerca de Nosotros</h1>
+          <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+          <i class="far fa-circle text-white px-2"></i>
+          <a href="{% url 'about_us' %}" class="h4 text-white">Acerca de</a>
+      </div>
+  </div>
+</div>
+<!-- Hero End -->
+
+
+ 
+    <!-- Sección 1 -->
+    <section class="seccion">
+      <div class="imagen">
+        <img src="{% static 'assets/img/doctores.jpg' %}" alt="Imagen 1">
+      </div>
+      <div class="texto">
+        <h2>Sobre nosotros</h2>
+        <p>En [nombre de la clínica médica], nos dedicamos a ser líderes en el cuidado de la salud, brindando servicios médicos integrales y de alta calidad a nuestra comunidad. Con un equipo de profesionales médicos altamente capacitados y experimentados, estamos comprometidos en proporcionar una atención médica completa y compasiva a nuestros pacientes.
+
+            Nuestra clínica cuenta con instalaciones modernas y equipamiento médico de vanguardia para ofrecer un diagnóstico y tratamiento precisos. Nuestros servicios incluyen medicina general, pediatría, ginecología, cardiología, dermatología, y una amplia gama de especialidades médicas. Además, contamos con servicios de laboratorio, estudios de diagnóstico por imágenes y otras pruebas médicas para un enfoque integral en el cuidado de nuestros pacientes.
+            
+            Nos enorgullecemos de nuestro enfoque centrado en el paciente, escuchando atentamente las necesidades y preocupaciones de cada paciente. Trabajamos en estrecha colaboración con ellos para desarrollar planes de tratamiento individualizados, brindando un cuidado compasivo y personalizado en cada visita.
+            
+            Nuestro equipo médico está comprometido con la educación continua y la actualización constante de nuestros conocimientos y habilidades para garantizar la mejor atención posible. Además, nos preocupamos por la prevención y promoción de la salud, brindando a nuestros pacientes información y recursos para llevar un estilo de vida saludable.
+            
+            En [nombre de la clínica médica], nos esforzamos por mantener altos estándares de atención médica en un ambiente cálido y acogedor. Valoramos la confianza que nuestros pacientes depositan en nosotros y estamos comprometidos en mejorar su salud y bienestar en cada paso del camino. Esperamos ser su socio de confianza en su viaje hacia una vida saludable."
+            
+            
+            
+            
+            </p>
+      </div>
+    </section>
+
+
+             
+{% endblock %}

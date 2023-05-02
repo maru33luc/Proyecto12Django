@@ -1,0 +1,442 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from .forms import ContactoForm, RegisterForm, CustomUserCreationForm, CustomUserChangeForm, CustomAuthenticationForm, AuthenticationForm, LoginForm, PatientForm, DoctorForm, SpecialistForm
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth import authenticate, login
+from django.urls import reverse_lazy, reverse
+from django.views.generic.edit import FormView
+
+
+
+from .models import Patient, Specialist, Doctor
+from clinica_app.models import User
+#probando autenticacion
+from django.urls import reverse
+from django.contrib.auth import authenticate,login,logout
+
+# Create your views here.
+def index(request):
+    context = {}
+    return render(request, 'clinica_app/index.html', context)
+
+def services(request):
+    context = {}
+    return render(request, 'clinica_app/services.html', context)
+
+def staff(request):
+    doctors_staff = [
+        {
+            'name': 'Maria',
+            'last_name': 'Sanchez',
+            'speciality': 'Dermatologia',
+        },
+         {
+            'name': 'Ramiro',
+            'last_name': 'Perez',
+            'speciality': 'Traumatologia',
+        },
+         {
+            'name': 'Josefina',
+            'last_name': 'Correa',
+            'speciality': 'Ginecologia',
+        },
+         {
+            'name': 'Carlos',
+            'last_name': 'Torres',
+            'speciality': 'Cirugia',
+        },
+         {
+            'name': 'Pedro',
+            'last_name': 'Lopez',
+            'speciality': 'Gastroenterologia',
+        },
+    ]
+    context = {
+        'doctors' : doctors_staff
+    }
+    return render(request, 'clinica_app/staff.html', context)
+
+def appointment(request):
+    context = {}
+    return render(request, 'clinica_app/appointment.html', context)
+
+def about_us(request):
+    context = {}
+    return render(request, 'clinica_app/about_us.html', context)
+
+def contact(request):
+    context = {}
+    return render(request, 'clinica_app/contact.html', context)
+
+def log_in(request):
+    context = {}
+    return render(request, 'clinica_app/login.html', context)
+
+
+def signup(request):
+    if request.method == 'POST':
+        signup_form = RegisterForm(request.POST)
+        print(request.POST)
+        if signup_form.is_valid:
+           signup_form.save()
+           
+           return HttpResponseRedirect("/thanks/")
+       
+    else:
+        signup_form = RegisterForm()
+
+    context = {
+        'signup_form' : signup_form
+    }
+   
+    return render(request, 'clinica_app/signup.html', context)
+
+def signin(request):
+    context = {}
+    if request.method == "POST":
+        email = request.POST['email']
+        password=request.POST['password']
+        user=authenticate(request,email=email,password=password)
+        if user is not None:
+            login(request,user)
+            return redirect("welcome")
+        else:
+            return render(request,'clinica_app/signin.html',{
+                "message":"Invalid Credentials"
+            })
+    #return render(request,"userlogin.html")
+    return render(request, 'clinica_app/signin.html', context)
+
+def signout(request):
+    logout(request)
+    return render(request,'clinica_app/signin.html',{
+        'message':"Logged out"
+    })
+def welcome(request):
+    context = {}
+    return render(request, 'clinica_app/welcome.html', context)
+
+
+def patient_create(request):
+    if request.method == 'POST':
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            patient = form.save(commit=False)
+            patient.user = request.user
+            patient.save()
+            messages.success(request,  messages.SUCCESS, 'Patient created successfully.')
+            #messages.add_message(request, messages.SUCCESS, 'Paciente dado de alta con exito', extra_tags="tag1")
+            return redirect('appointment')
+            
+    else:
+         form = PatientForm()    
+
+    context = {
+        'form': form
+    }
+    return render(request, 'clinica_app/patient/patient_create.html', context)
+
+def patients(request):
+    #patients = Patient.objects.select_related('user').all()
+    patients = Patient.objects.all()
+    return render(request, 'clinica_app/patient/patients.html', {
+        'patients': patients
+    })
+def patient_detail(request, pk):
+    patient = get_object_or_404(Patient, pk=pk, user=request.user)
+    
+    return render(request, 'clinica_app/patient/patient_detail.html', {'patient': patient})
+
+@login_required
+def patient_update(request, pk):
+    patient = get_object_or_404(Patient, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = PatientForm(request.POST, instance=patient)
+        if form.is_valid():
+            form.save()
+            #investigar como mod. fields del user name y last
+            return redirect('patient_detail', pk=patient.patient_id)
+    else:
+        form = PatientForm(instance=patient)
+    return render(request, 'clinica_app/patient/patient_update.html', {'form': form, 'patient': patient})
+
+def patient_delete(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    patient.delete()
+    return redirect('patients')
+
+
+###Admin ###
+## Specialist ##
+
+
+@login_required
+def specialist_list(request):
+    specialists = Specialist.objects.all()
+    return render(request, 'clinica_app/admin/specialist_list.html', {'specialists': specialists})
+
+def specialist_detail(request, pk):
+    specialist = Specialist.objects.get(pk=pk)
+    #specialist = get_object_or_404(Specialist, pk=pk)
+    return render(request, 'clinica_app/admin/specialist_detail.html', {'specialist': specialist})
+
+def specialist_delete(request, pk):
+    specialist = Specialist.objects.get(id=pk)
+    if request.method == 'POST':
+        specialist.delete()
+        return redirect('specialist_list')
+    context = {
+        'specialist': specialist
+    } 
+    return render(request, 'clinica_app/admin/specialist_delete.html', context)   
+
+
+def specialist_create(request):
+    if request.method == 'POST':
+        form = SpecialistForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            Specialist.objects.create(name=name)
+            return redirect(reverse('specialist_list'))
+    else:
+        form = SpecialistForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'clinica_app/admin/specialist_create.html', context)
+
+def specialist_update(request, pk):
+    specialist = Specialist.objects.get(id=pk)
+    if request.method == 'POST':
+        form = SpecialistForm(request.POST)
+        if form.is_valid():
+            specialist.name = form.cleaned_data['name']
+            specialist.save()
+            return redirect('specialist_list')
+    else:
+        form = SpecialistForm(initial={'name': specialist.name})
+    context = {
+        'form': form,
+        'specialist': specialist
+    }    
+    return render(request, 'clinica_app/admin/specialist_update.html', context)
+    
+
+
+
+
+'''
+@login_required
+def patient_create(request):
+    if request.method == 'POST':
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            patient = form.save(commit=False)
+            patient.user = request.user # associate patient with current user
+            patient.save()
+            return redirect('patient_detail', pk=patient.pk)
+    else:
+        form = PatientForm()
+    return render(request, 'clinica_app/patient/create.html', {
+        'form': form,
+        'patient': patient})
+
+'''
+
+
+def patient_edit(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id)
+    if request.method == 'POST':
+        form = PatientForm(request.POST, instance=patient)
+        if form.is_valid():
+            form.save()
+            return redirect('patient_detail', patient_id=patient.id)
+    else:
+        form = PatientForm(instance=patient)
+    return render(request, 'clinica_app/patient/edit.html', {'form': form, 'patient': patient})
+
+def patient_delete(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id)
+    patient.delete()
+    return redirect('patients')
+
+def contacto(request):
+    if request.method == 'POST':
+        contacto_form = ContactoForm(request.POST)
+    else:
+        contacto_form = ContactoForm()
+    return render(request, 'clinica_app/contacto.html', {
+        'contacto_form': contacto_form
+    })
+
+#########
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            email = form.cleaned_data.get('email')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(email=email, password=raw_password)
+            login(request, user)
+            return redirect('welcome')
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'clinica_app/register.html', {'form': form})
+
+@login_required
+def profile(request):
+    user = request.user
+    return render(request, 'clinica_app/profile.html', {'user': user})
+
+def update_profile(request):
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = CustomUserChangeForm(instance=request.user)
+
+    return render(request, 'clinica_app/profile_update.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            user = authenticate(email=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('welcome')
+            else:
+                form.add_error(None, 'Invalid email or password')
+    else:
+        form = LoginForm()
+    return render(request, 'clinica_app/login1.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('index')
+
+@login_required
+def custom_logout(request):
+    logout(request)
+    return redirect('index') # replace 'home' with the name of your home view
+
+
+
+
+
+
+##### ADMIN ####
+
+
+@login_required
+def tasks(request):
+    tasks = Task.objects.filter(
+        user=request.user, date_completed__isnull=True)  # tareas del user actual
+    return render(request, 'tasks.html', {
+        'tasks': tasks
+    })
+
+@login_required
+def completed_tasks(request):
+    tasks = Task.objects.filter(
+        user=request.user, date_completed__isnull=False).order_by('-date_completed')  # tareas del user actual
+    return render(request, 'tasks.html', {
+        'tasks': tasks
+    })
+
+@login_required
+def create_task(request):
+    if request.method == 'GET':
+        return render(request, 'create_task.html', {
+            'form': TaskForm
+        })
+    else:
+        try:
+         # print(request.POST)
+            form = TaskForm(request.POST)
+        # m devuelve los datos del formulario
+            new_task = form.save(commit=False)
+            new_task.user = request.user
+            new_task.save()
+        # print(form)
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'create_task.html', {
+                'form': TaskForm,
+                'error': "Please provide valid data"
+            })
+
+@login_required
+def task_detail(request, task_id):
+    if request.method == 'GET':
+        # print(task_id)
+        # por si preguntan x una tarea q no existe
+        task = get_object_or_404(Task, pk=task_id, user = request.user)
+        form = TaskForm(instance=task)
+        return render(request, 'task_detail.html', {
+            'task': task,
+            'form': form
+        })
+    else:
+        try:
+            task = get_object_or_404(Task, pk=task_id, user = request.user)
+            form = TaskForm(request.POST, instance=task)
+            form.save() #graba modificado
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'task_detail.html', {
+            'task': task,
+            'form': form,
+            'error': 'Error updtaing Task'
+        })
+
+@login_required
+def task_complete(request, task_id):
+    task = get_object_or_404(Task, pk = task_id, user = request.user)
+    if request.method == 'POST':
+        task.date_completed = timezone.now()
+        task.save()
+        return redirect('tasks')
+        
+@login_required
+def task_delete(request, task_id):
+    task = get_object_or_404(Task, pk = task_id, user = request.user)
+    if request.method == 'POST':
+        task.delete()
+        return redirect('tasks')  
+
+@login_required
+def signout(request):
+    logout(request)
+    return redirect('home')
+
+
+def signin(request):
+    if request.method == 'GET':
+        return render(request, 'login.html', {
+            'form': AuthenticationForm
+        })
+    else:
+        # autentica usario y password
+        user = authenticate(
+            request, username=request.POST['username'], password=request.POST['password'])
+        # print(request.POST)
+        if user is None:  # usuario no valido
+            return render(request, 'login.html', {
+                'form': AuthenticationForm,
+                'error': 'Username or password is incorrect'
+            })
+        else:  # ususario y password correctos
+            login(request, user)  # guardo sesion user
+            return redirect('tasks')
+
