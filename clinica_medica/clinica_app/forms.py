@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-
+from datetime import datetime, date, timedelta
+import re
 from .models import User, Patient, Doctor, Specialist
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
@@ -103,12 +104,46 @@ class PatientForm(forms.ModelForm):
     city = forms.CharField(label='Localidad: ')
     social_work = forms.CharField(label='Obra Social:')
     sw_number = forms.CharField(label='Número de afiliado:')
-    date_of_birth = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-
+    date_of_birth = forms.DateField(
+        initial=date(1990, 1, 1),
+        widget=forms.DateInput(
+            attrs={
+                'type': 'date',
+                'max': (date.today() - timedelta(days=18*365)).strftime('%Y-%m-%d'),
+                'min': date(1920, 1, 1).strftime('%Y-%m-%d'),
+                
+            }
+        )
+    )
     class Meta:
             model = Patient
             fields = ['dni', 'phone', 'address', 'city', 'social_work', 'sw_number', 'date_of_birth' ]
-                      
+
+    def clean_dni(self):
+        dni = self.cleaned_data['dni']
+        if not dni.isdigit() or len(dni) != 8:
+            raise forms.ValidationError('DNI debe ser un número y contener solo 8 dígitos' )
+        return dni
+        
+
+    # def clean_date_of_birth(self):
+    #     dob = self.cleaned_data['date_of_birth']
+    #     if dob > datetime.now().date():
+    #         raise forms.ValidationError("Ingrese una fecha de nacimiento válida.")
+    #     age = (datetime.now().date() - dob).days // 365
+    #     if age < 18:
+    #         raise forms.ValidationError("Usted debe ser mayor de 18 años para registrarse.")
+    #     return dob
+    
+    def clean_phone(self):
+        phone = str(self.cleaned_data['phone'])
+        phone = re.sub(r'\D', '', phone)  # remove all non-digit characters
+        if len(phone) < 10:
+            raise forms.ValidationError('El número de teléfono debe ser al menos de 10 digitos.')
+        return phone
+
+
+       
     
     
 class SpecialistForm(forms.ModelForm):

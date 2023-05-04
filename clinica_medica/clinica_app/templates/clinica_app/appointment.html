@@ -25,8 +25,15 @@
                         <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Turnos</h5>
                         <h1 class="display-4">Reserve su turno</h1>
                     </div>
-                    <p class="mb-5">Eirmod sed tempor lorem ut dolores. Aliquyam sit sadipscing kasd ipsum. Dolor ea et dolore et at sea ea at dolor, justo ipsum duo rebum sea invidunt voluptua. Eos vero eos vero ea et dolore eirmod et. Dolores diam duo invidunt lorem. Elitr ut dolores magna sit. Sea dolore sanctus sed et. Takimata takimata sanctus sed.</p>
-                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="">Doctor</a>
+                    {% if user.is_patient == True %}
+                    <p class="mb-5">Ahora si, usted puede reservar un turno. </p>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'doctors' %}">Médicos</a>
+                    {% else %}
+                    <p class="mb-5">Si usted aún no completo sus datos luego de registrarse en el sistema, debe hacerlo, de lo contrario no podrá acceder al sistema de turnos. </p>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar Datos</a>
+                    {% endif %}
+                    
+                   
                     <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="">Leer más</a>
                 </div>
                 <div class="col-lg-6">

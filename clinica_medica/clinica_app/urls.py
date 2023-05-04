@@ -15,35 +15,20 @@ urlpatterns = [
     path('appointment', views.appointment, name="appointment"),
     path('contact', views.contact, name="contact"),
     path('about_us', views.about_us, name="about_us"),
-  
-    path('signup', views.signup, name='signup'),
-
-#aqui esta las rutas para acceso ususarios
-    path('signout', views.signout, name= 'signout'),
-    path('signin', views.signin, name='signin'),
     path('welcome', views.welcome, name='welcome'),
-
-   
-  
-  
     path('log_in', views.login_view, name='log_in'),
-
     path('register', views.register, name='register'),
     path('profile', views.profile, name='profile'),
     path('update_profile', views.update_profile, name='update_profile'),  
     path('logout', views.logout_view, name='logout'),  
+    #### patients ####
     path('patient/create/', views.patient_create, name='patient_create'),
     path('patients', views.patients, name="patients"), 
     path('patient/<int:pk>/', views.patient_detail, name='patient_detail'),
     path('patient/<int:pk>/update/', views.patient_update, name='patient_update'),
     path('patient/<int:pk>/delete/', views.patient_delete, name='patient_delete'),
-
+    path('admin/doctors', views.doctors, name="doctors"), 
     path('contacto', views.contacto, name="contacto"), 
-     # path('login1/', CustomLoginView.as_view(), name='login'),
-   # path('logout/', CustomLogoutView.as_view(), name='logout'),
-   #### patients ####
-    
-    
     
     
     #### ADMIN ####
@@ -55,17 +40,14 @@ urlpatterns = [
     path('admin/<int:pk>/delete/', views.specialist_delete, name='specialist_delete'),
     #doctors#
 
-
+    #aqui esta las rutas para acceso ususarios sin usar
+    # path('signout', views.signout, name= 'signout'),
+    # path('signin', views.signin, name='signin'),
+    # path('signup', views.signup, name='signup'),
 
     
 ]
 
-'''
-    path('create_task/', views.create_task, name='create_task' ),
-    path('task_detail/<int:task_id>', views.task_detail, name='task_detail' ),
-    path('task_detail/<int:task_id>/complete', views.task_complete, name='task_complete' ),
-    path('task_detail/<int:task_id>/delete', views.task_delete, name='task_delete' ),
-'''
 
 
 

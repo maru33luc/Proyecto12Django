@@ -27,9 +27,10 @@ class User(AbstractUser):
     email = models.EmailField('email', unique=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    is_staff = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-
+    is_patient = models.BooleanField(default=False)
+    is_doctor = models.BooleanField(default=False)
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -48,7 +49,7 @@ class User(AbstractUser):
 
 
 class Patient(models.Model):
-    patient_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     # first_name = models.CharField(max_length=20, verbose_name='Nombre')
     # last_name = models.CharField(max_length=20, verbose_name='Apellido')
     dni = models.CharField(max_length=8, verbose_name='DNI', null=True, blank=True)
@@ -76,14 +77,14 @@ class Specialist(models.Model):
         return self.name
 
 class Doctor(models.Model):
-    doctor_id = models.AutoField(primary_key=True)
-    first_name = models.CharField(max_length=20, verbose_name='Nombre')
-    last_name = models.CharField(max_length=20, verbose_name='Apellido')
-    email = models.EmailField(verbose_name='Email')
+    id = models.AutoField(primary_key=True)
+    #first_name = models.CharField(max_length=20, verbose_name='Nombre')
+    #last_name = models.CharField(max_length=20, verbose_name='Apellido')
+    #email = models.EmailField(verbose_name='Email')
     dni = models.CharField(max_length=8, verbose_name='DNI', null=True, blank=True)
     phone = models.IntegerField(default=0, null=True, blank=True)
     address = models.CharField(max_length=50, verbose_name='Dirección', null=True, blank=True)
-    
+    city = models.CharField(max_length=40, verbose_name='Ciudad', null=True, blank=True)
     mr_number = models.CharField(max_length=20, verbose_name='Número de Obra Social', null=True, blank=True)
     #specialist = models.CharField(max_length=20, verbose_name='Especialidad', null=True, blank=True)
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
