@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'clinica_app/admin/base.html' %}
 {% block title %}
 	<title>Alta Médico</title>
 {% endblock title %}
@@ -17,7 +17,7 @@
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-primary">Save</button>
-          <a href="{% url 'specialist_list' %}" class="btn btn-default">Cancel</a>
+          <a href="{% url 'doctors' %}" class="btn btn-default">Cancel</a>
         </div>
       </div>
 </form>

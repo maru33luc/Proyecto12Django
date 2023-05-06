@@ -119,8 +119,10 @@ class DoctorForm(forms.Form): #create Doctor
         model = Doctor
         fields = ['__all__'] #campos a utilizar en este form
         widgets = {
+            'specialist': forms.Select(attrs={'class': 'form-control'}),
+            'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+        
             #'title': forms.TextInput(attrs= { 'class': 'form-control', 'placeholder': 'Write a title'}),
             #'description': forms.Textarea(attrs= { 'class': 'form-control', 'placeholder': 'Write a description'}),
-            #'important': forms.CheckboxInput(attrs= { 'class': 'form-check-input m-auto'}),
-            }
-        
+            #'important': forms.CheckboxInput(attrs= { 'class': 'form-check-input m-auto'}
+        }

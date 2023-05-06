@@ -24,20 +24,25 @@ urlpatterns = [
     path('patient/<int:pk>/', views.patient_detail, name='patient_detail'),
     path('patient/<int:pk>/update/', views.patient_update, name='patient_update'),
     path('patient/<int:pk>/delete/', views.patient_delete, name='patient_delete'),
-    path('admin/doctors', views.doctors, name="doctors"), 
+    
     path('contacto', views.contacto, name="contacto"), 
     
     
     #### ADMIN ####
     #specialist#
     path('admin/specialist_list', views.specialist_list, name='specialist_list'),
-    path('admin/<int:pk>/', views.specialist_detail, name='specialist_detail'),
-    path('admin/new/', views.specialist_create, name='specialist_create'),
-    path('admin/<int:pk>/update/', views.specialist_update, name='specialist_update'),
-    path('admin/<int:pk>/delete/', views.specialist_delete, name='specialist_delete'),
+    path('admin/specialist/<int:pk>/', views.specialist_detail, name='specialist_detail'),
+    path('admin/specialist/new/', views.specialist_create, name='specialist_create'),
+    path('admin/specialist/<int:pk>/update/', views.specialist_update, name='specialist_update'),
+    path('admin/specialist/<int:pk>/delete/', views.specialist_delete, name='specialist_delete'),
+    
     #doctors#
 
-
+    path('admin/doctors', views.doctors, name="doctors"), 
+    path('admin/doctor/<int:pk>/', views.doctor_detail, name='doctor_detail'),
+    path('admin/doctor/new/', views.doctor_create, name='doctor_create'),
+    path('admin/doctor/<int:pk>/update/', views.doctor_update, name='doctor_update'),
+    path('admin/doctor/<int:pk>/delete/', views.doctor_delete, name='doctor_delete'),
     
 ]
 

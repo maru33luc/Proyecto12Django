@@ -33,15 +33,15 @@
 
             {% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" href="/tasks">Tasks Pending</a>
+              <a class="nav-link" href="{% url 'doctors' %}">Doctores</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'completed_tasks' %}"
-                >Completed Tasks</a
+              <a class="nav-link" href="{% url 'patients' %}"
+                >Pacientes</a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/create_task">Create Task</a>
+              <a class="nav-link" href="{% url 'specialist_list' %}">Especialidades</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/logout">Log Out</a>

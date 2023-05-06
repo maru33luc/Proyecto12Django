@@ -75,6 +75,7 @@ class Doctor(models.Model):
     mr_number = models.CharField(max_length=20, verbose_name='Número de Matrícula', null=True, blank=True)
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
+    image_profile = models.ImageField(upload_to='assets/img/doctor_images/', null=True, blank=True)
    
     def __str__(self):
         return self.user.get_full_name()

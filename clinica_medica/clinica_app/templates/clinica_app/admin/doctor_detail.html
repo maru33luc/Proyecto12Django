@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'clinica_app/admin/base.html' %}
 {% block title %}
 	<title>Médico</title>
 {% endblock title %}
@@ -7,7 +7,7 @@
 <main class="container">
     <div class="row">
     <div class="col-md-4 offset-md-4 mt-5">
-        <h1 class="text-secondary">{{doctor.first_name}} {{doctor.last_name}}  </h1>
+        <h1 class="text-secondary">{{doctor.user.first_name}} {{doctor.user.last_name}}  </h1>
         {{ error }} 
         <form action="" method="POST">
            

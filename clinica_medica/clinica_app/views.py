@@ -103,6 +103,7 @@ def patient_create(request):
     }
     return render(request, 'clinica_app/patient/patient_create.html', context)
 
+#Chequear porque me muestra usuarios
 def patients(request):
     patients = Patient.objects.all()
     return render(request, 'clinica_app/patient/patients.html', {
@@ -194,6 +195,55 @@ def doctors(request):
     return render(request, 'clinica_app/admin/doctors.html', {
         'doctors': doctors
     })
+
+def specialist_detail(request, pk):
+    specialist = Specialist.objects.get(pk=pk)
+    #specialist = get_object_or_404(Specialist, pk=pk)
+    return render(request, 'clinica_app/admin/specialist_detail.html', {'specialist': specialist})
+
+def specialist_delete(request, pk):
+    specialist = Specialist.objects.get(id=pk)
+    if request.method == 'POST':
+        specialist.delete()
+        return redirect('specialist_list')
+    context = {
+        'specialist': specialist
+    } 
+    return render(request, 'clinica_app/admin/specialist_delete.html', context)   
+
+
+def specialist_create(request):
+    if request.method == 'POST':
+        form = SpecialistForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            Specialist.objects.create(name=name)
+            return redirect(reverse('specialist_list'))
+    else:
+        form = SpecialistForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'clinica_app/admin/specialist_create.html', context)
+
+def specialist_update(request, pk):
+    specialist = Specialist.objects.get(id=pk)
+    if request.method == 'POST':
+        form = SpecialistForm(request.POST)
+        if form.is_valid():
+            specialist.name = form.cleaned_data['name']
+            specialist.save()
+            return redirect('specialist_list')
+    else:
+        form = SpecialistForm(initial={'name': specialist.name})
+    context = {
+        'form': form,
+        'specialist': specialist
+    }    
+    return render(request, 'clinica_app/admin/specialist_update.html', context)
+
+
+
 
 
 ######### LOGIN y demas en uso

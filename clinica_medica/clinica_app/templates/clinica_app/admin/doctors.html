@@ -1,4 +1,4 @@
-{% extends 'clinica_app/base1.html' %}
+{% extends 'clinica_app/admin/base.html' %}
 {% block title %}
 	<title>Listado de Médicos</title>
 {% endblock title %}
@@ -38,9 +38,9 @@
     <td>{{ doctor.specialist.name }}</td>
     <td>
     
-    <a style="margin-right: 30px;" href="{% url 'specialist_update' specialist.id %}">Edit</a>
+    <a style="margin-right: 30px;" href="{% url 'doctor_update' doctor.id %}">Edit</a>
     
-    <a href="{% url 'specialist_delete' specialist.id %}">Remove</a>
+    <a href="{% url 'doctor_delete' doctor.id %}">Remove</a>
     
     </td>
     
@@ -56,7 +56,7 @@
     
     <div class="text-center">
     
-    <a href="{% url 'specialist_create' %}"><button type="button" class="btn btn-primary mb_3">Add Specialist</button></a>
+    <a href="{% url 'doctor_create' %}"><button type="button" class="btn btn-primary mb_3">Agregar Doctor</button></a>
     
     </div>
     
