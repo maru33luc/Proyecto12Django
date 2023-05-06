@@ -114,6 +114,9 @@ class SpecialistForm(forms.ModelForm):
         
    
 class DoctorForm(forms.Form): #create Doctor
+    first_name = forms.CharField(label="Nombre: ", required=True)
+    last_name = forms.CharField(label="Apellido: ", required=True)
+    email = forms.EmailField(label="Email: ", required=True)
     specialist = forms.ModelChoiceField(queryset=Specialist.objects.all())
     class Meta:   #voy a especificar q modelo pertenece
         model = Doctor
@@ -124,5 +127,5 @@ class DoctorForm(forms.Form): #create Doctor
         
             #'title': forms.TextInput(attrs= { 'class': 'form-control', 'placeholder': 'Write a title'}),
             #'description': forms.Textarea(attrs= { 'class': 'form-control', 'placeholder': 'Write a description'}),
-            #'important': forms.CheckboxInput(attrs= { 'class': 'form-check-input m-auto'}
+            #'important': forms.CheckboxInput(attrs= { 'class': 'form-check-input m-auto'})
         }

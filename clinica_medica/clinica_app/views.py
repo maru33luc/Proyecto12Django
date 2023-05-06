@@ -196,51 +196,51 @@ def doctors(request):
         'doctors': doctors
     })
 
-def specialist_detail(request, pk):
-    specialist = Specialist.objects.get(pk=pk)
-    #specialist = get_object_or_404(Specialist, pk=pk)
-    return render(request, 'clinica_app/admin/specialist_detail.html', {'specialist': specialist})
+def doctor_detail(request, pk):
+    doctor = Doctor.objects.get(pk=pk)
+    #doctor = get_object_or_404(Doctor, pk=pk)
+    return render(request, 'clinica_app/admin/doctor_detail.html', {'doctor': doctor})
 
-def specialist_delete(request, pk):
-    specialist = Specialist.objects.get(id=pk)
+def doctor_delete(request, pk):
+    doctor = Doctor.objects.get(id=pk)
     if request.method == 'POST':
-        specialist.delete()
-        return redirect('specialist_list')
+        doctor.delete()
+        return redirect('doctors')
     context = {
-        'specialist': specialist
+        'doctor': doctor
     } 
-    return render(request, 'clinica_app/admin/specialist_delete.html', context)   
+    return render(request, 'clinica_app/admin/doctor_delete.html', context)   
 
 
-def specialist_create(request):
+def doctor_create(request):
     if request.method == 'POST':
-        form = SpecialistForm(request.POST)
+        form = DoctorForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
-            Specialist.objects.create(name=name)
-            return redirect(reverse('specialist_list'))
+            Doctor.objects.create(name=name)
+            return redirect(reverse('doctors'))
     else:
-        form = SpecialistForm()
+        form = DoctorForm()
     context = {
         'form': form
     }
-    return render(request, 'clinica_app/admin/specialist_create.html', context)
+    return render(request, 'clinica_app/admin/doctor_create.html', context)
 
-def specialist_update(request, pk):
-    specialist = Specialist.objects.get(id=pk)
+def doctor_update(request, pk):
+    doctor = Doctor.objects.get(id=pk)
     if request.method == 'POST':
-        form = SpecialistForm(request.POST)
+        form = doctorForm(request.POST)
         if form.is_valid():
-            specialist.name = form.cleaned_data['name']
-            specialist.save()
-            return redirect('specialist_list')
+            doctor.name = form.cleaned_data['name']
+            doctor.save()
+            return redirect('doctors')
     else:
-        form = SpecialistForm(initial={'name': specialist.name})
+        form = DoctorForm(initial={'name': doctor.name})
     context = {
         'form': form,
-        'specialist': specialist
+        'doctor': doctor
     }    
-    return render(request, 'clinica_app/admin/specialist_update.html', context)
+    return render(request, 'clinica_app/admin/doctor_update.html', context)
 
 
 
