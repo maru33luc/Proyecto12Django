@@ -3,9 +3,6 @@ from django.contrib import admin
 admin.autodiscover()
 from . import views
 from django.contrib.auth import views as auth_views
-#from .views import CustomLoginView, CustomLogoutView
-
-
 
 
 urlpatterns = [
@@ -40,10 +37,6 @@ urlpatterns = [
     path('admin/<int:pk>/delete/', views.specialist_delete, name='specialist_delete'),
     #doctors#
 
-    #aqui esta las rutas para acceso ususarios sin usar
-    # path('signout', views.signout, name= 'signout'),
-    # path('signin', views.signin, name='signin'),
-    # path('signup', views.signup, name='signup'),
 
     
 ]

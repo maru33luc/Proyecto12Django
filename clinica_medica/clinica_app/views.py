@@ -1,21 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect
 from django.contrib import messages
-from .forms import ContactoForm, RegisterForm, CustomUserCreationForm, CustomUserChangeForm, CustomAuthenticationForm, AuthenticationForm, LoginForm, PatientForm, DoctorForm, SpecialistForm
-
+from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib.auth import authenticate, login
-from django.urls import reverse_lazy, reverse
-from django.views.generic.edit import FormView
-
-
-
 from .models import Patient, Specialist, Doctor
 from clinica_app.models import User
-#probando autenticacion
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate,login,logout
 
 # Create your views here.
@@ -30,23 +19,8 @@ def index(request):
             pass
     context = {'patient_id': patient_id}
     print(patient_id)
-    return render(request, 'clinica_app/index.html', context)
-    # patient_id = None
-    # if request.user.is_authenticated:
-    #     patient = request.user.patient # Assumes a one-to-one relationship between User and Patient models
-    #     patient_id = patient.id
-    # context = {'patient_id': patient_id}
-
-    # if request.user:
-
-    #     if request.user.is_patient == True:
-    #          patient = Patient.objects.get(user=request.user)
-       
-    #          print(patient)    
-    #          context = {'patient': patient, }
+    return render(request, 'clinica_app/index.html', context)   
     
-    
-
 def services(request):
     context = {}
     return render(request, 'clinica_app/services.html', context)
@@ -104,14 +78,11 @@ def contacto(request):
     return render(request, 'clinica_app/contacto.html', {
         'contacto_form': contacto_form
     })
-# def welcome(request):
-#     context = {}
-#     return render(request, 'clinica_app/welcome.html', context)
+
 def welcome(request):
     context = {}
     return render(request, 'clinica_app/welcome.html', context)
     
-
 def patient_create(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
@@ -122,11 +93,8 @@ def patient_create(request):
             user = request.user
             user.is_patient = True
             user.save()
-            messages.success(request,  messages.SUCCESS, 'Patient created successfully.')
-            #messages.add_message(request, messages.SUCCESS, 'Paciente dado de alta con exito', extra_tags="tag1")
-            #ver de mandar el patient_id a appointment
+            messages.success(request,  messages.SUCCESS, 'Paciente dado de alta con exito')
             return redirect('appointment')
-            
     else:
          form = PatientForm()    
 
@@ -136,7 +104,6 @@ def patient_create(request):
     return render(request, 'clinica_app/patient/patient_create.html', context)
 
 def patients(request):
-    #patients = Patient.objects.select_related('user').all()
     patients = Patient.objects.all()
     return render(request, 'clinica_app/patient/patients.html', {
         'patients': patients
@@ -146,17 +113,17 @@ def patient_detail(request, pk):
     
     return render(request, 'clinica_app/patient/patient_detail.html', {'patient': patient})
 
+#Hacerlo andar
 @login_required
 def patient_update(request, pk):
     patient = get_object_or_404(Patient, pk=pk, user=request.user)
     if request.method == 'POST':
         form = PatientForm(request.POST, instance=patient)
-
+        print(form.errors)
         if form.is_valid():
-            print(form)
+            
             form.save()
-            #investigar como mod. fields del user name y last
-            return redirect('patient_detail', pk=patient.patient_id)
+            return redirect('patient_detail', pk=patient.id)
     else:
         form = PatientForm(instance=patient)
     return render(request, 'clinica_app/patient/patient_update.html', {'form': form, 'patient': patient})
@@ -169,7 +136,6 @@ def patient_delete(request, pk):
 
 ###Admin ###
 ## Specialist ##
-
 
 @login_required
 def specialist_list(request):
@@ -224,14 +190,10 @@ def specialist_update(request, pk):
     
 ## doctors ##   
 def doctors(request):
-    #patients = Patient.objects.select_related('user').all()
-    doctors = Patient.objects.all()
+    doctors = Doctor.objects.all()
     return render(request, 'clinica_app/admin/doctors.html', {
         'doctors': doctors
     })
-
-
-
 
 
 ######### LOGIN y demas en uso
@@ -293,103 +255,5 @@ def logout_view(request):
     logout(request)
     return redirect('index')
 
-@login_required
-def custom_logout(request):
-    logout(request)
-    return redirect('index') # replace 'home' with the name of your home view
 
-
-
-
-
-
-##### ADMIN ####
-## sin uso por el momento chequear
-# def log_in(request):
-#     context = {}
-#     return render(request, 'clinica_app/login.html', context)
-
-
-# def signup(request):
-#     if request.method == 'POST':
-#         signup_form = RegisterForm(request.POST)
-#         print(request.POST)
-#         if signup_form.is_valid:
-#            signup_form.save()
-           
-#            return HttpResponseRedirect("/thanks/")
-       
-#     else:
-#         signup_form = RegisterForm()
-
-#     context = {
-#         'signup_form' : signup_form
-#     }
-   
-#     return render(request, 'clinica_app/signup.html', context)
-
-# def signin(request):
-#     context = {}
-#     if request.method == "POST":
-#         email = request.POST['email']
-#         password=request.POST['password']
-#         user=authenticate(request,email=email,password=password)
-#         if user is not None:
-#             login(request,user)
-#             return redirect("welcome")
-#         else:
-#             return render(request,'clinica_app/signin.html',{
-#                 "message":"Invalid Credentials"
-#             })
-#     #return render(request,"userlogin.html")
-#     return render(request, 'clinica_app/signin.html', context)
-
-# def signout(request):
-#     logout(request)
-#     return render(request,'clinica_app/signin.html',{
-#         'message':"Logged out"
-#     })
-
-# #sin uso
-
-# def patient_edit(request, patient_id):
-#     patient = get_object_or_404(Patient, pk=patient_id)
-#     if request.method == 'POST':
-#         form = PatientForm(request.POST, instance=patient)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('patient_detail', patient_id=patient.id)
-#     else:
-#         form = PatientForm(instance=patient)
-#     return render(request, 'clinica_app/patient/edit.html', {'form': form, 'patient': patient})
-
-# def patient_delete(request, patient_id):
-#     patient = get_object_or_404(Patient, pk=patient_id)
-#     patient.delete()
-#     return redirect('patients')
-
-# @login_required
-# def signout(request):
-#     logout(request)
-#     return redirect('home')
-
-
-# def signin(request):
-#     if request.method == 'GET':
-#         return render(request, 'login.html', {
-#             'form': AuthenticationForm
-#         })
-#     else:
-#         # autentica usario y password
-#         user = authenticate(
-#             request, username=request.POST['username'], password=request.POST['password'])
-#         # print(request.POST)
-#         if user is None:  # usuario no valido
-#             return render(request, 'login.html', {
-#                 'form': AuthenticationForm,
-#                 'error': 'Username or password is incorrect'
-#             })
-#         else:  # ususario y password correctos
-#             login(request, user)  # guardo sesion user
-#             return redirect('tasks')
 

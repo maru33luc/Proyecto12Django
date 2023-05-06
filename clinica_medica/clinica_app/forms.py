@@ -54,43 +54,12 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 
 
-class CustomAuthenticationForm(AuthenticationForm):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.error_messages['invalid_login'] = 'Please enter a correct email and password. Note that both fields may be case-sensitive.'
-
-    def clean(self):
-        email = self.cleaned_data.get('email')
-        password = self.cleaned_data.get('password')
-
-        if email and password:
-            try:
-                user = User.objects.get(email=email)
-            except User.DoesNotExist:
-                raise forms.ValidationError('Invalid email or password.')
-
-            if not user.check_password(password):
-                raise forms.ValidationError('Invalid email or password.')
-
-        return self.cleaned_data
     
 class LoginForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password')
 
-'''
-class UserSignUpCreationForm(UserCreationForm):
-    class Meta:
-        model = Userfields = ('username', 'email', 'first_name')
 
-class UserChangeForm(UserChangeForm):
-    class Meta:
-        model = User
-        fields = ('username', 'email')
-'''
 class ContactoForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
     last_name = forms.CharField(label="Apellido: ", required=True)
@@ -125,15 +94,6 @@ class PatientForm(forms.ModelForm):
             raise forms.ValidationError('DNI debe ser un número y contener solo 8 dígitos' )
         return dni
         
-
-    # def clean_date_of_birth(self):
-    #     dob = self.cleaned_data['date_of_birth']
-    #     if dob > datetime.now().date():
-    #         raise forms.ValidationError("Ingrese una fecha de nacimiento válida.")
-    #     age = (datetime.now().date() - dob).days // 365
-    #     if age < 18:
-    #         raise forms.ValidationError("Usted debe ser mayor de 18 años para registrarse.")
-    #     return dob
     
     def clean_phone(self):
         phone = str(self.cleaned_data['phone'])
@@ -142,9 +102,6 @@ class PatientForm(forms.ModelForm):
             raise forms.ValidationError('El número de teléfono debe ser al menos de 10 digitos.')
         return phone
 
-
-       
-    
     
 class SpecialistForm(forms.ModelForm):
     
@@ -154,46 +111,8 @@ class SpecialistForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'})
         }
-        '''
-    def save(self, commit=True):
-        name = self.cleaned_data['name']
-        specialist = Specialist(name=name)
-        if commit:
-            specialist.save()
-        return specialist
-     '''   
-    #description = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}))
-    #photo = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
-    #price = forms.DecimalField(min_value=0, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'min': 0, 'step': 0.01}))
-
-
-
-'''
-
-class SpecialistForm(forms.Form):
-    name = forms.CharField(max_length=255)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if 'instance' in kwargs:
-            instance = kwargs['instance']
-            self.fields['name'].initial = instance.name
-
-    def save(self, commit=True):
-        instance = Specialist()
-        if self.cleaned_data['name']:
-            instance.name = self.cleaned_data['name']
-        if commit:
-            instance.save()
-        return instance
-
-    def update(self, instance, commit=True):
-        instance.name = self.cleaned_data['name']
-        if commit:
-            instance.save()
-        return instance
-'''
-
+        
+   
 class DoctorForm(forms.Form): #create Doctor
     specialist = forms.ModelChoiceField(queryset=Specialist.objects.all())
     class Meta:   #voy a especificar q modelo pertenece
