@@ -30,6 +30,7 @@ urlpatterns = [
     
     #### ADMIN ####
     path('admin/home_admin', views.home_admin, name='home_admin'),
+    path('admin/login_admin', views.login_admin, name='login_admin'),
     #specialist#
     path('admin/specialist_list', views.specialist_list, name='specialist_list'),
     path('admin/specialist/<int:pk>/', views.specialist_detail, name='specialist_detail'),

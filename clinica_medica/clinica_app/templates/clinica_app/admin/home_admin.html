@@ -14,9 +14,10 @@
                     <a class="btn btn-dark" href="{% url 'logout' %}">Log Out</a>
                
     {% else %}
-    <a class="btn btn-secondary" href="{% url 'log_in' %}">
+    <a class="btn btn-secondary" href="{% url 'login_admin' %}?admin=True">
         Sign In
     </a>
+  
     {% endif %}
     
    

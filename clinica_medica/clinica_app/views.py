@@ -136,18 +136,52 @@ def patient_delete(request, pk):
 
 
 ###Admin ###
-## Specialist ##
+
 
 def home_admin(request):
     patients = Patient.objects.all()
     doctors = Doctor.objects.all()
     specialists = Specialist.objects.all()
+    isadmin = True
     context = {
         'specialists': specialists,
         'doctors' : doctors,
         'patients': patients,
+        'isadmin': isadmin,
     }
     return render(request, 'clinica_app/admin/home_admin.html', context)
+
+def login_admin(request):
+    
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            user = authenticate(email=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home_admin')
+                                 
+                    
+            else:
+                form.add_error(None, 'Invalid email or password')
+    
+    else:
+        
+        form = LoginForm()
+
+        
+
+    context = {
+        'form': form,
+        
+        
+    }
+
+    return render(request, 'clinica_app/admin/login.html', context)
+
+## Specialist ##
 @login_required
 def specialist_list(request):
     specialists = Specialist.objects.all()
@@ -390,18 +424,26 @@ def login_view(request):
             user = authenticate(email=email, password=password)
             if user is not None:
                 login(request, user)
-                if user.is_admin == True:
+                if user.is_admin and request.GET.get('admin') == 'True':
+                                 
                     return redirect(reverse('home_admin'))
                 else:
                     return redirect('welcome')
             else:
                 form.add_error(None, 'Invalid email or password')
+    
     else:
+        
         form = LoginForm()
+
+        
+
     context = {
         'form': form,
         
+        
     }
+
     return render(request, 'clinica_app/login1.html', context)
 
 def logout_view(request):
