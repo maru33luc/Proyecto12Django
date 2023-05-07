@@ -67,6 +67,7 @@ class Specialist(models.Model):
         return self.name
 
 class Doctor(models.Model):
+    # name= models.CharField(max_length=50, verbose_name='Nombre y Apellido', null=True, blank=True)
     id = models.AutoField(primary_key=True)
     dni = models.CharField(max_length=8, verbose_name='DNI', null=True, blank=True)
     phone = models.IntegerField(default=0, null=True, blank=True)
@@ -75,9 +76,9 @@ class Doctor(models.Model):
     mr_number = models.CharField(max_length=20, verbose_name='Número de Matrícula', null=True, blank=True)
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
-    image_profile = models.ImageField(upload_to='assets/img/doctor_images/', null=True, blank=True)
+    image_profile = models.ImageField(upload_to='doctor_images/', null=True, blank=True)
    
     def __str__(self):
-        return self.user.get_full_name()
-
+        return self.mr_number
+    
         

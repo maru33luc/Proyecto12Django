@@ -5,6 +5,10 @@ import re
 from .models import User, Patient, Doctor, Specialist
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
+from django.core.files.storage import FileSystemStorage
+import os
+from django.conf import settings
+
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
@@ -113,16 +117,69 @@ class SpecialistForm(forms.ModelForm):
         }
         
    
-class DoctorForm(forms.Form): #create Doctor
-    specialist = forms.ModelChoiceField(queryset=Specialist.objects.all())
-    class Meta:   #voy a especificar q modelo pertenece
-        model = Doctor
-        fields = ['__all__'] #campos a utilizar en este form
-        widgets = {
-            'specialist': forms.Select(attrs={'class': 'form-control'}),
-            'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+# class DoctorForm(forms.Form): #create Doctor
+#     specialist = forms.ModelChoiceField(queryset=Specialist.objects.all())
+#     # class Meta:   #voy a especificar q modelo pertenece
+#     model = Doctor
+#     fields = ['__all__'] #campos a utilizar en este form
+#     widgets = {
+#         'specialist': forms.Select(attrs={'class': 'form-control'}),
+#         'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         
             #'title': forms.TextInput(attrs= { 'class': 'form-control', 'placeholder': 'Write a title'}),
             #'description': forms.Textarea(attrs= { 'class': 'form-control', 'placeholder': 'Write a description'}),
             #'important': forms.CheckboxInput(attrs= { 'class': 'form-check-input m-auto'}
-        }
+        # }
+  
+class DoctorForm(forms.ModelForm):
+    class Meta:
+        model = Doctor
+        fields = ['dni','phone','address','city','mr_number','specialist','image_profile']
+        widgets = {
+            'specialist': forms.Select(attrs={'class': 'form-control'}),
+            'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+        }  
+    user_form = CustomUserCreationForm()
+
+    # def save(self, commit=True):
+    #     instance = super().save(commit=False)
+
+    #     # CustomUserCreationForm
+    #     user_form = CustomUserCreationForm(self.data)
+    #     if user_form.is_valid():
+    #         user = user_form.save(commit=False)
+    #         user.is_doctor = True  # Marcar el usuario como médico
+    #         user.save()
+    #         instance.user = user
+
+    #         # if 'image_profile' in self.cleaned_data:
+    #         #     image_profile = self.cleaned_data['image_profile']
+    #         #     fs = FileSystemStorage(location=settings.MEDIA_ROOT)
+
+    #         #     # fs = FileSystemStorage()
+    #         #     filename = fs.save(os.path.join('doctor_images', image_profile.name), image_profile)
+    #         #     instance.image_profile = filename
+
+    #         if commit:
+    #             instance.save()
+    #         return instance
+    #     else:
+    #         # Manejar errores en el formulario de usuario aquí
+    #         pass
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        # CustomUserCreationForm
+        user_form = CustomUserCreationForm(self.data)
+        if user_form.is_valid():
+            user = user_form.save(commit=False)
+            user.is_doctor = True  # Marcar el usuario como médico
+            user.save()
+            instance.user = user
+
+            if commit:
+                instance.save()
+            return instance
+        else:
+            # Manejar errores en el formulario de usuario aquí
+            pass
