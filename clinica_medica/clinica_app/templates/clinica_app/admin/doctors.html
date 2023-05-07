@@ -41,9 +41,17 @@
     <td>{{ doctor.city }}</td>
     <td>{{ doctor.mr_number }}</td>
     <td>{{ doctor.specialist.name }}</td>
-    <td>{{ doctor.image_profile }}</td>
-    <td>
+      <td>{% if doctor.image_profile %}
+    <img width="50px" src=" {{settings.MEDIA_URL}}{{ doctor.image_profile.url }}" alt="{{ doctor.mr_number }}">
+    {% else %}
+        Sin imagen
+    {% endif %}</td>
     
+
+
+
+   
+      <td>
     <a style="margin-right: 30px;" href="{% url 'doctor_update' doctor.id %}">Edit</a>
     
     <a href="{% url 'doctor_delete' doctor.id %}">Remove</a>

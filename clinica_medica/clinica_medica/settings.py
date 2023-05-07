@@ -125,7 +125,7 @@ STATIC_URL = 'clinica_app/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'clinica_app/static'),)
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'clinica_app/media/doctor_images/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'clinica_app/media/')
 
 
 
