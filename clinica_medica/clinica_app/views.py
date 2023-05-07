@@ -138,6 +138,16 @@ def patient_delete(request, pk):
 ###Admin ###
 ## Specialist ##
 
+def home_admin(request):
+    patients = Patient.objects.all()
+    doctors = Doctor.objects.all()
+    specialists = Specialist.objects.all()
+    context = {
+        'specialists': specialists,
+        'doctors' : doctors,
+        'patients': patients,
+    }
+    return render(request, 'clinica_app/admin/home_admin.html', context)
 @login_required
 def specialist_list(request):
     specialists = Specialist.objects.all()
@@ -345,7 +355,10 @@ def register(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(email=email, password=raw_password)
             login(request, user)
-            return redirect('index')
+            if user.is_admin == True:
+                return redirect(reverse('home_admin'))
+            else:
+                return redirect('index')
     else:
         form = CustomUserCreationForm()
 
@@ -377,8 +390,10 @@ def login_view(request):
             user = authenticate(email=email, password=password)
             if user is not None:
                 login(request, user)
-                
-                return redirect('welcome')
+                if user.is_admin == True:
+                    return redirect(reverse('home_admin'))
+                else:
+                    return redirect('welcome')
             else:
                 form.add_error(None, 'Invalid email or password')
     else:
@@ -390,7 +405,14 @@ def login_view(request):
     return render(request, 'clinica_app/login1.html', context)
 
 def logout_view(request):
+    # isadmin = False
+    # if request.user.is_admin == True:
+    #     isadmin = True
+       
     logout(request)
+    # if isadmin == True:
+    #     return redirect(reverse('home_admin'))  
+    # else:
     return redirect('index')
 
 
