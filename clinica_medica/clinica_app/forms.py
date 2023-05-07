@@ -152,13 +152,13 @@ class DoctorForm(forms.ModelForm):
     #         user.save()
     #         instance.user = user
 
-    #         # if 'image_profile' in self.cleaned_data:
-    #         #     image_profile = self.cleaned_data['image_profile']
-    #         #     fs = FileSystemStorage(location=settings.MEDIA_ROOT)
+            # if 'image_profile' in self.cleaned_data:
+            #     image_profile = self.cleaned_data['image_profile']
+            #     fs = FileSystemStorage(location=settings.MEDIA_ROOT)
 
-    #         #     # fs = FileSystemStorage()
-    #         #     filename = fs.save(os.path.join('doctor_images', image_profile.name), image_profile)
-    #         #     instance.image_profile = filename
+            #     # fs = FileSystemStorage()
+            #     filename = fs.save(os.path.join('doctor_images', image_profile.name), image_profile)
+            #     instance.image_profile = filename
 
     #         if commit:
     #             instance.save()

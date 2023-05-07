@@ -300,6 +300,8 @@ def doctor_create(request):
         if doctor_form.is_valid():
             doctor_form.save()
             return redirect(reverse('doctors'))
+        else:
+            print(doctor_form.errors)
     else:
         doctor_form = DoctorForm()
         user_form = CustomUserCreationForm()
