@@ -294,15 +294,19 @@ def doctor_delete(request, pk):
 
 def doctor_create(request):
     if request.method == 'POST':
-        form = DoctorForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
+        user_form = CustomUserCreationForm(request.POST)
+        doctor_form = DoctorForm(request.POST, request.FILES)
+        # form = DoctorForm(request.POST, request.FILES)
+        if doctor_form.is_valid():
+            doctor_form.save()
             return redirect(reverse('doctors'))
     else:
-        form = DoctorForm()
+        doctor_form = DoctorForm()
+        user_form = CustomUserCreationForm()
 
     context = {
-        'form': form
+        'user_form': user_form,
+        'doctor_form': doctor_form
     }
     return render(request, 'clinica_app/admin/doctor_create.html', context)
 
