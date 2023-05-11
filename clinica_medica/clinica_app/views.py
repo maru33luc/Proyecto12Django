@@ -429,8 +429,7 @@ def login_view(request):
                         return redirect(reverse('home_admin'))
 
                     return redirect(reverse('home_admin'))
-                
-                
+
                 else:
                     return redirect('welcome')
             else:
