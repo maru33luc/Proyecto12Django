@@ -309,7 +309,7 @@ def doctor_create(request):
     context = {
         'user_form': user_form,
         'doctor_form': doctor_form
-    }
+    }    
     return render(request, 'clinica_app/admin/doctor_create.html', context)
 
 
