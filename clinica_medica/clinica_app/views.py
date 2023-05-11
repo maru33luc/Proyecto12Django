@@ -414,6 +414,47 @@ def update_profile(request):
 
     return render(request, 'clinica_app/profile_update.html', {'form': form})
 
+
+#Necesito codigo para saber si el usuario es superuser extienda de admin/base   y si es doctor extienda de doctor/base
+# def home(request):
+#     if request.user.is_authenticated:
+#         if request.user.is_admin:
+#             return redirect(reverse('home_admin'))
+#         else: 
+#             return redirect(reverse('home_doctor'))
+#     else:
+#         return redirect(reverse('login'))
+# y en el template que tendria que agregar
+# {% if user.is_admin %}
+#     {% extends 'admin/base.html' %}
+# {% else %}
+#     {% extends 'doctor/base.html' %}
+# {% endif %}
+# {% block content %}
+#     <h1>Home</h1>
+# {% endblock %}
+# y en el template de login
+# {% if user.is_admin %}
+#     <a href="{% url 'home_admin' %}">Home</a>
+# {% else %}
+#     <a href="{% url 'home_doctor' %}">Home</a>
+# {% endif %}
+# y en el template de logout
+# {% if user.is_admin %}
+#     <a href="{% url 'home_admin' %}">Home</a>
+# {% else %}
+#     <a href="{% url 'home_doctor' %}">Home</a>
+# {% endif %}
+# y en el template de register
+# {% if user.is_admin %}
+#     <a href="{% url 'home_admin' %}">Home</a>
+# {% else %}
+#     <a href="{% url 'home_doctor' %}">Home</a>
+# {% endif %}
+# y en el template de profile
+# {% if user.is_admin %}
+
+
 def login_view(request):
     
     if request.method == 'POST':

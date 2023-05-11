@@ -80,11 +80,16 @@ WSGI_APPLICATION = 'clinica_medica.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "mydatabase",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'clinica_medica',
+        'USER': 'postgres',
+        'PASSWORD': 'Maru29luc',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
 
 # DATABASES = {
 #     "default": {
