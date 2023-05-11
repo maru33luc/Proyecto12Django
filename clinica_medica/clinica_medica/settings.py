@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bootstrap5',
+    'django_bootstrap5',
     'clinica_app',
 ]
 AUTH_USER_MODEL = "clinica_app.User"

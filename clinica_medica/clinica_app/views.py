@@ -424,9 +424,13 @@ def login_view(request):
             user = authenticate(email=email, password=password)
             if user is not None:
                 login(request, user)
-                if user.is_admin and request.GET.get('admin') == 'True':
-                                 
+                if user.is_admin or request.GET.get('admin') == 'True':
+                    if user.is_superuser:
+                        return redirect(reverse('home_admin'))
+
                     return redirect(reverse('home_admin'))
+                
+                
                 else:
                     return redirect('welcome')
             else:
