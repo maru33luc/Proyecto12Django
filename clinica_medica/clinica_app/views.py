@@ -114,14 +114,49 @@ def patient_detail(request, pk):
     
     return render(request, 'clinica_app/patient/patient_detail.html', {'patient': patient})
 
-#Hacerlo andar
+
+
+
+#la funcion que esta debajo me falla al querer editar un paciente desde el admin
+# def patient_update(request, pk):
+#     patient = get_object_or_404(Patient, pk=pk)
+#     if request.method == 'POST':
+#         form = PatientForm(request.POST, instance=patient)
+#         print(form.errors)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('patient_detail', pk=patient.id)
+#     else:
+#         form = PatientForm(instance=patient)
+#     return render(request, 'clinica_app/patient/patient_update.html', {'form': form, 'patient': patient})
+
+#ahora entra pero se rompe al intentar guardar al paciente actualizado
+# def patient_update(request, pk):
+#     patient = get_object_or_404(Patient, pk=pk)
+#     if request.method == 'POST':
+#         form = PatientForm(request.POST, instance=patient)
+#         print(form.errors)
+#         if form.is_valid():
+#             patient = form.save(commit=False)
+#             patient.user = request.user
+#             patient.save()
+#             return redirect('patient_detail', pk=patient.id)
+#     else:
+#         form = PatientForm(instance=patient)
+#     return render(request, 'clinica_app/patient/patient_update.html', {'form': form, 'patient': patient})
+
+
+
+
 @login_required
 def patient_update(request, pk):
-    patient = get_object_or_404(Patient, pk=pk, user=request.user)
+    patient = get_object_or_404(Patient, pk=pk)
     if request.method == 'POST':
         form = PatientForm(request.POST, instance=patient)
-        print(form.errors)
         if form.is_valid():
+            patient = form.save(commit=False)
+            patient.user = request.user
+            patient.save()
             
             form.save()
             return redirect('patient_detail', pk=patient.id)
@@ -413,46 +448,6 @@ def update_profile(request):
         form = CustomUserChangeForm(instance=request.user)
 
     return render(request, 'clinica_app/profile_update.html', {'form': form})
-
-
-#Necesito codigo para saber si el usuario es superuser extienda de admin/base   y si es doctor extienda de doctor/base
-# def home(request):
-#     if request.user.is_authenticated:
-#         if request.user.is_admin:
-#             return redirect(reverse('home_admin'))
-#         else: 
-#             return redirect(reverse('home_doctor'))
-#     else:
-#         return redirect(reverse('login'))
-# y en el template que tendria que agregar
-# {% if user.is_admin %}
-#     {% extends 'admin/base.html' %}
-# {% else %}
-#     {% extends 'doctor/base.html' %}
-# {% endif %}
-# {% block content %}
-#     <h1>Home</h1>
-# {% endblock %}
-# y en el template de login
-# {% if user.is_admin %}
-#     <a href="{% url 'home_admin' %}">Home</a>
-# {% else %}
-#     <a href="{% url 'home_doctor' %}">Home</a>
-# {% endif %}
-# y en el template de logout
-# {% if user.is_admin %}
-#     <a href="{% url 'home_admin' %}">Home</a>
-# {% else %}
-#     <a href="{% url 'home_doctor' %}">Home</a>
-# {% endif %}
-# y en el template de register
-# {% if user.is_admin %}
-#     <a href="{% url 'home_admin' %}">Home</a>
-# {% else %}
-#     <a href="{% url 'home_doctor' %}">Home</a>
-# {% endif %}
-# y en el template de profile
-# {% if user.is_admin %}
 
 
 def login_view(request):
