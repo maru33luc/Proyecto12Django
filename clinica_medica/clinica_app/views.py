@@ -26,35 +26,13 @@ def services(request):
     return render(request, 'clinica_app/services.html', context)
 
 def staff(request):
-    doctors_staff = [
-        {
-            'name': 'Maria',
-            'last_name': 'Sanchez',
-            'speciality': 'Dermatologia',
-        },
-         {
-            'name': 'Ramiro',
-            'last_name': 'Perez',
-            'speciality': 'Traumatologia',
-        },
-         {
-            'name': 'Josefina',
-            'last_name': 'Correa',
-            'speciality': 'Ginecologia',
-        },
-         {
-            'name': 'Carlos',
-            'last_name': 'Torres',
-            'speciality': 'Cirugia',
-        },
-         {
-            'name': 'Pedro',
-            'last_name': 'Lopez',
-            'speciality': 'Gastroenterologia',
-        },
-    ]
+    doctors_staff = Doctor.objects.all().order_by('user__last_name')
+    #doctors_staff = Doctor.objects.all()
+    specialists = Specialist.objects.all()
+    
     context = {
-        'doctors' : doctors_staff
+        'doctors' : doctors_staff,
+        'specialists' : specialists
     }
     return render(request, 'clinica_app/staff.html', context)
 
@@ -326,23 +304,36 @@ def doctor_create(request):
     }    
     return render(request, 'clinica_app/admin/doctor_create.html', context)
 
-
-
 def doctor_update(request, pk):
     doctor = Doctor.objects.get(id=pk)
     if request.method == 'POST':
-        form = DoctorForm(request.POST)
+        form = DoctorForm(request.POST, request.FILES, instance=doctor)
         if form.is_valid():
-            doctor.name = form.cleaned_data['name']
-            doctor.save()
+            form.save()
             return redirect('doctors')
     else:
-        form = DoctorForm(initial={'name': doctor.name})
+        form = DoctorForm(instance=doctor)
     context = {
         'form': form,
         'doctor': doctor
     }    
     return render(request, 'clinica_app/admin/doctor_update.html', context)
+
+# def doctor_update(request, pk):
+#     doctor = Doctor.objects.get(id=pk)
+#     if request.method == 'POST':
+#         form = DoctorForm(request.POST)
+#         if form.is_valid():
+#             doctor.name = form.cleaned_data['name']
+#             doctor.save()
+#             return redirect('doctors')
+#     else:
+#         form = DoctorForm(initial={'name': doctor.name})
+#     context = {
+#         'form': form,
+#         'doctor': doctor
+#     }    
+#     return render(request, 'clinica_app/admin/doctor_update.html', context)
 
 
 
