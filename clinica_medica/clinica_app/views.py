@@ -103,27 +103,23 @@ def patient_create(request):
     }
     return render(request, 'clinica_app/patient/patient_create.html', context)
 
-#Chequear porque me muestra usuarios
-def patients(request):
-    patients = Patient.objects.all()
-    return render(request, 'clinica_app/patient/patients.html', {
-        'patients': patients
-    })
+
 def patient_detail(request, pk):
     patient = get_object_or_404(Patient, pk=pk, user=request.user)
     
     return render(request, 'clinica_app/patient/patient_detail.html', {'patient': patient})
 
 #Hacerlo andar
-@login_required
+
 def patient_update(request, pk):
-    patient = get_object_or_404(Patient, pk=pk, user=request.user)
+    patient = get_object_or_404(Patient, pk=pk)
     if request.method == 'POST':
         form = PatientForm(request.POST, instance=patient)
         print(form.errors)
         if form.is_valid():
-            
-            form.save()
+            patient = form.save(commit=False)
+            patient.save()
+            #form.save()
             return redirect('patient_detail', pk=patient.id)
     else:
         form = PatientForm(instance=patient)
@@ -180,6 +176,52 @@ def login_admin(request):
     }
 
     return render(request, 'clinica_app/admin/login.html', context)
+
+## Patients ##
+#Chequear porque me muestra usuarios
+def patients(request):
+    patients = Patient.objects.all()
+    return render(request, 'clinica_app/admin/patients.html', {
+        'patients': patients
+    })
+
+def patient_create_admin(request):
+    if request.method == 'POST':
+        user_form = CustomUserCreationForm(request.POST)
+        form = PatientForm(request.POST)
+        if form.is_valid() and user_form.is_valid():
+            user = user_form.save(commit=False)
+            user.is_patient = True
+            user.save()
+            patient = form.save(commit=False)
+            patient.user = user
+            patient.save()
+            
+            messages.success(request,  messages.SUCCESS, 'Paciente dado de alta con exito')
+            return redirect('patients')
+        else:
+            print(form.errors)
+    else:
+         form = PatientForm()    
+         user_form = CustomUserCreationForm()
+    context = {
+        'form': form,
+        'user_form': user_form
+    }
+    return render(request, 'clinica_app/admin/patient_create.html', context)
+def patient_update_admin(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    if request.method == 'POST':
+        form = PatientForm(request.POST, instance=patient)
+        
+        if form.is_valid():
+            patient = form.save(commit=False)
+            patient.save()
+            # form.save()
+            return redirect('patients')
+    else:
+        form = PatientForm(instance=patient)
+    return render(request, 'clinica_app/admin/patient_update.html', {'form': form, 'patient': patient})
 
 ## Specialist ##
 @login_required
@@ -256,96 +298,24 @@ def doctor_delete(request, pk):
     return render(request, 'clinica_app/admin/doctor_delete.html', context)   
 
 
-# def doctor_create(request):
-#     if request.method == 'POST':
-#         form = DoctorForm(request.POST)
-#         if form.is_valid():
-#             # name = form.cleaned_data['name']
-#             # Doctor.objects.create(name=name)
-
-#             doctor = form.save(commit=False)
-#             # doctor.user = request.user
-#             # doctor.save()
-#             user = request.user
-#             user.is_doctor = True
-#             user.save()
-#             messages.success(request,  messages.SUCCESS, 'Doctor dado de alta con exito')
-
-#             # form.save()
-#             return redirect(reverse('doctors'))
-#     else:
-#         form = DoctorForm()
-#     context = {
-#         'form': form
-#     }
-#     return render(request, 'clinica_app/admin/doctor_create.html', context)
-
-
-# @login_required
-# def doctor_create(request):
-#     if request.method == 'POST':
-#         user_form = CustomUserCreationForm(request.POST)
-#         doctor_form = DoctorForm(request.POST, request.FILES)
-#         print(doctor_form.errors)
-#         print("Hola")
-#         # if  doctor_form.is_valid():
-#         #     doctor_form.save()
-#         if user_form.is_valid() and doctor_form.is_valid():
-#             user = user_form.save(commit=False)
-#             user.is_doctor = True
-#             user.save()
-#             doctor = doctor_form.save(commit=False)
-#             doctor.user = user
-#             doctor.save()
-#             return redirect(reverse('doctors'))
-#     else:
-#         user_form = CustomUserCreationForm()
-#         doctor_form = DoctorForm()
-#     context = {
-#         'user_form': user_form,
-#         'doctor_form': doctor_form
-#     }
-#     return render(request, 'clinica_app/admin/doctor_create.html', context)
-
-# def doctor_create(request):
-#     if request.method == 'POST':
-#         user_form = CustomUserCreationForm(request.POST)
-#         doctor_form = DoctorForm(request.POST, request.FILES)
-#         if user_form.is_valid() and doctor_form.is_valid():
-#             user = user_form.save(commit=False)
-#             user.is_doctor = True
-#             user.save()
-#             doctor = doctor_form.save(commit=False)
-#             doctor.user = user
-#             doctor.save()
-#             return redirect(reverse('doctors'))
-#         else:
-#             print(doctor_form.errors)
-#             context = {
-#                 'user_form': user_form,
-#                 'doctor_form': doctor_form
-#             }
-#             return render(request, 'clinica_app/admin/doctor_create.html', context)
-#     else:
-#         user_form = CustomUserCreationForm()
-#         doctor_form = DoctorForm()
-#     context = {
-#         'user_form': user_form,
-#         'doctor_form': doctor_form
-#     }
-#     return render(request, 'clinica_app/admin/doctor_create.html', context)
-
 
 def doctor_create(request):
+    
     if request.method == 'POST':
         user_form = CustomUserCreationForm(request.POST)
         doctor_form = DoctorForm(request.POST, request.FILES)
         # form = DoctorForm(request.POST, request.FILES)
-        if doctor_form.is_valid():
-            doctor_form.save()
+        if user_form.is_valid() and doctor_form.is_valid():
+            user = user_form.save(commit=False)
+            user.is_doctor = True
+            user.save()
+            doctor = doctor_form.save(commit=False)
+            doctor.user = user
+            doctor.save()
             return redirect(reverse('doctors'))
         else:
             print(doctor_form.errors)
+            print(user_form.errors)
     else:
         doctor_form = DoctorForm()
         user_form = CustomUserCreationForm()
@@ -353,7 +323,7 @@ def doctor_create(request):
     context = {
         'user_form': user_form,
         'doctor_form': doctor_form
-    }
+    }    
     return render(request, 'clinica_app/admin/doctor_create.html', context)
 
 
@@ -414,6 +384,9 @@ def update_profile(request):
 
     return render(request, 'clinica_app/profile_update.html', {'form': form})
 
+
+
+
 def login_view(request):
     
     if request.method == 'POST':
@@ -424,10 +397,9 @@ def login_view(request):
             user = authenticate(email=email, password=password)
             if user is not None:
                 login(request, user)
-                if user.is_admin or request.GET.get('admin') == 'True':
-                    if user.is_superuser:
-                        return redirect(reverse('home_admin'))   
+                if user.is_admin or user.is_superuser or request.GET.get('admin') == 'True':
                     return redirect(reverse('home_admin'))
+
                 else:
                     return redirect('welcome')
             else:
