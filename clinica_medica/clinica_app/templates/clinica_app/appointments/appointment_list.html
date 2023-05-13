@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Appointments</h2>
+{% if appointments %}
+<ul>
+    {% for appointment in appointments %}
+    <li>{{ appointment.doctor }} - {{ appointment.date }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No appointments available.</p>
+{% endif %}
+{% endblock %}

@@ -22,7 +22,17 @@ urlpatterns = [
     path('patient/create/', views.patient_create, name='patient_create'),
     path('patient/<int:pk>/', views.patient_detail, name='patient_detail'),
     path('patient/<int:pk>/update/', views.patient_update, name='patient_update'),
-    
+
+    ### appointments###
+    # path('appointments/', views.appointment_list, name='appointment_list'),
+    path('appointments/create/', views.appointment_create, name='appointment_create'),
+    path('appointments/<int:pk>/', views.appointment_detail, name='appointment_detail'),
+    # path('appointments/<int:pk>/edit/', views.appointment_edit, name='appointment_edit'),
+    path('appointments/<int:pk>/cancel/', views.cancel_appointment, name='cancel_appointment'),
+    ##doctor poner en admin##
+    path('doctor_availability/', views.doctor_availability, name='doctor_availability'),
+    path('edit_availability/<int:pk>/', views.edit_availability, name='edit_availability'),
+    path('delete_availability/<int:pk>/', views.delete_availability, name='delete_availability'),
     
     path('contacto', views.contacto, name="contacto"), 
     
@@ -32,9 +42,9 @@ urlpatterns = [
     path('admin/login_admin', views.login_admin, name='login_admin'),
     #patients#
     path('patients', views.patients, name="patients"), 
-    path('admin/create/', views.patient_create_admin, name='patient_create_admin'),
-    path('admin/<int:pk>/update/', views.patient_update_admin, name='patient_update_admin'),
-    path('patient/<int:pk>/delete/', views.patient_delete, name='patient_delete'),
+    path('admin/patient/create/', views.patient_create_admin, name='patient_create_admin'),
+    path('admin/patient/<int:pk>/update/', views.patient_update_admin, name='patient_update_admin'),
+    path('admin/patient/<int:pk>/delete/', views.patient_delete, name='patient_delete'),
     #specialist#
     path('admin/specialist_list', views.specialist_list, name='specialist_list'),
     path('admin/specialist/<int:pk>/', views.specialist_detail, name='specialist_detail'),

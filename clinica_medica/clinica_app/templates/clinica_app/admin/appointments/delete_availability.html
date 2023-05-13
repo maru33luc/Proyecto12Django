@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Delete Doctor Availability</h1>
+  <p>Are you sure you want to delete the availability for {{ availability.doctor }} on {{ availability.date }} from {{ availability.start_time }} to {{ availability.end_time }}?</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{% url 'doctor_availability' %}" class="
