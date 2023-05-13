@@ -6,6 +6,9 @@
 {% block title %}Pacientes {% endblock %}
 {% block content %}
 
+<main>
+
+
 
   <div class="container mt-5">
     <div class="row">
@@ -17,16 +20,17 @@
             <tr>
               <th>Nombre</th>
               <th>Apellido</th>
+              <th>DNI</th>
               <th>Fecha de nacimiento</th>
               <th>Teléfono</th>
               <th>Email</th>
               <th>Dirección</th>
               <th>Localidad</th>
               <th>Obra Social</th>
-              <th>N Afiliado</th>
+              <th>N°Afiliado</th>
 
 
-              <th>Acciones</th>
+              <th>Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -34,6 +38,7 @@
               <tr>
                 <td>{{ patient.user.first_name }}</td>
                 <td>{{ patient.user.last_name }}</td>
+                <td>{{ patient.dni }}</td>
                 <td>{{ patient.date_of_birth }}</td>
                 <td>{{ patient.phone }}</td>
                 <td>{{ patient.user.email }}</td>
@@ -43,9 +48,9 @@
                 <td>{{ patient.sw_number }}</td>
                 
                 <td>
-                  <a href="{% url 'patient_detail' patient.pk %}" class="btn btn-primary btn-sm">Ver</a>
-                  <a href="{% url 'patient_update' patient.pk %}" class="btn btn-warning btn-sm">Editar</a>
-                  <a href="{% url 'patient_delete' patient.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este paciente?')">Eliminar</a>
+                  <!-- <a href="{% url 'patient_detail' patient.pk %}" class="btn btn-primary btn-sm">Ver</a> -->
+                  <a href="{% url 'patient_update_admin' patient.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                  <a href="{% url 'patient_delete' patient.pk %}" class="btn btn-danger btn-sm" >Eliminar</a>
                 </td>
               </tr>
             {% empty %}
@@ -55,9 +60,12 @@
             {% endfor %}
           </tbody>
         </table>
-        <a href="{% url 'patient_create' %}" class="btn btn-success">Agregar paciente</a>
+        <div class="text-center">
+        <a href="{% url 'patient_create_admin' %}" class="btn btn-success mb_3">Agregar Paciente</a>
+      </div>
       </div>
     </div>
   </div>
+</main>
 {% endblock %}
 

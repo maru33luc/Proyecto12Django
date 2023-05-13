@@ -1,17 +1,22 @@
 {% extends 'clinica_app/admin/base.html' %}
 
 {% block content %}
-  <h1 class="mb-3">Specialists</h1>
+<main>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+  <h1 class="mb-3">Especialidades</h1>
+  <hr>
   <table class="table table-striped">
 
     <thead>
     
     <tr>
     
-    <th scope="col">Name</th>
+    <th scope="col">Especialidad</th>
     
        
-    <th scope="col">Action</th>
+    <th scope="col">Acción</th>
     
     </tr>
     
@@ -29,9 +34,9 @@
     
     <td>
     
-    <a style="margin-right: 30px;" href="{% url 'specialist_update' specialist.id %}">Edit</a>
+    <a style="margin-right: 30px;" href="{% url 'specialist_update' specialist.id %}" class="btn btn-warning btn-sm">Editar</a>
     
-    <a href="{% url 'specialist_delete' specialist.id %}">Remove</a>
+    <a href="{% url 'specialist_delete' specialist.id %}" class="btn btn-danger btn-sm">Eliminar</a>
     
     </td>
     
@@ -39,7 +44,7 @@
     
     
     {% empty %}
-      <p>No specialists found.</p>
+      <p>No se encontraron especialidades.</p>
     {% endfor %}
     </tbody>
     
@@ -47,12 +52,14 @@
     
     <div class="text-center">
     
-    <a href="{% url 'specialist_create' %}"><button type="button" class="btn btn-primary mb_3">Add Specialist</button></a>
+    <a href="{% url 'specialist_create' %}"><button type="button" class="btn btn-success mb_3">Agregar Especialidad</button></a>
     
     </div>
-    
+  </div>
+</div>
+</div>
 
-
+  </main>
 
 
 

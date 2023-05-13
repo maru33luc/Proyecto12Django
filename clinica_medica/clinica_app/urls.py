@@ -20,10 +20,9 @@ urlpatterns = [
     path('logout', views.logout_view, name='logout'),  
     #### patients ####
     path('patient/create/', views.patient_create, name='patient_create'),
-    path('patients', views.patients, name="patients"), 
     path('patient/<int:pk>/', views.patient_detail, name='patient_detail'),
     path('patient/<int:pk>/update/', views.patient_update, name='patient_update'),
-    path('patient/<int:pk>/delete/', views.patient_delete, name='patient_delete'),
+    
     
     path('contacto', views.contacto, name="contacto"), 
     
@@ -31,6 +30,11 @@ urlpatterns = [
     #### ADMIN ####
     path('admin/home_admin', views.home_admin, name='home_admin'),
     path('admin/login_admin', views.login_admin, name='login_admin'),
+    #patients#
+    path('patients', views.patients, name="patients"), 
+    path('admin/create/', views.patient_create_admin, name='patient_create_admin'),
+    path('admin/<int:pk>/update/', views.patient_update_admin, name='patient_update_admin'),
+    path('patient/<int:pk>/delete/', views.patient_delete, name='patient_delete'),
     #specialist#
     path('admin/specialist_list', views.specialist_list, name='specialist_list'),
     path('admin/specialist/<int:pk>/', views.specialist_detail, name='specialist_detail'),

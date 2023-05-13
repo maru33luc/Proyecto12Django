@@ -3,7 +3,12 @@
 	<title>Listado de Médicos</title>
 {% endblock title %}
 {% block content %}
+<main>
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-12">
   <h1 class="mb-3">Médicos</h1>
+  <hr>
   <table class="table table-striped">
 
     <thead>
@@ -20,7 +25,7 @@
     <th scope="col">N° Matrícula</th>
     <th scope="col">Especialidad</th>
     <th scope="col">Imagen</th>
-    <th scope="col">Action</th>
+    <th scope="col">Acción</th>
     
     </tr>
     
@@ -42,7 +47,7 @@
     <td>{{ doctor.mr_number }}</td>
     <td>{{ doctor.specialist.name }}</td>
       <td>{% if doctor.image_profile %}
-    <img width="50px" src=" {{settings.MEDIA_URL}}{{ doctor.image_profile.url }}" alt="{{ doctor.mr_number }}">
+    <img width="100px" src=" {{settings.MEDIA_URL}}{{ doctor.image_profile.url }}" alt="{{ doctor.mr_number }}">
     {% else %}
         Sin imagen
     {% endif %}</td>
@@ -52,9 +57,9 @@
 
    
       <td>
-    <a style="margin-right: 30px;" href="{% url 'doctor_update' doctor.id %}">Edit</a>
+    <a style="margin-right: 30px;" href="{% url 'doctor_update' doctor.id %}" class="btn btn-warning btn-sm">Editar</a>
     
-    <a href="{% url 'doctor_delete' doctor.id %}">Remove</a>
+    <a href="{% url 'doctor_delete' doctor.id %}" class="btn btn-danger btn-sm">Eliminar</a>
     
     </td>
     
@@ -70,13 +75,15 @@
     
     <div class="text-center">
     
-    <a href="{% url 'doctor_create' %}"><button type="button" class="btn btn-primary mb_3">Agregar Doctor</button></a>
+    <a href="{% url 'doctor_create' %}"><button type="button" class="btn btn-success mb_3">Agregar Doctor</button></a>
     
     </div>
-    
+  </div>
+</div>
+</div>
 
 
 
-
+  </main>
 
 {% endblock %}

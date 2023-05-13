@@ -139,8 +139,14 @@ class DoctorForm(forms.ModelForm):
             'specialist': forms.Select(attrs={'class': 'form-control'}),
             'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         }  
-    user_form = CustomUserCreationForm()
+    
 
+    def save(self, commit=True):
+        doctor = super().save(commit=False)
+        if commit:
+            doctor.save()
+        return doctor
+    # user_form = CustomUserCreationForm()
     # def save(self, commit=True):
     #     instance = super().save(commit=False)
 
@@ -152,34 +158,9 @@ class DoctorForm(forms.ModelForm):
     #         user.save()
     #         instance.user = user
 
-            # if 'image_profile' in self.cleaned_data:
-            #     image_profile = self.cleaned_data['image_profile']
-            #     fs = FileSystemStorage(location=settings.MEDIA_ROOT)
-
-            #     # fs = FileSystemStorage()
-            #     filename = fs.save(os.path.join('doctor_images', image_profile.name), image_profile)
-            #     instance.image_profile = filename
-
     #         if commit:
     #             instance.save()
     #         return instance
     #     else:
     #         # Manejar errores en el formulario de usuario aquí
     #         pass
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-
-        # CustomUserCreationForm
-        user_form = CustomUserCreationForm(self.data)
-        if user_form.is_valid():
-            user = user_form.save(commit=False)
-            user.is_doctor = True  # Marcar el usuario como médico
-            user.save()
-            instance.user = user
-
-            if commit:
-                instance.save()
-            return instance
-        else:
-            # Manejar errores en el formulario de usuario aquí
-            pass
