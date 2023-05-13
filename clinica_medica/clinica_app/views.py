@@ -145,8 +145,8 @@ def doctor_availability(request):
 
 
 @login_required
-def edit_availability(request, availability_id):
-    availability = get_object_or_404(DoctorAvailability, id=availability_id)
+def edit_availability(request, pk):
+    availability = get_object_or_404(DoctorAvailability, id=pk)
 
     if request.method == 'POST':
         form = DoctorAvailabilityForm(request.POST, instance=availability)
@@ -165,8 +165,8 @@ def edit_availability(request, availability_id):
 
 
 @login_required
-def delete_availability(request, availability_id):
-    availability = get_object_or_404(DoctorAvailability, id=availability_id)
+def delete_availability(request, pk):
+    availability = get_object_or_404(DoctorAvailability, id=pk)
 
     if request.method == 'POST':
         availability.delete()
