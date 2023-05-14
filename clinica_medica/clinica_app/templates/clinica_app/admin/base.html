@@ -47,8 +47,8 @@
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Turnos</a>
                     <div class="dropdown-menu">
                         <a href="{% url 'doctor_availability'  %}" class="dropdown-item">Doctor</a>
-                        <a href="#" class="dropdown-item">Drafts</a>
-                        <a href="#" class="dropdown-item">Sent Items</a>
+                        <a href="{% url 'appointment_list' %}" class="dropdown-item">turnos</a>
+                        <a href="{% url 'appointment_create' %}" class="dropdown-item">alta</a>
                         <div class="dropdown-divider"></div>
                         <a href="#"class="dropdown-item">Trash</a>
                     </div>

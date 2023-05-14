@@ -24,7 +24,7 @@ urlpatterns = [
     path('patient/<int:pk>/update/', views.patient_update, name='patient_update'),
 
     ### appointments###
-    # path('appointments/', views.appointment_list, name='appointment_list'),
+    path('appointments/', views.appointment_list, name='appointment_list'),
     path('appointments/create/', views.appointment_create, name='appointment_create'),
     path('appointments/<int:pk>/', views.appointment_detail, name='appointment_detail'),
     # path('appointments/<int:pk>/edit/', views.appointment_edit, name='appointment_edit'),

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'clinica_app/admin/base.html' %}
 
 {% block content %}
     <h1 class="mt-4 mb-4">Create Appointment</h1>
@@ -11,7 +11,7 @@
                     <select name="doctor" class="form-control">
                         <option value="" selected disabled>Select a doctor</option>
                         {% for doctor in doctors %}
-                            <option value="{{ doctor.id }}">{{ doctor.name }}</option>
+                            <option value="{{ doctor.id }}">{{ doctor.user.last_name }} {{ doctor.user.first_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -39,7 +39,7 @@
             <ul class="list-group">
                 {% for availability in availability_list %}
                     <li class="list-group-item">
-                        {{ availability.doctor.name }} - {{ availability.date_time }}
+                        {{ availability.doctor }} - {{ availability.date }} {{ availability.start_time }}
                         <a href="{% url 'edit_availability' availability.id %}" class="btn btn-sm btn-outline-secondary float-end">Edit</a>
                         <a href="{% url 'delete_availability' availability.id %}" class="btn btn-sm btn-outline-danger float-end me-2">Delete</a>
                     </li>

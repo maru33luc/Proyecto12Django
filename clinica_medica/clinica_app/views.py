@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm, DoctorAvailabilityForm
+from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm
 from django.contrib.auth.decorators import login_required
 from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability
 from clinica_app.models import User
@@ -116,10 +116,10 @@ def patient_delete(request, pk):
 #     appointments = Appointment.objects.all().order_by('date', 'time')
 #     return render(request, 'clinica_app/admin/appointments.html', {'appointments': appointments})
 
-# def appointment_list(request):
-#     appointments = Appointment.objects.all().order_by('date', 'time')
-#     context = {'appointments': appointments}
-#     return render(request, 'clinica_app/patient/appointment_list.html', context)
+def appointment_list(request):
+    appointments = Appointment.objects.all().order_by('date', 'time')
+    context = {'appointments': appointments}
+    return render(request, 'clinica_app/appointments/appointment_list.html', context)
 
 
 
@@ -181,6 +181,7 @@ def delete_availability(request, pk):
 
 
 ### ultimo ap_create ###
+
 def appointment_create(request):
     if request.method == 'POST':
         form = AppointmentCreateForm(request.POST)
@@ -190,19 +191,23 @@ def appointment_create(request):
     else:
         form = AppointmentCreateForm()
 
+    # Get doctors and add them to the context dictionary
+    doctors = Doctor.objects.all()
+    context = {
+        'form': form,
+        'doctors': doctors,
+    }
+
     # Set available time choices for the selected doctor and date
     doctor_id = request.GET.get('doctor')
     date_str = request.GET.get('date')
     if doctor_id and date_str:
-        doctor = Doctor.objects.get(pk=doctor_id)
+        doctor = get_object_or_404(Doctor, pk=doctor_id)
         date = datetime.strptime(date_str, '%Y-%m-%d').date()
         availability = DoctorAvailability.objects.filter(doctor=doctor, date=date).first()
         if availability:
             form.set_time_choices(availability)
 
-    context = {
-        'form': form,
-    }
     return render(request, 'clinica_app/appointments/appointment_create.html', context)
 ## another examples ##
 # def appointment_create(request):
