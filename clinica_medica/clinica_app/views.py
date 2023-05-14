@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm
+from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm
 from django.contrib.auth.decorators import login_required
-from .models import Patient, Specialist, Doctor
+from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability
 from clinica_app.models import User
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate,login,logout
+from datetime import datetime, date, timedelta
 
 # Create your views here.
 def index(request):
@@ -108,6 +109,310 @@ def patient_delete(request, pk):
     patient.delete()
     return redirect('patients')
 
+
+### Turnos ####
+# @login_required
+# def appointments(request):
+#     appointments = Appointment.objects.all().order_by('date', 'time')
+#     return render(request, 'clinica_app/admin/appointments.html', {'appointments': appointments})
+
+def appointment_list(request):
+    appointments = Appointment.objects.all().order_by('date', 'time')
+    context = {'appointments': appointments}
+    return render(request, 'clinica_app/appointments/appointment_list.html', context)
+
+
+
+@login_required
+def doctor_availability(request):
+    if request.method == 'POST':
+        form = DoctorAvailabilityForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Availability added successfully.')
+            return redirect('doctor_availability')
+    else:
+        form = DoctorAvailabilityForm()
+    
+    availability_list = DoctorAvailability.objects.all()
+    context = {
+        'form': form,
+        'doctor_list': Doctor.objects.all(),
+        'availability_list': availability_list,
+    }
+    return render(request, 'clinica_app/admin/appointments/doctor_availability.html', context)
+
+
+
+@login_required
+def edit_availability(request, pk):
+    availability = get_object_or_404(DoctorAvailability, id=pk)
+
+    if request.method == 'POST':
+        form = DoctorAvailabilityForm(request.POST, instance=availability)
+        if form.is_valid():
+            form.save()
+            return redirect('doctor_availability')
+    else:
+        form = DoctorAvailabilityForm(instance=availability)
+
+    context = {
+        'form': form,
+        'doctor_list': Doctor.objects.all(),
+        'availability': availability,
+    }
+    return render(request, 'clinica_app/admin/appointments/edit_availability.html', context)
+
+
+@login_required
+def delete_availability(request, pk):
+    availability = get_object_or_404(DoctorAvailability, id=pk)
+
+    if request.method == 'POST':
+        availability.delete()
+        return redirect('doctor_availability')
+
+    context = {
+        'availability': availability,
+    }
+    return render(request, 'clinica_app/admin/appointments/delete_availability.html', context)
+
+
+
+
+### ultimo ap_create ###
+
+def appointment_create(request):
+    if request.method == 'POST':
+        form = AppointmentCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('appointment_list')
+    else:
+        form = AppointmentCreateForm()
+
+    # Get doctors and add them to the context dictionary
+    doctors = Doctor.objects.all()
+    context = {
+        'form': form,
+        'doctors': doctors,
+    }
+
+    # Set available time choices for the selected doctor and date
+    doctor_id = request.GET.get('doctor')
+    date_str = request.GET.get('date')
+    if doctor_id and date_str:
+        doctor = get_object_or_404(Doctor, pk=doctor_id)
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        availability = DoctorAvailability.objects.filter(doctor=doctor, date=date).first()
+        if availability:
+            form.set_time_choices(availability)
+
+    return render(request, 'clinica_app/appointments/appointment_create.html', context)
+## another examples ##
+# def appointment_create(request):
+#     if request.method == 'POST':
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('appointment_list')
+#     else:
+#         form = AppointmentForm()
+#     context = {'form': form}
+#     if request.GET.get('doctor_id') and request.GET.get('date'):
+#         doctor_id = request.GET['doctor_id']
+#         date = request.GET['date']
+#         try:
+#             doctor_availability = DoctorAvailability.objects.get(doctor_id=doctor_id, date=date)
+#             form.set_time_choices(doctor_availability)
+#             context['doctor_availability'] = doctor_availability
+#         except DoctorAvailability.DoesNotExist:
+#             pass
+#     return render(request, 'clinica_app/appointment_create.html', context)
+
+# def appointment_create(request):
+#     if request.method == 'POST':
+#         form = AppointmentCreateForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             appointment.patient = request.user.patient_profile
+#             appointment.save()
+#             return redirect('appointment_detail', appointment.id)
+#     else:
+#         form = AppointmentCreateForm()
+#     context = {
+#         'form': form,
+#     }
+#     if request.GET.get('doctor_id') and request.GET.get('date'):
+#         doctor_id = request.GET['doctor_id']
+#         date = request.GET['date']
+#         availability_list = DoctorAvailability.objects.filter(doctor=doctor_id, date=date)
+#         context['availability_list'] = availability_list
+#     return render(request, 'clinica_app/appointment_create.html', context)
+
+# @login_required
+# def appointment_create(request):
+#     if request.method == 'POST':
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             doctor_availability = form.cleaned_data['doctor']
+#             appointment.doctor = doctor_availability.doctor
+#             appointment.start_time = doctor_availability.start_time
+#             appointment.end_time = doctor_availability.end_time
+#             appointment.save()
+#             doctor_availability.delete()
+#             messages.success(request, 'Appointment created successfully!')
+#             return redirect('appointment_list')
+#     else:
+#         form = AppointmentForm()
+#         doctor_availability_form = DoctorAvailabilityForm()
+#     context = {
+#         'form': form,
+#         'doctor_availability_form': doctor_availability_form,
+#     }
+#     return render(request, 'clinica_app/patient/appointment_create.html', context)
+
+@login_required
+def appointment_detail(request, appointment_id):
+    appointment = get_object_or_404(Appointment, pk=appointment_id)
+
+    if request.user != appointment.patient.user:
+        raise Http404()
+
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST, instance=appointment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Appointment updated successfully.')
+            return redirect('appointment_detail', appointment_id=appointment.id)
+    else:
+        form = AppointmentForm(instance=appointment)
+
+    context = {
+        'form': form,
+        'appointment': appointment,
+    }
+    return render(request, 'clinica_app/appointments/appointment_detail.html', context)
+@login_required
+def cancel_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, pk=appointment_id)
+
+    if request.user != appointment.patient.user:
+        raise Http404()
+
+    if request.method == 'POST':
+        appointment.delete()
+        messages.success(request, 'Appointment cancelled successfully.')
+        return redirect('appointment_list')
+
+    context = {
+        'appointment': appointment,
+    }
+    return render(request, 'clinica_app/appointments/cancel_appointment.html', context)
+
+
+
+####
+# @login_required
+# def appointment_create(request):
+#     if request.method == 'POST':
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             doctor_availability = DoctorAvailability.objects.get(id=form.cleaned_data['doctor_availability_id'])
+#             appointment.doctor = doctor_availability.doctor
+#             appointment.save()
+#             doctor_availability.is_available = False
+#             doctor_availability.save()
+#             return redirect('appointments')
+#     else:
+#         form = AppointmentForm()
+#     context = {
+#         'form': form,
+#     }
+#     return render(request, 'clinica_app/admin/appointment_create.html', context)
+
+# @login_required
+# def appointment_create(request):
+#     if request.method == 'POST':
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             appointment.patient = request.user.patient
+#             appointment.save()
+#             # Get the doctor's availability for the selected date
+#             doctor = appointment.doctor
+#             date = appointment.date
+#             availability = DoctorAvailability.objects.filter(doctor=doctor, date=date).first()
+#             if availability:
+#                 # If there's an availability entry, update the available slots
+#                 available_slots = availability.available_slots - 1
+#                 availability.available_slots = available_slots
+#                 availability.save()
+#                 messages.success(request, f'Appointment booked successfully! Available slots left: {available_slots}')
+#             else:
+#                 # If there's no availability entry, create one and set the available slots to 4
+#                 availability = DoctorAvailability(doctor=doctor, date=date, available_slots=3)
+#                 availability.save()
+#                 messages.success(request, f'Appointment booked successfully! Available slots left: 3')
+#             return redirect('appointments')
+#     else:
+#         form = AppointmentForm()
+#     context = {'form': form}
+#     return render(request, 'clinica_app/patient/appointment_create.html', context)
+
+
+# @login_required
+# def appointment_create(request):
+#     if request.method == 'POST':
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             doctor = form.cleaned_data['doctor']
+#             patient = request.user.patient
+#             date = form.cleaned_data['date']
+#             time = form.cleaned_data['time']
+#             appointment = Appointment.objects.create(doctor=doctor, patient=patient, date=date, time=time)
+#             return redirect('appointment_detail', pk=appointment.pk)
+#     else:
+#         form = AppointmentForm()
+#     return render(request, 'appointment_create.html', {'form': form})
+
+# @login_required
+# def appointment_create(request):
+#     if request.method == 'POST':
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             appointment.patient = request.user.patient
+#             appointment.status = 'pending'
+#             appointment.save()
+#             messages.success(request, 'Appointment booked successfully.')
+#             return redirect('appointment_detail', appointment.pk)
+#     else:
+#         form = AppointmentForm()
+#     doctor_availability_form = DoctorAvailabilityForm()
+#     return render(request, 'appointment_create.html', {'form': form, 'doctor_availability_form': doctor_availability_form})
+
+# @login_required
+# def appointment_create(request):
+#     if request.method == 'POST':
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             appointment.patient = request.user.patient
+#             doctor_availability = get_object_or_404(DoctorAvailability, pk=form.cleaned_data['doctor_availability'])
+#             appointment.doctor = doctor_availability.doctor
+#             appointment.start_time = doctor_availability.start_time
+#             appointment.end_time = doctor_availability.end_time
+#             doctor_availability.booked = True
+#             doctor_availability.save()
+#             appointment.save()
+#             messages.success(request, 'Appointment booked successfully!')
+#             return redirect('appointment_list')
+#     else:
+#         form = AppointmentForm()
+#     return render(request, 'appointments/appointment_create.html', {'form': form})
 
 ###Admin ###
 

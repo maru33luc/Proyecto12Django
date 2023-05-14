@@ -1,0 +1,53 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+{% block content %}
+    <h1 class="mt-4 mb-4">Create Appointment</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST" class="appointment-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="doctor">Doctor:</label>
+                    <select name="doctor" class="form-control">
+                        <option value="" selected disabled>Select a doctor</option>
+                        {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">{{ doctor.user.last_name }} {{ doctor.user.first_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" name="date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="start_time">Start Time:</label>
+                    <input type="time" name="start_time" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="end_time">End Time:</label>
+                    <input type="time" name="end_time" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea name="description" class="form-control"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Appointment</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h3>Doctor Availability</h3>
+            <ul class="list-group">
+                {% for availability in availability_list %}
+                    <li class="list-group-item">
+                        {{ availability.doctor }} - {{ availability.date }} {{ availability.start_time }}
+                        <a href="{% url 'edit_availability' availability.id %}" class="btn btn-sm btn-outline-secondary float-end">Edit</a>
+                        <a href="{% url 'delete_availability' availability.id %}" class="btn btn-sm btn-outline-danger float-end me-2">Delete</a>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">No doctor availability found.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
