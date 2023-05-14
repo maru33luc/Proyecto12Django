@@ -1,0 +1,71 @@
+{% extends 'clinica_app/base1.html' %}
+{% load static %}
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static 'css/style_signin.css' %}" />
+{% endblock %}
+{% block title %}Editar Paciente {% endblock %}
+{% block main %}
+
+
+
+
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Editar paciente</h1>
+        <hr>
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="first_name">Nombre:</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ patient.user.first_name }}" readonly>
+          </div>
+          <div class="form-group">
+            <label for="last_name">Apellido:</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ patient.user.last_name }}" readonly >
+          </div>
+
+          <div class="form-group">
+            <label for="dni">DNI:</label>
+            <input type="text" class="form-control" id="dni" name="dni" value="{{ patient.dni }}" >
+          </div>  
+
+
+          <div class="form-group">
+            <label for="date_of_birth">Fecha de nacimiento:</label>
+            <!-- <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ patient.date_of_birth|date:'Y/m/d' }}" > -->
+            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ patient.date_of_birth|date:'Y-m-d' }}" >
+
+          </div>
+          <div class="foraddress">
+            <label for="phone">Teléfono:</label>
+            <input type="text" class="form-control" id="phone" name="phone" value="{{ patient.phone }}" >
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ patient.user.email }}" readonly>
+          </div>
+          <div class="form-group">
+            <label for="address">Dirección:</label>
+            <input class="form-control" id="address" name="address" value="{{ patient.address }}">
+          </div>
+          <div class="form-group">
+            <label for="city">Localidad:</label>
+            <input class="form-control" id="city" name="city" value="{{ patient.city }}">
+          </div>
+          <div class="form-group">
+            <label for="social_work">Obra Social:</label>
+            <input class="form-control" id="social_work" name="social_work" value="{{ patient.social_work }}">
+          </div>
+          <div class="form-group">
+            <label for="sw_number">N afiliado:</label>
+            <input class="form-control" id="sw_number" name="sw_number" value="{{ patient.sw_number }}">
+          </div>
+          <button type="submit" class="btn btn-success">Guardar cambios</button>
+          <!-- <a href="{% url 'patients' %}" class="btn btn-primary">Volver a la lista de pacientes</a> -->
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'clinica_app/patient/base_patient.html' %}
+{% load static %}
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static 'css/style_signin.css' %}" />
+{% endblock %}
+{% block title %}Pacientes {% endblock %}
+{% block main %}
+
+
+
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Registrarse</h1>
+            <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="{% url 'log_in' %}" class="h4 text-white">Log in</a>
+        </div>
+    </div>
+  </div>
+  <!-- Hero End -->
+
+
+
+
+
+<div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Detalle del paciente</h1>
+        <hr>
+        <p><strong>Nombre:</strong> {{ paciente.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ paciente.apellido }}</p>
+        <p><strong>Fecha de nacimiento:</strong> {{ paciente.fecha_nacimiento }}</p>
+        <p><strong>Teléfono:</strong> {{ paciente.telefono }}</p>
+        <p><strong>Email:</strong> {{ paciente.email }}</p>
+        <p><strong>Dirección:</strong> {{ paciente.direccion }}</p>
+        <a href="{% url 'editar_paciente' paciente.id %}" class="btn btn-warning">Editar paciente</a>
+        <a href="{% url 'pacientes' %}" class="btn btn-primary">Volver a la lista de pacientes</a>
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}
