@@ -1,4 +1,3 @@
-
 {% extends 'clinica_app/admin/base.html' %}
 
 {% block content %}
@@ -30,16 +29,16 @@
           </tr>
         </thead>
         <tbody>
-          {% for availability in availability_list %}
+          {% for slot in slot_list %}
             <tr>
-              <td>{{ availability.doctor }}</td>
-              <td>{{ availability.date }}</td>
-              <td>{{ availability.start_time }}</td>
-              <td>{{ availability.end_time }}</td>
-              <td>{{ availability.get_status_display }}</td>
+              <td>{{ slot.doctor }}</td>
+              <td>{{ slot.date }}</td>
+              <td>{{ slot.start_time }}</td>
+              <td>{{ slot.end_time }}</td>
+              <td>{{ slot.get_status_display }}</td>
               <td>
-                <a href="{% url 'edit_availability' availability.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
-                <a href="{% url 'delete_availability' availability.id %}" class="btn btn-sm btn-outline-danger">Borrar</a>
+                <a href="{% url 'edit_availability' slot.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                <a href="{% url 'delete_availability' slot.id %}" class="btn btn-sm btn-outline-danger">Borrar</a>
               </td>
             </tr>
           {% empty %}
@@ -54,9 +53,5 @@
   </div>
 </main>
 {% endblock %}
-
-
-
-
 
 

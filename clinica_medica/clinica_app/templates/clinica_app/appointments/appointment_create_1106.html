@@ -1,0 +1,55 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+
+
+
+
+{% block content %}
+  <h1>Create Appointment</h1>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create</button>
+  </form>
+
+  <br>
+
+  <h2>Select a doctor to view their availability:</h2>
+  <form method="GET">
+    <select name="doctor">
+      <option value="">All Doctors</option>
+      {% for doctor in doctors %}
+        {% if doctor.id == selected_doctor %}
+          <option value="{{ doctor.id }}" selected>{{ doctor }}</option>
+        {% else %}
+          <option value="{{ doctor.id }}">{{ doctor }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+    <button type="submit">View</button>
+  </form>
+
+  {% if doctor_availability %}
+    <br>
+
+    <h2>{{ selected_doctor }} Availability:</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for availability in doctor_availability %}
+          <tr>
+            <td>{{ availability.date }}</td>
+            <td>{{ availability.start_time }}</td>
+            <td>{{ availability.end_time }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}

@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-
-
+from datetime import time
+import datetime
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -53,7 +53,7 @@ class Patient(models.Model):
     city = models.CharField(max_length=40, verbose_name='Ciudad', null=True, blank=True)
     social_work = models.CharField(max_length=20, verbose_name='Obra Social', null=True, blank=True)
     sw_number = models.CharField(max_length=20, verbose_name='Número de Obra Social', null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
     date_of_birth = models.DateField()
    
     def __str__(self):
@@ -75,7 +75,7 @@ class Doctor(models.Model):
     city = models.CharField(max_length=40, verbose_name='Ciudad', null=True, blank=True)
     mr_number = models.CharField(max_length=20, verbose_name='Número de Matrícula', null=True, blank=True)
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
     image_profile = models.ImageField(upload_to='doctor_images/', null=True, blank=True)
    
     def __str__(self):
@@ -83,38 +83,60 @@ class Doctor(models.Model):
     
 
 # TURNOS #
-
-
 class DoctorAvailability(models.Model):
+   
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
 
     class Meta:
-        unique_together = ['doctor', 'date', 'start_time']
+        abstract = True
 
+
+class Slot(DoctorAvailability):   
+    STATUS_CHOICES = [
+        ('available', 'Available'),
+        ('booked', 'Booked'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
+
+    class Meta:
+        unique_together = ['doctor', 'date', 'start_time', 'end_time']
+
+   
     def __str__(self):
         return f"{self.doctor} - {self.date} - {self.start_time} to {self.end_time}"
+    
+    # def save(self, *args, **kwargs):
+    #     if self.status == 'available':
+    #     # Check if there is any appointment overlapping with this availability
+    #         overlapping_appointments = Appointment.objects.filter(
+    #             doctor=self.doctor,
+    #             date=self.date,
+    #             start_time__lt=self.end_time,
+    #             end_time__gt=self.start_time
+    #         )
+
+    #         for appointment in overlapping_appointments:
+    #             if (appointment.start_time <= self.start_time < appointment.end_time) or \
+    #             (appointment.start_time < self.end_time <= appointment.end_time):
+    #             # At least a portion of the availability slot is already booked
+    #                 self.status = 'booked'
+    #                 break
+
+    #     super().save(*args, **kwargs)
+
 
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    doctor_availability = models.ForeignKey(DoctorAvailability, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     date = models.DateField()
-    time = models.TimeField()
+    start_time = models.TimeField(default=datetime.time(9, 0)) # Add default start time
+    end_time = models.TimeField(null=True)
     notes = models.TextField(null=True, blank=True)
 
   
     def __str__(self):
         return f"{self.date} - {self.patient.get_full_name()}"
 
-
-# class DoctorAvailability(models.Model):
-#     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-#     date = models.DateField()
-#     start_time = models.TimeField()
-#     end_time = models.TimeField()
-
-#     def __str__(self):
-#         return f"{self.doctor} - {self.date} {self.start_time}-{self.end_time}"   
-        
