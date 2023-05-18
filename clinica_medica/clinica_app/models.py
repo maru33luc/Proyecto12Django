@@ -85,7 +85,7 @@ class Doctor(models.Model):
 # TURNOS #
 class DoctorAvailability(models.Model):
    
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='doctoravailability_set')
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()

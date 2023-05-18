@@ -37,8 +37,8 @@
               <td>{{ slot.end_time }}</td>
               <td>{{ slot.get_status_display }}</td>
               <td>
-                <a href="{% url 'edit_availability' slot.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
-                <a href="{% url 'delete_availability' slot.id %}" class="btn btn-sm btn-outline-danger">Borrar</a>
+                <a href="{% url 'edit_availability' slot.doctor_id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                <a href="{% url 'delete_availability' slot.doctor_id %}" class="btn btn-sm btn-outline-danger">Borrar</a>
               </td>
             </tr>
           {% empty %}

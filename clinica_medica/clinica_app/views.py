@@ -146,10 +146,9 @@ def doctor_availability(request):
     return render(request, 'clinica_app/admin/appointments/doctor_availability.html', context)
 
 
-
 @login_required
-def edit_availability(request, pk):
-    availability = get_object_or_404(DoctorAvailability, id=pk)
+def edit_availability(request, slot_id):
+    availability = get_object_or_404(Slot, id=slot_id)
 
     if request.method == 'POST':
         form = DoctorAvailabilityForm(request.POST, instance=availability)
@@ -161,7 +160,7 @@ def edit_availability(request, pk):
 
     context = {
         'form': form,
-        'doctor_list': Doctor.objects.all(),
+        # 'doctor_list': availability.doctoravailability_set.all(),
         'availability': availability,
     }
     return render(request, 'clinica_app/admin/appointments/edit_availability.html', context)
@@ -255,7 +254,8 @@ def slot_view(request):
 
             Slot.objects.bulk_create(slots)
 
-            return render(request, 'clinica_app/admin/appointments/slots.html')
+
+            # return render(request, 'clinica_app/admin/appointments/slots.html')
     else:
         form = DoctorAvailabilityForm()
 

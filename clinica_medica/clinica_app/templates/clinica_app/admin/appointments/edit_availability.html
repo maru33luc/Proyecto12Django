@@ -4,7 +4,22 @@
 <main>
   <div class="container mt-5">
   <h1>Editar disponibilidad </h1>
-  <h3>Doctor {{ availability.doctor }}</h3>
+  <h3>Doctor {{ slot.doctor }}</h3>
+
+
+    <div>
+      {% for turno in slot_list %}
+  <div>
+    <p>Fecha: {{ slot.date }}</p>
+    <p>Hora de inicio: {{ slot.start_time }}</p>
+    <p>Hora de fin: {{ slot.end_time }}</p>
+    <!-- Otros campos relevantes para el turno -->
+  </div>
+{% endfor %}
+    </div>
+
+
+
   <div class="row">
     <div class="col-md-6">
       <form method="POST">
