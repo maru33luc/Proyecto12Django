@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from datetime import datetime, date, timedelta
 import re
-from .models import User, Patient, Doctor, Specialist, DoctorAvailability, Appointment
+from .models import User, Patient, Doctor, Specialist, DoctorAvailability, Appointment, Slot
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
@@ -146,89 +146,59 @@ class DoctorForm(forms.ModelForm):
         if commit:
             doctor.save()
         return doctor
-    # user_form = CustomUserCreationForm()
-    # def save(self, commit=True):
-    #     instance = super().save(commit=False)
-
-    #     # CustomUserCreationForm
-    #     user_form = CustomUserCreationForm(self.data)
-    #     if user_form.is_valid():
-    #         user = user_form.save(commit=False)
-    #         user.is_doctor = True  # Marcar el usuario como médico
-    #         user.save()
-    #         instance.user = user
-
-    #         if commit:
-    #             instance.save()
-    #         return instance
-    #     else:
-    #         # Manejar errores en el formulario de usuario aquí
-    #         pass
-
-# class DoctorAvailabilityForm(forms.ModelForm):
-#     class Meta:
-#         model = DoctorAvailability
-#         fields = ['doctor', 'day', 'start_time', 'end_time']
-
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         doctor = cleaned_data.get('doctor')
-#         day = cleaned_data.get('day')
-#         start_time = cleaned_data.get('start_time')
-#         end_time = cleaned_data.get('end_time')
-
-#         # Check if there is already an availability record for this doctor on this day
-#         if DoctorAvailability.objects.filter(doctor=doctor, day=day).exists():
-#             raise forms.ValidationError('There is already an availability record for this doctor on this day.')
-
-#         # Check if start_time is earlier than end_time
-#         if start_time and end_time and start_time >= end_time:
-#             raise forms.ValidationError('Start time must be earlier than end time.')
-
-#         # Check if there is no overlap with other availability records for this doctor
-#         overlaps = DoctorAvailability.objects.filter(doctor=doctor, day=day, start_time__lt=end_time, end_time__gt=start_time)
-#         if overlaps.exists():
-#             raise forms.ValidationError('The availability overlaps with another availability record for this doctor on this day.')
-
-#         return cleaned_data
+  
     
-
-
-
 
 
 class DoctorAvailabilityForm(forms.ModelForm):
     class Meta:
-        model = DoctorAvailability
-        fields = ['doctor', 'date', 'start_time', 'end_time']
+        model = Slot
+        fields = ['doctor', 'date', 'start_time', 'end_time' ]
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+            
+        }
+class SlotForm(forms.ModelForm):
+    class Meta:
+        model = Slot
+        fields = ['doctor', 'date', 'start_time', 'end_time', 'status']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+            'status': forms.Select(choices=Slot.STATUS_CHOICES),
+        }
+
+    doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+
+
+
+
+
+
+
+class AppointmentCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Appointment
+        fields = ['doctor', 'date', 'start_time', 'end_time', 'notes']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }
-
-
-# class AppointmentForm(forms.ModelForm):
-#     class Meta:
-#         model = Appointment
-#         fields = ('doctor', 'patient', 'start_time', 'end_time')
-#         widgets = {
-#             'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-#             'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-#         }
-
-
-
-class AppointmentCreateForm(forms.ModelForm):
-    doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), empty_label=None)
-    date = forms.DateField(widget=forms.SelectDateWidget)
-    start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    description = forms.CharField(widget=forms.Textarea)
-
-    class Meta:
-        model = Appointment
-        fields = ['doctor', 'date', 'start_time', 'end_time', 'description']
+        
+        
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)  # Get the 'request' object from kwargs
+        super().__init__(*args, **kwargs)
+        self.fields['doctor'].queryset = Doctor.objects.filter(
+            doctoravailability__status='available'
+        ).distinct()
+        self.fields['doctor'].empty_label = None  # Remove the empty label for the doctor field
 
     def clean(self):
         cleaned_data = super().clean()
@@ -236,103 +206,39 @@ class AppointmentCreateForm(forms.ModelForm):
         date = cleaned_data.get('date')
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
-
+        notes = cleaned_data.get('notes')
+        # Check if the doctor is available for the selected date and time
         if doctor and date and start_time and end_time:
-            # Check if the selected time slot is available for the selected doctor
-            availability = DoctorAvailability.objects.filter(doctor=doctor, date=date)
-            if not availability.exists():
-                raise forms.ValidationError('Selected time slot is not available for this doctor.')
-            else:
-                time_slots = []
-                for a in availability:
-                    start = max(a.start_time, start_time)
-                    end = min(a.end_time, end_time)
-                    if start < end:
-                        time_slots.append((start, end))
+            doctor_availability = DoctorAvailability.objects.filter(
+                doctor=doctor,
+                date=date,
+                start_time__lte=start_time,
+                end_time__gte=end_time
+            ).first()
 
-                if not time_slots:
-                    raise forms.ValidationError('Selected time slot is not available for this doctor.')
-                else:
-                    self.fields['start_time'].widget = forms.Select(choices=[(t[0], t[0].strftime('%I:%M %p')) for t in time_slots])
-                    self.fields['end_time'].widget = forms.Select(choices=[(t[1], t[1].strftime('%I:%M %p')) for t in time_slots])
-
-                    appointment_start = datetime.combine(date, start_time)
-                    appointment_end = datetime.combine(date, end_time)
-                    conflicting_appointments = Appointment.objects.filter(doctor=doctor, date=date, start_time__lt=appointment_end, end_time__gt=appointment_start)
-                    if conflicting_appointments.exists():
-                        raise forms.ValidationError('Selected time slot conflicts with an existing appointment.')
+            if not doctor_availability:
+                self.add_error('doctor', 'Doctor is not available at the selected date and time.')
 
         return cleaned_data
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.patient = self.request.user.patient  # Set the logged-in user as the patient
+        instance.doctor_id = self.cleaned_data['doctor'].id  # Set the doctor ID
+        if commit:
+            instance.save()
+        return instance
+    
+
+    
+
+class AppointmentEditForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['doctor', 'date', 'start_time', 'end_time', 'notes']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+       
 
 
-### otros ejemplos###
-# class AppointmentForm(forms.ModelForm):
-#     doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), empty_label=None)
-#     date = forms.DateField(widget=forms.SelectDateWidget)
-#     start_time = forms.ChoiceField(choices=[], widget=forms.Select())
-#     end_time = forms.ChoiceField(choices=[], widget=forms.Select())
-
-#     class Meta:
-#         model = Appointment
-#         fields = ['doctor', 'date', 'start_time', 'end_time', 'description']
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['start_time'].choices = []
-#         self.fields['end_time'].choices = []
-
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         start_time = cleaned_data.get('start_time')
-#         end_time = cleaned_data.get('end_time')
-#         if start_time and end_time and start_time >= end_time:
-#             self.add_error('end_time', 'End time must be after start time.')
-
-#     def set_time_choices(self, doctor_availability):
-#         time_slots = doctor_availability.get_time_slots()
-#         self.fields['start_time'].choices = time_slots
-#         self.fields['end_time'].choices = time_slots
-
-
-
-
-# class AppointmentCreateForm(forms.ModelForm):
-#     doctor = forms.ModelChoiceField(queryset=Doctor.objects.all(), empty_label=None)
-#     date = forms.DateField(widget=forms.SelectDateWidget)
-#     start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-#     end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-#     description = forms.CharField(widget=forms.Textarea)
-
-#     class Meta:
-#         model = Appointment
-#         fields = ['doctor', 'date', 'start_time', 'end_time', 'description']
-
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         doctor = cleaned_data.get('doctor')
-#         date = cleaned_data.get('date')
-#         start_time = cleaned_data.get('start_time')
-#         end_time = cleaned_data.get('end_time')
-
-#         if doctor and date and start_time and end_time:
-#             # Check if the selected time slot is available for the selected doctor
-#             availability = DoctorAvailability.objects.filter(doctor=doctor, date=date, start_time__lte=start_time, end_time__gte=end_time)
-#             if not availability.exists():
-#                 raise forms.ValidationError('Selected time slot is not available for this doctor.')
-#             else:
-#                 appointment_start = datetime.combine(date, start_time)
-#                 appointment_end = datetime.combine(date, end_time)
-#                 conflicting_appointments = Appointment.objects.filter(doctor=doctor, date=date, start_time__lt=appointment_end, end_time__gt=appointment_start)
-#                 if conflicting_appointments.exists():
-#                     raise forms.ValidationError('Selected time slot conflicts with an existing appointment.')
-#         return cleaned_data
-
-# class AppointmentForm(forms.ModelForm):
-#     doctor = forms.ModelChoiceField(queryset=DoctorAvailability.objects.all(), empty_label=None)
-#     date = forms.DateField(widget=forms.SelectDateWidget)
-#     start_time = forms.TimeField(widget=forms.TimeInput(format='%I:%M %p'))
-#     end_time = forms.TimeField(widget=forms.TimeInput(format='%I:%M %p'))
-
-#     class Meta:
-#         model = Appointment
-#         fields = ['doctor', 'date', 'start_time', 'end_time', 'description']

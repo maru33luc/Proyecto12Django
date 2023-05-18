@@ -1,0 +1,73 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <h1 class="text-center mb-4">Create Appointment</h1>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="form-group">
+            <label for="doctor">Doctor:</label>
+            <select class="form-control" name="doctor" id="doctor">
+                <option value="">Select a doctor</option>
+                {% for doctor in form.doctor.field.queryset %}
+                    <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if doctor_availability %}
+          <hr>
+          <h2>Select a time slot:</h2>
+          <div class="row">
+            {% for availability in doctor_availability %}
+              {% if forloop.counter == doctor_availability|length %}
+                <div class="col-md-12 mb-3">
+                  <div class="card p-2 bg-light text-dark">
+                    <div class="card-body">
+                      <h5 class="card-title">Time Slot</h5>
+                      <p class="card-text">{{ availability.start|date:"l d F Y" }} at {{ availability.start|time:"H:i" }} - {{ availability.end|time:"H:i" }}</p>
+                      <p class="card-text">Doctor: {{ availability.doctor }}</p>
+                      <input type="hidden" name="doctor_availability" value="{{ availability.id }}">
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                <div class="col-md-4 mb-3 doctor-availability" data-doctor="{{ availability.doctor.id }}">
+                  <div class="card p-2 bg-light text-dark">
+                    <div class="card-body">
+                      <h5 class="card-title">Time Slot</h5>
+                      <p class="card-text">{{ availability.start|date:"l d F Y" }} at {{ availability.start|time:"H:i" }} - {{ availability.end|time:"H:i" }}</p>
+                      <p class="card-text">Doctor: {{ availability.doctor }}</p>
+                      <input type="radio" name="doctor_availability" value="{{ availability.id }}" id="availability_{{ availability.id }}">
+                      <label for="availability_{{ availability.id }}">Select</label>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="text-center mt-3">
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $('#doctor').change(function() {
+        var doctorId = $(this).val();
+        $('.doctor-availability').hide();
+        $('.doctor-availability[data-doctor="' + doctorId + '"]').show();
+      });
+    });
+  </script>
+</div>
+{% endblock %}
+
