@@ -2,7 +2,7 @@
 
 <!-- appointment_detail.html -->
 {% block content %}
-<h1>Appointment Details</h1>
+<h1>Detalle del turno</h1>
 
 <table>
   <tr>
@@ -10,24 +10,24 @@
     <td>{{ appointment.doctor }}</td>
   </tr>
   <tr>
-    <td><strong>Date:</strong></td>
+    <td><strong>Fecha:</strong></td>
     <td>{{ appointment.date }}</td>
   </tr>
   <tr>
-    <td><strong>Start Time:</strong></td>
+    <td><strong>Empieza:</strong></td>
     <td>{{ appointment.start_time }}</td>
   </tr>
   <tr>
-    <td><strong>End Time:</strong></td>
+    <td><strong>Termina:</strong></td>
     <td>{{ appointment.end_time }}</td>
   </tr>
   <tr>
-    <td><strong>Notes:</strong></td>
+    <td><strong>Notas:</strong></td>
     <td>{{ appointment.notes }}</td>
   </tr>
 </table>
 
-<a class="btn btn-secondary" href="{% url 'appointment_edit' appointment.pk %}">Edit</a>
+<!-- <a class="btn btn-secondary" href="{% url 'appointment_edit' appointment.pk %}">Edit</a> -->
 
 <a href="{% url 'appointment_list'  %}" class="btn btn-success">Volver</a>
 

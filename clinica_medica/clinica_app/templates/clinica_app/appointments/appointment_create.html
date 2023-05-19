@@ -2,43 +2,88 @@
 {% load static %}
 
 {% block content %}
-  <h1>Create an Appointment</h1>
-
-  {% if last_message %}
-  <div class="alert alert-{{ last_message.tags }}">
-      {{ last_message }}
+  <h1>Reservar un turno</h1>
+  {% if form.errors %}
+  <div class="alert alert-danger">
+    <ul>
+      {% for field_errors in form.errors.values %}
+        {% for error in field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
   </div>
 {% endif %}
-  <form method="post" action="">
+
+
+  <div class="col-md-6">
+    <h3>Turnos disponibles</h3>
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <form method="GET">
+          <label for="doctor">Filtrar por doctor:</label>
+          <select name="doctor" id="doctor" class="form-control">
+            <option value="">Todos los Dres.</option>
+            {% for doctor in doctor_list %}
+              <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="date">Filtrar por fecha:</label>
+          <input type="date" name="date" id="date" class="form-control">
+
+          <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% if doctor_selected or date_selected %}
+  <form method="post" action="{% url 'appointment_create' %}">
     {% csrf_token %}
-    {{ form.as_p }}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Date</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slot in slot_list %}
+          <tr>
+            <td>{{ slot.doctor }}</td>
+            <td>{{ slot.date }}</td>
+            <td>{{ slot.start_time }}</td>
+            <td>{{ slot.end_time }}</td>
+            <td>{{ slot.get_status_display }}</td>
+            <td>
+              {% if slot.status == 'available' %}
+                <input type="hidden" name="doctor" value="{{ slot.doctor.id }}" id="doctor">
+                <input type="hidden" name="date" value="{{ slot.date }}" id="date">
+                <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}" id="start_time">
+<input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}" id="end_time">
 
-
-
-    <div class="form-group">
-      <label for="id_available_dates">Available Dates:</label>
-      <select id="id_available_dates" name="available_dates">
-        <option value="">-- Select Date --</option>
-        {% for availability in availabilities %}
-          {% if availability.doctor == selected_doctor %}
-            <option value="{{ availability.date }}">{{ availability.date }}</option>
-          {% endif %}
+                <input type="hidden" name="notes" value="" id="notes">
+                <input type="hidden" name="slot_id" value="{{ slot.id }}" id="slot_id">
+                <button type="submit" class="btn btn-primary">Book Appointment</button>
+                
+              {% else %}
+                Slot not available
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6">No available slots found.</td>
+          </tr>
         {% endfor %}
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="id_available_times">Available Times:</label>
-      <select id="id_available_times" name="available_times">
-        <option value="">-- Select Time --</option>
-        {% for availability in availabilities %}
-          {% if availability.doctor == selected_doctor and availability.date == selected_date %}
-            <option value="{{ availability.start_time }}">{{ availability.start_time }} - {{ availability.end_time }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-    </div>
-
-    <button type="submit">Create Appointment</button>
+      </tbody>
+    </table>
   </form>
+  {% endif %}
 {% endblock %}
+
+
