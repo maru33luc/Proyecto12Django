@@ -32,14 +32,13 @@ urlpatterns = [
 
     path('appointments/<int:pk>/cancel/', views.cancel_appointment, name='cancel_appointment'),
     ##doctor poner en admin##
-    path('doctor_availability/', views.doctor_availability, name='doctor_availability'),
-    path('edit_availability/<int:pk>/', views.edit_availability, name='edit_availability'),
-    path('delete_availability/<int:pk>/', views.delete_availability, name='delete_availability'),
-    
+  
     path('contacto', views.contacto, name="contacto"), 
     # path('doctor_availability/<int:doctor_id>/', views.doctor_availability_detail, name='doctor_availability_detail')
     ## slots ##
     path('slots/', views.slot_view, name='slot_view'),
+    path('edit_slot/<int:pk>/', views.edit_slot, name='edit_slot'),
+    path('delete_slot/<int:pk>/', views.delete_slot, name='delete_slot'),
     
     #### ADMIN ####
     path('admin/home_admin', views.home_admin, name='home_admin'),

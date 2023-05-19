@@ -158,8 +158,22 @@ class DoctorAvailabilityForm(forms.ModelForm):
             'date': forms.DateInput(attrs={'type': 'date'}),
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
-            
+       
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        selected_date = cleaned_data.get('date')
+
+        if selected_date and selected_date < date.today():
+            self.add_error('date', 'La fecha debe ser igual o posterior a la fecha actual.')
+
+        if start_time and end_time and end_time <= start_time:
+            self.add_error('end_time', 'El end_time debe ser posterior al start_time.')
+
+        return cleaned_data
+    
 class SlotForm(forms.ModelForm):
     class Meta:
         model = Slot
@@ -171,34 +185,38 @@ class SlotForm(forms.ModelForm):
             'status': forms.Select(choices=Slot.STATUS_CHOICES),
         }
 
-    doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    # doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    # doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
 
 
 
 
 
 
+
+import datetime
+
+from django import forms
 
 class AppointmentCreateForm(forms.ModelForm):
-
+    slot_id = forms.IntegerField(widget=forms.HiddenInput())
+   
     class Meta:
         model = Appointment
         fields = ['doctor', 'date', 'start_time', 'end_time', 'notes']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
-            'start_time': forms.TimeInput(attrs={'type': 'time'}),
-            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+             'start_time': forms.TimeInput(attrs={'type': 'time', 'format': '%H:%M'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time', 'format': '%H:%M'}),
         }
-        
-        
+
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)  # Get the 'request' object from kwargs
+        self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         self.fields['doctor'].queryset = Doctor.objects.filter(
-            doctoravailability__status='available'
+            slot__status='available'
         ).distinct()
-        self.fields['doctor'].empty_label = None  # Remove the empty label for the doctor field
+        self.fields['doctor'].empty_label = None
 
     def clean(self):
         cleaned_data = super().clean()
@@ -207,27 +225,37 @@ class AppointmentCreateForm(forms.ModelForm):
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
         notes = cleaned_data.get('notes')
+        print("start_time:", start_time)
+        print("end_time:", end_time)
         # Check if the doctor is available for the selected date and time
         if doctor and date and start_time and end_time:
-            doctor_availability = DoctorAvailability.objects.filter(
+            print("start_time:", start_time)
+            print("end_time:", end_time)
+            # Check if the start time is earlier than the end time
+            if start_time >= end_time:
+                self.add_error('start_time', 'Start time must be earlier than end time.')
+
+            # Check if the doctor is available at the selected date and time
+            slot = Slot.objects.filter(
                 doctor=doctor,
                 date=date,
                 start_time__lte=start_time,
                 end_time__gte=end_time
             ).first()
 
-            if not doctor_availability:
+            if not slot:
                 self.add_error('doctor', 'Doctor is not available at the selected date and time.')
 
         return cleaned_data
+
     def save(self, commit=True):
         instance = super().save(commit=False)
-        instance.patient = self.request.user.patient  # Set the logged-in user as the patient
-        instance.doctor_id = self.cleaned_data['doctor'].id  # Set the doctor ID
+        instance.patient = self.request.user.patient
+        instance.doctor_id = self.cleaned_data['doctor'].id
         if commit:
             instance.save()
         return instance
-    
+
 
     
 
