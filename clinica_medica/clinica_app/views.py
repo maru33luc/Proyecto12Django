@@ -149,78 +149,41 @@ def doctor_availability(request):
 
 @login_required
 def edit_availability(request, pk):
-    availability = get_object_or_404(DoctorAvailability, id=pk)
+    slot = get_object_or_404(Slot, id=pk)
 
     if request.method == 'POST':
-        form = DoctorAvailabilityForm(request.POST, instance=availability)
+        form = SlotForm(request.POST, instance=slot)
         if form.is_valid():
             form.save()
-            return redirect('doctor_availability')
+            return redirect('slot_view')
     else:
-        form = DoctorAvailabilityForm(instance=availability)
+        form = SlotForm(instance=slot)
 
     context = {
         'form': form,
         'doctor_list': Doctor.objects.all(),
-        'availability': availability,
+        'slot': slot,
     }
     return render(request, 'clinica_app/admin/appointments/edit_availability.html', context)
 
 
 @login_required
 def delete_availability(request, pk):
-    availability = get_object_or_404(DoctorAvailability, id=pk)
+    slot = get_object_or_404(Slot, id=pk)
 
     if request.method == 'POST':
-        availability.delete()
-        return redirect('doctor_availability')
+        slot.delete()
+        return redirect('slot_view')
 
     context = {
-        'availability': availability,
+        'slot': slot,
     }
     return render(request, 'clinica_app/admin/appointments/delete_availability.html', context)
 
 ### Slots###
 
 
-# def slot_view(request):
-#     if request.method == 'POST':
-#         form = DoctorAvailabilityForm(request.POST)
-#         if form.is_valid():
-#             slot = form.save(commit=False)
 
-#             # Obtén los datos del formulario
-#             start_time = form.cleaned_data['start_time']
-#             end_time = form.cleaned_data['end_time']
-
-#             # Calcula el intervalo de veinte minutos
-#             interval = timedelta(hour=0, minute=20)
-
-#             # Crea múltiples registros basados en el intervalo de veinte minutos
-#             current_time = start_time
-#             while current_time < end_time:
-#                 slot = Slot(
-#                     doctor=slot.doctor,
-#                     date=slot.date,
-#                     start_time=current_time,
-#                     end_time=current_time + interval,
-#                     # Otros campos relevantes para los registros
-#                 )
-#                 slot.save()
-#                 current_time += interval
-
-#             return render(request, 'home_admin.html')
-#     else:
-#         form = DoctorAvailabilityForm()
-
-#     slot_list = Slot.objects.all()
-#     context = {
-#         'form': form,
-#         'doctor_list': Doctor.objects.all(),
-#         'slot_list': slot_list,
-#     }
-
-#     return render(request, 'clinica_app/admin/appointments/slots.html', context)
 def slot_view(request):
     if request.method == 'POST':
         form = DoctorAvailabilityForm(request.POST)
@@ -228,9 +191,10 @@ def slot_view(request):
             slot = form.save(commit=False)
 
             # Obtén los datos del formulario
+            doctor = form.cleaned_data['doctor']
             start_time = form.cleaned_data['start_time']
             end_time = form.cleaned_data['end_time']
-
+            
             # Calcula el intervalo de veinte minutos
             interval = timedelta(minutes=20)
 
@@ -254,12 +218,14 @@ def slot_view(request):
                 current_datetime += interval
 
             Slot.objects.bulk_create(slots)
-
-            return render(request, 'clinica_app/admin/appointments/slots.html')
+            slot_list = Slot.objects.filter(doctor=doctor).order_by('date', 'doctor', 'start_time')
+            
+            return redirect('slot_view')
     else:
         form = DoctorAvailabilityForm()
-
-    slot_list = Slot.objects.all()
+    
+   
+    slot_list = Slot.objects.all().order_by('date','doctor', 'start_time')
     context = {
         'form': form,
         'doctor_list': Doctor.objects.all(),
@@ -267,7 +233,6 @@ def slot_view(request):
     }
 
     return render(request, 'clinica_app/admin/appointments/slots.html', context)
-
 
 
 ### ultimo ap_create ###
