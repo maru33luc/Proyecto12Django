@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
@@ -147,35 +148,35 @@ def doctor_availability(request):
 
 
 @login_required
-def edit_availability(request, slot_id):
-    availability = get_object_or_404(Slot, id=slot_id)
+def edit_availability(request, pk):
+    slot = get_object_or_404(Slot, id=pk)
 
     if request.method == 'POST':
-        form = DoctorAvailabilityForm(request.POST, instance=availability)
+        form = SlotForm(request.POST, instance=slot)
         if form.is_valid():
             form.save()
-            return redirect('doctor_availability')
+            return redirect('slot_view')
     else:
-        form = DoctorAvailabilityForm(instance=availability)
+        form = SlotForm(instance=slot)
 
     context = {
         'form': form,
-        # 'doctor_list': availability.doctoravailability_set.all(),
-        'availability': availability,
+        'doctor_list': Doctor.objects.all(),
+        'slot': slot,
     }
     return render(request, 'clinica_app/admin/appointments/edit_availability.html', context)
 
 
 @login_required
 def delete_availability(request, pk):
-    availability = get_object_or_404(DoctorAvailability, id=pk)
+    slot = get_object_or_404(Slot, id=pk)
 
     if request.method == 'POST':
-        availability.delete()
-        return redirect('doctor_availability')
+        slot.delete()
+        return redirect('slot_view')
 
     context = {
-        'availability': availability,
+        'slot': slot,
     }
     return render(request, 'clinica_app/admin/appointments/delete_availability.html', context)
 
@@ -221,6 +222,23 @@ def delete_availability(request, pk):
 
 #     return render(request, 'clinica_app/admin/appointments/slots.html', context)
 def slot_view(request):
+   
+    doctor_id = request.GET.get('doctor')
+    date = request.GET.get('date')
+    flag= False
+
+    # Obtén todos los turnos
+    slots = Slot.objects.all().order_by('date', 'start_time')
+
+    # Aplica los filtros si se proporcionaron valores
+    if doctor_id:
+        slots = slots.filter(doctor_id=doctor_id)
+        flag = True
+    if date:
+        slots = slots.filter(date=date)
+        flag = True
+
+   ##-----------------------    
     if request.method == 'POST':
         form = DoctorAvailabilityForm(request.POST)
         if form.is_valid():
@@ -254,25 +272,30 @@ def slot_view(request):
 
             Slot.objects.bulk_create(slots)
 
-
+            return redirect('slot_view')
             # return render(request, 'clinica_app/admin/appointments/slots.html')
     else:
         form = DoctorAvailabilityForm()
 
-    slot_list = Slot.objects.all()
+    # mostrar la slot_list ordenada por fecha y hora
+    if flag==False:
+        filtered_slots = slots.order_by('date', 'start_time')
+        # slots = Slot.objects.all().order_by('date', 'start_time')
+    else:
+        filtered_slots = slots
+
+    # slot_list = Slot.objects.all()
+
     context = {
         'form': form,
         'doctor_list': Doctor.objects.all(),
-        'slot_list': slot_list,
+        'slot_list': filtered_slots,
     }
-
     return render(request, 'clinica_app/admin/appointments/slots.html', context)
 
 
 
 ### ultimo ap_create ###
-
-
 
 
 def appointment_create(request):

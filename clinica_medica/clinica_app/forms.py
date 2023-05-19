@@ -160,6 +160,19 @@ class DoctorAvailabilityForm(forms.ModelForm):
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
             
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        selected_date = cleaned_data.get('date')
+
+        if selected_date and selected_date < date.today():
+            self.add_error('date', 'La fecha debe ser igual o posterior a la fecha actual.')
+
+        if start_time and end_time and end_time <= start_time:
+            self.add_error('end_time', 'El end_time debe ser posterior al start_time.')
+        return cleaned_data
+
 class SlotForm(forms.ModelForm):
     class Meta:
         model = Slot
@@ -171,13 +184,8 @@ class SlotForm(forms.ModelForm):
             'status': forms.Select(choices=Slot.STATUS_CHOICES),
         }
 
-    doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-
-
-
-
-
+    # doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    # doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
 
 
 class AppointmentCreateForm(forms.ModelForm):
