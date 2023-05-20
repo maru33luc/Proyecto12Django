@@ -11,7 +11,7 @@
           {% csrf_token %}
           {{ form.as_p }}
 
-          <button type="submit" class="btn btn-primary mt-3">Add Availability</button>
+          <button type="submit" class="btn btn-primary mt-3">Habilitar turnos</button>
         </form>
       </div>
       
@@ -57,8 +57,8 @@
                 <td>{{ slot.end_time }}</td>
                 <td>{{ slot.get_status_display }}</td>
                 <td>
-                  <a href="{% url 'edit_availability' slot.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
-                  <a href="{% url 'delete_availability' slot.id %}" class="btn btn-sm btn-outline-danger">Borrar</a>
+                  <a href="{% url 'edit_slot' slot.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                  <a href="{% url 'delete_slot' slot.id %}" class="btn btn-sm btn-outline-danger">Borrar</a>
                 </td>
               </tr>
             {% empty %}

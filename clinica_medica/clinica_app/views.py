@@ -115,10 +115,7 @@ def patient_delete(request, pk):
 
 
 ### Turnos ####
-# @login_required
-# def appointments(request):
-#     appointments = Appointment.objects.all().order_by('date', 'time')
-#     return render(request, 'clinica_app/admin/appointments.html', {'appointments': appointments})
+
 
 def appointment_list(request):
     appointments = Appointment.objects.all().order_by('date', 'start_time')
@@ -127,28 +124,10 @@ def appointment_list(request):
 
 
 
-@login_required
-def doctor_availability(request):
-    if request.method == 'POST':
-        form = DoctorAvailabilityForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Availability added successfully.')
-            return redirect('doctor_availability')
-    else:
-        form = DoctorAvailabilityForm()
-    
-    availability_list = DoctorAvailability.objects.all()
-    context = {
-        'form': form,
-        'doctor_list': Doctor.objects.all(),
-        'availability_list': availability_list,
-    }
-    return render(request, 'clinica_app/admin/appointments/doctor_availability.html', context)
 
 
 @login_required
-def edit_availability(request, pk):
+def edit_slot(request, pk):
     slot = get_object_or_404(Slot, id=pk)
 
     if request.method == 'POST':
@@ -164,11 +143,11 @@ def edit_availability(request, pk):
         'doctor_list': Doctor.objects.all(),
         'slot': slot,
     }
-    return render(request, 'clinica_app/admin/appointments/edit_availability.html', context)
+    return render(request, 'clinica_app/admin/appointments/edit_slot.html', context)
 
 
 @login_required
-def delete_availability(request, pk):
+def delete_slot(request, pk):
     slot = get_object_or_404(Slot, id=pk)
 
     if request.method == 'POST':
@@ -178,51 +157,13 @@ def delete_availability(request, pk):
     context = {
         'slot': slot,
     }
-    return render(request, 'clinica_app/admin/appointments/delete_availability.html', context)
+    return render(request, 'clinica_app/admin/appointments/delete_slot.html', context)
 
 ### Slots###
 
 
-# def slot_view(request):
-#     if request.method == 'POST':
-#         form = DoctorAvailabilityForm(request.POST)
-#         if form.is_valid():
-#             slot = form.save(commit=False)
 
-#             # Obtén los datos del formulario
-#             start_time = form.cleaned_data['start_time']
-#             end_time = form.cleaned_data['end_time']
-
-#             # Calcula el intervalo de veinte minutos
-#             interval = timedelta(hour=0, minute=20)
-
-#             # Crea múltiples registros basados en el intervalo de veinte minutos
-#             current_time = start_time
-#             while current_time < end_time:
-#                 slot = Slot(
-#                     doctor=slot.doctor,
-#                     date=slot.date,
-#                     start_time=current_time,
-#                     end_time=current_time + interval,
-#                     # Otros campos relevantes para los registros
-#                 )
-#                 slot.save()
-#                 current_time += interval
-
-#             return render(request, 'home_admin.html')
-#     else:
-#         form = DoctorAvailabilityForm()
-
-#     slot_list = Slot.objects.all()
-#     context = {
-#         'form': form,
-#         'doctor_list': Doctor.objects.all(),
-#         'slot_list': slot_list,
-#     }
-
-#     return render(request, 'clinica_app/admin/appointments/slots.html', context)
 def slot_view(request):
-   
     doctor_id = request.GET.get('doctor')
     date = request.GET.get('date')
     flag= False
@@ -238,16 +179,17 @@ def slot_view(request):
         slots = slots.filter(date=date)
         flag = True
 
-   ##-----------------------    
+   ##-----------------------  
     if request.method == 'POST':
         form = DoctorAvailabilityForm(request.POST)
         if form.is_valid():
             slot = form.save(commit=False)
 
             # Obtén los datos del formulario
+            doctor = form.cleaned_data['doctor']
             start_time = form.cleaned_data['start_time']
             end_time = form.cleaned_data['end_time']
-
+            
             # Calcula el intervalo de veinte minutos
             interval = timedelta(minutes=20)
 
@@ -271,13 +213,14 @@ def slot_view(request):
                 current_datetime += interval
 
             Slot.objects.bulk_create(slots)
-
-            return redirect('slot_view')
-            # return render(request, 'clinica_app/admin/appointments/slots.html')
+            slot_list = Slot.objects.filter(doctor=doctor).order_by('date', 'doctor', 'start_time')
+            
+            return redirect('slot_view')          
     else:
         form = DoctorAvailabilityForm()
-
-    # mostrar la slot_list ordenada por fecha y hora
+    
+   
+     # mostrar la slot_list ordenada por fecha y hora
     if flag==False:
         filtered_slots = slots.order_by('date', 'start_time')
         # slots = Slot.objects.all().order_by('date', 'start_time')
@@ -292,188 +235,142 @@ def slot_view(request):
         'slot_list': filtered_slots,
     }
     return render(request, 'clinica_app/admin/appointments/slots.html', context)
-
-
-
 ### ultimo ap_create ###
 
-
 def appointment_create(request):
+    doctor_id = request.GET.get('doctor')
+    date = request.GET.get('date')
+
+    # Filter the slots based on the selected doctor or date
+    slots = Slot.objects.all()
+    if doctor_id:
+        slots = slots.filter(doctor_id=doctor_id)
+    if date:
+        slots = slots.filter(date=date)
+    doctor_selected = bool(doctor_id)
+    date_selected = bool(date)
     if request.method == 'POST':
         form = AppointmentCreateForm(request.POST, request=request)
-        print(request.POST)
-        
         if form.is_valid():
             
-            doctor_id = form.cleaned_data['doctor'].id
-            date = form.cleaned_data['date']
-            start_time = form.cleaned_data['start_time']
-            end_time = form.cleaned_data['end_time']
-            print(f"doctor_id: {doctor_id}")
-            print(f"date: {date}")
-            print(f"start_time: {start_time}")
-            print(f"end_time: {end_time}")
-            # Check if the patient already has an appointment with the same details
-            appointment_exists = Appointment.objects.filter(
-                patient=request.user.patient,
-                date=date,
-                start_time=start_time,
-                end_time=end_time
-            ).exists()
-
-            if appointment_exists:
-                messages.error(request, 'An appointment with the same details already exists.')
-                return redirect('appointment_create')
-
-            # Check if the patient already has an appointment with any doctor on the same date and time
-            overlapping_appointments = Appointment.objects.filter(
-                patient=request.user.patient,
-                date=date,
-                start_time__lt=end_time,
-                end_time__gt=start_time
-            ).exists()
-
-            if overlapping_appointments:
-                messages.error(request, 'You already have an appointment at the selected date and time.')
-                return redirect('appointment_create')
-
-            try:
-                doctor_availability = DoctorAvailability.objects.get(
-                    doctor_id=doctor_id,
-                    date=date,
-                    start_time=start_time,
-                    end_time=end_time,
-                    status='available'
-                )
-            except DoctorAvailability.DoesNotExist as e:
-                print("Doctor Availability does not exist for the following parameters:")
-                print(f"doctor_id: {doctor_id}")
-                print(f"date: {date}")
-                print(f"start_time: {start_time}")
-                print(f"end_time: {end_time}")
-                messages.error(request, 'The selected doctor is not available for the selected date and time.')
-                return redirect('appointment_create')
-            print(doctor_id)
-            print(doctor_availability.doctor_id)
+             # Convert the start_time and end_time to datetime.time objects
+            start_time = datetime.strptime(request.POST['start_time'], '%H:%M').time()
+            end_time = datetime.strptime(request.POST['end_time'], '%H:%M').time()
+            # Assign the converted time values back to the form cleaned_data
+            form.cleaned_data['start_time'] = start_time
+            form.cleaned_data['end_time'] = end_time
+            #form.save()
             appointment = form.save(commit=False)
             appointment.patient = request.user.patient
-            appointment.save()
-            doctor_availability.status = 'booked' 
-            print(appointment)  # Check if the appointment object is created
-            # If the start_time of the appointment is different from the start_time of the availability,
-            # create a new availability with the status 'booked' for the remaining time slot before the appointment start_time
-            if doctor_availability.start_time != start_time:
-                new_availability = DoctorAvailability.objects.create(
-                    doctor=doctor_availability.doctor,
-                    date=doctor_availability.date,
-                    start_time=doctor_availability.start_time,
-                    end_time=start_time,
-                    status='booked'
-                )
 
-            # If the end_time of the appointment is different from the end_time of the availability,
-            # create a new availability with the status 'booked' for the remaining time slot after the appointment end_time
-            if doctor_availability.end_time != end_time:
-                new_availability = DoctorAvailability.objects.create(
-                    doctor=doctor_availability.doctor,
-                    date=doctor_availability.date,
-                    start_time=end_time,
-                    end_time=doctor_availability.end_time,
-                    status='booked'
-                )
+            # Check if the selected slot is still available
+            
+            slot_id = form.cleaned_data['slot_id']
+            try:
+                slot = Slot.objects.get(id=slot_id, status='available')
+                appointment.slot = slot
+                slot.status = 'booked'
+                slot.save()
+                appointment.save()
+                messages.success(request, 'Appointment created successfully.')
+                return redirect(reverse('appointment_detail', kwargs={'pk': appointment.id}))
 
-            messages.success(request, 'Appointment created successfully.')
-            return redirect('appointment_list')
+            except Slot.DoesNotExist:
+                messages.error(request, 'The selected slot is no longer available.')
         else:
             print(form.errors)
-
+            messages.error(request, 'Failed to create appointment. Please check the form data.')
     else:
         form = AppointmentCreateForm(request=request)
-        print(form.errors)
-        print(request.POST)
-        last_message = ''
-        storage = messages.get_messages(request)
-        for message in storage:
-            last_message = message
 
-    return render(request, 'clinica_app/appointments/appointment_create.html', {'form': form})
+    context = {
+        'form': form,
+        'doctor_list': Doctor.objects.all(),
+        'slot_list': slots,
+        'doctor_selected': doctor_selected,
+        'date_selected': date_selected,
+    }
+    return render(request, 'clinica_app/appointments/appointment_create.html', context)
+
+
 
 # def appointment_create(request):
+#     doctor_id = request.GET.get('doctor')
+#     date = request.GET.get('date')
+
+#     # Filter the slots based on the selected doctor or date
+#     slots = Slot.objects.all()
+#     if doctor_id:
+#         slots = slots.filter(doctor_id=doctor_id)
+#     if date:
+#         slots = slots.filter(date=date)
+
 #     if request.method == 'POST':
 #         form = AppointmentCreateForm(request.POST, request=request)
-
 #         if form.is_valid():
-#             doctor_id = form.cleaned_data['doctor']
-#             date = form.cleaned_data['date']
-#             start_time = form.cleaned_data['start_time']
-#             end_time = form.cleaned_data['end_time']
+#             appointment = form.save(commit=False)
+#             appointment.patient = request.user.patient
 
-#             appointment_exists = Appointment.objects.filter(
-#                 patient=request.user.patient,
-#                 doctor_id=doctor_id,
-#                 date=date,
-#                 start_time=start_time,
-#                 end_time=end_time
-#             ).exists()
-
-#             if appointment_exists:
-#                 messages.error(request, 'An appointment with the same details already exists.')
-#                 return redirect('appointment_create')
-
-#             appointment = form.save()
-
+#             # Check if the selected slot is still available
+#             slot_id = request.POST.get('slot_id')
 #             try:
-#                 doctor_availability = DoctorAvailability.objects.get(
-#                     doctor_id=doctor_id,
-#                     date=date,
-#                     start_time=start_time,
-#                     status='available'
-#                 )
-
-#                 if doctor_availability.end_time > end_time:
-#                     # Create a new availability for the time slot after the appointment
-#                     new_availability_after = DoctorAvailability.objects.create(
-#                         doctor=doctor_availability.doctor,
-#                         date=doctor_availability.date,
-#                         start_time=end_time,
-#                         end_time=doctor_availability.end_time,
-#                         status='available'
-#                     )
-
-#                 # Update the existing availability to represent the booked time slot
-#                 doctor_availability.end_time = start_time
-#                 doctor_availability.status = 'booked'
-#                 doctor_availability.save()
-
-#             except DoctorAvailability.DoesNotExist:
-#                 appointment.delete()
-#                 messages.error(request, 'The selected doctor is not available for the selected date and time.')
+#                 slot = Slot.objects.get(id=slot_id, status='available')
+#                 appointment.slot = slot
+#                 slot.status = 'booked'
+#                 slot.save()
+#                 appointment.save()
+#                 messages.success(request, 'Appointment created successfully.')
 #                 return redirect('appointment_create')
-
-#             messages.success(request, 'Appointment created successfully.')
-#             return redirect('appointment_list')
+#             except Slot.DoesNotExist:
+#                 messages.error(request, 'The selected slot is no longer available.')
+#         else:
+#             messages.error(request, 'Failed to create appointment. Please check the form data.')
 #     else:
 #         form = AppointmentCreateForm(request=request)
 
-#     return render(request, 'clinica_app/appointments/appointment_create.html', {'form': form})
-
+#     context = {
+#         'form': form,
+#         'doctor_list': Doctor.objects.all(),
+#         'slot_list': slots,
+#     }
+#     return render(request, 'clinica_app/appointments/appointment_create.html', context)
 
 
 
 
 # def appointment_create(request):
+#     doctor_id = request.GET.get('doctor')
+#     date = request.GET.get('date')
+#     flag= False
+
+#     # Obtén todos los turnos
+#     slots = Slot.objects.all().order_by('date', 'start_time')
+
+#     # Aplica los filtros si se proporcionaron valores
+#     if doctor_id:
+#         slots = slots.filter(doctor_id=doctor_id)
+#         flag = True
+#     if date:
+#         slots = slots.filter(date=date)
+#         flag = True
+
 #     if request.method == 'POST':
 #         form = AppointmentCreateForm(request.POST, request=request)
-
+#         print(request.POST)
+        
 #         if form.is_valid():
-#             doctor_id = form.cleaned_data['doctor']
+            
+#             doctor_id = form.cleaned_data['doctor'].id
 #             date = form.cleaned_data['date']
 #             start_time = form.cleaned_data['start_time']
 #             end_time = form.cleaned_data['end_time']
-
+#             print(f"doctor_id: {doctor_id}")
+#             print(f"date: {date}")
+#             print(f"start_time: {start_time}")
+#             print(f"end_time: {end_time}")
+#             # Check if the patient already has an appointment with the same details
 #             appointment_exists = Appointment.objects.filter(
 #                 patient=request.user.patient,
-#                 doctor_id=doctor_id,
 #                 date=date,
 #                 start_time=start_time,
 #                 end_time=end_time
@@ -483,52 +380,82 @@ def appointment_create(request):
 #                 messages.error(request, 'An appointment with the same details already exists.')
 #                 return redirect('appointment_create')
 
-#             appointment = form.save()
+#             # Check if the patient already has an appointment with any doctor on the same date and time
+#             overlapping_appointments = Appointment.objects.filter(
+#                 patient=request.user.patient,
+#                 date=date,
+#                 start_time__lt=end_time,
+#                 end_time__gt=start_time
+#             ).exists()
+
+#             if overlapping_appointments:
+#                 messages.error(request, 'You already have an appointment at the selected date and time.')
+#                 return redirect('appointment_create')
 
 #             try:
-#                 doctor_availability = DoctorAvailability.objects.get(
+#                 slot = Slot.objects.get(
 #                     doctor_id=doctor_id,
 #                     date=date,
 #                     start_time=start_time,
 #                     end_time=end_time,
 #                     status='available'
 #                 )
-#             except DoctorAvailability.DoesNotExist:
-#                 appointment.delete()
+#             except Slot.DoesNotExist as e:
+#                 print("Doctor Availability does not exist for the following parameters:")
+#                 print(f"doctor_id: {doctor_id}")
+#                 print(f"date: {date}")
+#                 print(f"start_time: {start_time}")
+#                 print(f"end_time: {end_time}")
 #                 messages.error(request, 'The selected doctor is not available for the selected date and time.')
 #                 return redirect('appointment_create')
+#             print(doctor_id)
+#             print(slot.doctor_id)
+#             appointment = form.save(commit=False)
+#             appointment.patient = request.user.patient
+#             appointment.save()
 
+#             # Update the slot status to 'booked'
+#             if appointment.doctor_id == slot.doctor_id:
+#                 slot.status = 'booked'
+#                 slot.save()
+#                 messages.success(request, 'Appointment created successfully.')
+#                 return redirect('appointment_create')
+#             else:
+#                 messages.error(request, 'The selected doctor is not available for the selected date and time.')
+#                 return redirect('appointment_create')
+                        
+#             print(appointment)  # Check if the appointment object is created
 #             # If the start_time of the appointment is different from the start_time of the availability,
 #             # create a new availability with the status 'booked' for the remaining time slot before the appointment start_time
-#             if doctor_availability.start_time != start_time:
-#                 new_availability = DoctorAvailability.objects.create(
-#                     doctor=doctor_availability.doctor,
-#                     date=doctor_availability.date,
-#                     start_time=doctor_availability.start_time,
-#                     end_time=start_time,
-#                     status='booked'
-#                 )
+           
+           
 
-#             # If the end_time of the appointment is different from the end_time of the availability,
-#             # create a new availability with the status 'booked' for the remaining time slot after the appointment end_time
-#             if doctor_availability.end_time != end_time:
-#                 new_availability = DoctorAvailability.objects.create(
-#                     doctor=doctor_availability.doctor,
-#                     date=doctor_availability.date,
-#                     start_time=end_time,
-#                     end_time=doctor_availability.end_time,
-#                     status='booked'
-#                 )
-
-#             messages.success(request, 'Appointment created successfully.')
-#             return redirect('appointment_list')
 #     else:
 #         form = AppointmentCreateForm(request=request)
+#         print(form.errors)
+#         print(request.POST)
+#         last_message = ''
+#         storage = messages.get_messages(request)
+#         for message in storage:
+#             last_message = message
 
-#     return render(request, 'clinica_app/appointments/appointment_create.html', {'form': form})
+#      # mostrar la slot_list ordenada por fecha y hora
+#     if flag==False:
+#         filtered_slots = slots.order_by('date', 'start_time')
+#         # slots = Slot.objects.all().order_by('date', 'start_time')
+#     else:
+#         filtered_slots = slots
+
+#     # slot_list = Slot.objects.all()
+
+#     context = {
+#         'form': form,
+#         'doctor_list': Doctor.objects.all(),
+#         'slot_list': filtered_slots,
+#     }
+#     return render(request, 'clinica_app/appointments/appointment_create.html',context)
 
 
-# 
 
 
 

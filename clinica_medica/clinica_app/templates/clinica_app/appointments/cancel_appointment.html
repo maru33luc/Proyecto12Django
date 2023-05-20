@@ -1,10 +1,13 @@
 {% extends 'clinica_app/admin/base.html' %}
 
 {% block content %}
-  <h1>Cancel Appointment</h1>
+  <h1>Cancelar su turno</h1>
 
-  <p>Are you sure you want to cancel this appointment?</p>
-
+  <p>Esta seguro que quiere cancelar el turno?</p>
+  <p>con el Dr. {{ appointment.doctor.user.last_name }} {{ appointment.doctor.user.first_name }}</p>
+  <p> el día: {{appointment.date }}</p>
+  <p>de: {{ appointment.start_time|time:"g:i A" }}</p>
+  <p>hasta: {{ appointment.end_time|time:"g:i A" }}</p>
   <form method="POST">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger">Yes, Cancel Appointment</button>
