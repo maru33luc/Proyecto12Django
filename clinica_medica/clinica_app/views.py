@@ -263,6 +263,7 @@ def appointment_create(request):
             appointment.patient = request.user.patient
 
             # Check if the selected slot is still available
+            
             slot_id = form.cleaned_data['slot_id']
             try:
                 slot = Slot.objects.get(id=slot_id, status='available')
