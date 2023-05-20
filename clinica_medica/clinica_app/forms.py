@@ -8,6 +8,9 @@ from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
+import datetime
+
+from django import forms
 
 
 class SignupForm(forms.Form):
@@ -55,8 +58,6 @@ class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
         model = get_user_model()
         fields = ['email', 'password']
-
-
 
     
 class LoginForm(forms.Form):
@@ -116,20 +117,6 @@ class SpecialistForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'})
         }
         
-   
-# class DoctorForm(forms.Form): #create Doctor
-#     specialist = forms.ModelChoiceField(queryset=Specialist.objects.all())
-#     # class Meta:   #voy a especificar q modelo pertenece
-#     model = Doctor
-#     fields = ['__all__'] #campos a utilizar en este form
-#     widgets = {
-#         'specialist': forms.Select(attrs={'class': 'form-control'}),
-#         'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        
-            #'title': forms.TextInput(attrs= { 'class': 'form-control', 'placeholder': 'Write a title'}),
-            #'description': forms.Textarea(attrs= { 'class': 'form-control', 'placeholder': 'Write a description'}),
-            #'important': forms.CheckboxInput(attrs= { 'class': 'form-check-input m-auto'}
-        # }
   
 class DoctorForm(forms.ModelForm):
     class Meta:
@@ -148,8 +135,6 @@ class DoctorForm(forms.ModelForm):
         return doctor
   
     
-
-
 class DoctorAvailabilityForm(forms.ModelForm):
     class Meta:
         model = Slot
@@ -185,18 +170,7 @@ class SlotForm(forms.ModelForm):
             'status': forms.Select(choices=Slot.STATUS_CHOICES),
         }
 
-    # doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    # doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
 
-
-
-
-
-
-
-import datetime
-
-from django import forms
 
 class AppointmentCreateForm(forms.ModelForm):
     slot_id = forms.IntegerField(widget=forms.HiddenInput())
@@ -256,8 +230,6 @@ class AppointmentCreateForm(forms.ModelForm):
             instance.save()
         return instance
 
-
-    
 
 class AppointmentEditForm(forms.ModelForm):
     class Meta:
