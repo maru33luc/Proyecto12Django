@@ -155,7 +155,7 @@ class DoctorAvailabilityForm(forms.ModelForm):
         model = Slot
         fields = ['doctor', 'date', 'start_time', 'end_time' ]
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
+            'date': forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}),
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
        
@@ -192,11 +192,6 @@ class SlotForm(forms.ModelForm):
 
 
 
-
-
-import datetime
-
-from django import forms
 
 class AppointmentCreateForm(forms.ModelForm):
     slot_id = forms.IntegerField(widget=forms.HiddenInput())

@@ -3,7 +3,7 @@ from django.contrib import admin
 admin.autodiscover()
 from . import views
 from django.contrib.auth import views as auth_views
-
+from .views import SpecialistsListView
 
 urlpatterns = [
     path('', views.index, name="index"),
@@ -42,12 +42,14 @@ urlpatterns = [
     path('admin/home_admin', views.home_admin, name='home_admin'),
     path('admin/login_admin', views.login_admin, name='login_admin'),
     #patients#
+    
     path('patients', views.patients, name="patients"), 
     path('admin/patient/create/', views.patient_create_admin, name='patient_create_admin'),
     path('admin/patient/<int:pk>/update/', views.patient_update_admin, name='patient_update_admin'),
     path('admin/patient/<int:pk>/delete/', views.patient_delete, name='patient_delete'),
     #specialist#
-    path('admin/specialist_list', views.specialist_list, name='specialist_list'),
+    path('admin/specialist_list', views.SpecialistsListView.as_view(), name='specialist_list'),
+    # path('admin/specialist_list', views.specialist_list, name='specialist_list'),
     path('admin/specialist/<int:pk>/', views.specialist_detail, name='specialist_detail'),
     path('admin/specialist/new/', views.specialist_create, name='specialist_create'),
     path('admin/specialist/<int:pk>/update/', views.specialist_update, name='specialist_update'),
