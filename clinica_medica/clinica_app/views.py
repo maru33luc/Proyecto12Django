@@ -239,8 +239,15 @@ def appointment_create(request):
 
     # Filter the slots based on the selected doctor or date
     slots = Slot.objects.all()
+    # filtrar los slot con fecha mayor a la actual
+    # slots = slots.filter(date__gte=date.today())
+    #otra opcion me muestra error con esa
+    slots = slots.filter(date__gte=datetime.now())
+
+
     if doctor_id:
         slots = slots.filter(doctor_id=doctor_id)
+    
     if date:
         slots = slots.filter(date=date)
     doctor_selected = bool(doctor_id)

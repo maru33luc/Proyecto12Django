@@ -25,11 +25,22 @@
           <select name="doctor" id="doctor" class="form-control">
             <option value="">Todos los Dres.</option>
             {% for doctor in doctor_list %}
-              <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+              <!-- <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option> -->
+            <!--persistir en el input el doctor filtrado -->
+            {% if doctor.id == doctor_selected %}
+      <option value="{{ doctor.id }}" selected>{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+    {% else %}
+      <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+    {% endif %}
+            
+
             {% endfor %}
+
+            
           </select>
 
           <label for="date">Filtrar por fecha:</label>
+
           <input type="date" name="date" id="date" class="form-control">
 
           <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
