@@ -20,6 +20,13 @@
         <div class="row mt-3">
           <div class="col-md-6">
             <form method="GET">
+                <label for="specialist">Filtrar por especialidad:</label>
+          <select name="specialist" id="specialist" class="form-control">
+            <option value="">Todos las especialidades</option>
+            {% for specialist in specialist_list %}
+              <option value="{{ specialist.id }}">{{ specialist.name }}</option>
+            {% endfor %}
+          </select>
               <label for="doctor">Filtrar por médico:</label>
               <select name="doctor" id="doctor" class="form-control">
                 <option value="">Todos los médicos</option>
@@ -41,6 +48,7 @@
           <thead>
             <tr>
               <th>Doctor</th>
+              <th>Especialidad</th>
               <th>Día</th>
               <th>Desde</th>
               <th>Hasta</th>
@@ -52,6 +60,7 @@
             {% for slot in slot_list %}
               <tr>
                 <td>{{ slot.doctor }}</td>
+                <td>{{slot.doctor.specialist.name}}</td>
                 <td>{{ slot.date }}</td>
                 <td>{{ slot.start_time }}</td>
                 <td>{{ slot.end_time }}</td>

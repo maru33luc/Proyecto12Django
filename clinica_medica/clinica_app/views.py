@@ -11,7 +11,9 @@ from datetime import datetime, date, timedelta, time
 from django.utils import timezone
 from django.forms import inlineformset_factory
 from django.forms import formset_factory
-from django.db.models import F, ExpressionWrapper, DurationField
+from django.views.generic.list import ListView
+from datetime import date
+
 # Create your views here.
 
 def index(request):
@@ -162,6 +164,7 @@ def delete_slot(request, pk):
 def slot_view(request):
     doctor_id = request.GET.get('doctor')
     date = request.GET.get('date')
+    specialist_id = request.GET.get('specialist')
     flag= False
 
     # Obtén todos los turnos
@@ -174,7 +177,9 @@ def slot_view(request):
     if date:
         slots = slots.filter(date=date)
         flag = True
-
+    if specialist_id:
+        slots = slots.filter(doctor__specialist_id=specialist_id)
+        flag = True
    ##-----------------------  
     if request.method == 'POST':
         form = DoctorAvailabilityForm(request.POST)
@@ -224,11 +229,17 @@ def slot_view(request):
         filtered_slots = slots
 
     # slot_list = Slot.objects.all()
+    specialist_list = Specialist.objects.all()
 
+    # Get the list of doctors based on the selected specialist
+    doctor_list = Doctor.objects.all()
+    if specialist_id:
+        doctor_list = doctor_list.filter(specialist_id=specialist_id)
     context = {
         'form': form,
-        'doctor_list': Doctor.objects.all(),
+        'doctor_list': doctor_list,
         'slot_list': filtered_slots,
+        'specialist_list': specialist_list,
     }
     return render(request, 'clinica_app/admin/appointments/slots.html', context)
 ### ultimo ap_create ###
@@ -236,7 +247,7 @@ def slot_view(request):
 def appointment_create(request):
     doctor_id = request.GET.get('doctor')
     date = request.GET.get('date')
-
+    specialist_id = request.GET.get('specialist')
     # Filter the slots based on the selected doctor or date
     slots = Slot.objects.all()
     # filtrar los slot con fecha mayor a la actual
@@ -245,13 +256,22 @@ def appointment_create(request):
     slots = slots.filter(date__gte=datetime.now())
 
 
+    slots = slots.filter(date__gte=datetime.now()) # Filtrar slots con fecha igual o posterior a hoy
+    print(slots)
     if doctor_id:
         slots = slots.filter(doctor_id=doctor_id)
     
     if date:
         slots = slots.filter(date=date)
-    doctor_selected = bool(doctor_id)
+    if specialist_id:
+        slots = slots.filter(doctor__specialist_id=specialist_id)
+
+    # Now you can access the associated specialist for each slot
+    
+        
+    doctor_selec = bool(doctor_id)
     date_selected = bool(date)
+    specialist_selected = bool(specialist_id)
     if request.method == 'POST':
         form = AppointmentCreateForm(request.POST, request=request)
         if form.is_valid():
@@ -285,15 +305,42 @@ def appointment_create(request):
             messages.error(request, 'Failed to create appointment. Please check the form data.')
     else:
         form = AppointmentCreateForm(request=request)
+    # Get the list of specialists
+    specialist_list = Specialist.objects.all()
 
+    # Get the list of doctors based on the selected specialist
+    doctor_list = Doctor.objects.all()
+    if specialist_id:
+        doctor_list = doctor_list.filter(specialist_id=specialist_id)
+    current_date = timezone.now().date()  
+    doctor_selected = request.GET.get('doctor')
+    print(doctor_selected)
     context = {
         'form': form,
-        'doctor_list': Doctor.objects.all(),
+        'doctor_list': doctor_list,
+        'specialist_list': specialist_list,
         'slot_list': slots,
+        'doctor_selec': doctor_selec,
         'doctor_selected': doctor_selected,
         'date_selected': date_selected,
+        'specialist_selected': specialist_selected,
+        'current_date': current_date,
     }
     return render(request, 'clinica_app/appointments/appointment_create.html', context)
+
+
+
+
+# def get_available_dates(request):
+#     doctor_id = request.GET.get('doctor_id')
+#     available_dates = DoctorAvailability.objects.filter(
+#         doctor_id=doctor_id,
+#         status='available'
+#     ).values_list('date', flat=True).distinct()
+    
+#     return render(request, 'clinica_app/available_dates.html', {'dates': available_dates})
+
+
 
 
 def appointment_edit(request, pk):
@@ -328,6 +375,8 @@ def cancel_appointment(request, pk):
         'appointment': appointment,
     }
     return render(request, 'clinica_app/appointments/cancel_appointment.html', context)
+
+
 
 
 
@@ -373,6 +422,8 @@ def login_admin(request):
 
 ## Patients ##
 #Chequear porque me muestra usuarios
+
+    
 def patients(request):
     patients = Patient.objects.all()
     return render(request, 'clinica_app/admin/patients.html', {
@@ -418,10 +469,15 @@ def patient_update_admin(request, pk):
     return render(request, 'clinica_app/admin/patient_update.html', {'form': form, 'patient': patient})
 
 ## Specialist ##
-@login_required
-def specialist_list(request):
-    specialists = Specialist.objects.all()
-    return render(request, 'clinica_app/admin/specialist_list.html', {'specialists': specialists})
+class SpecialistsListView(ListView):
+    model = Specialist
+    context_object_name = 'specialists'
+    template_name = 'clinica_app/admin/specialist_list.html'
+    ordering = ['name']
+# @login_required
+# def specialist_list(request):
+#     specialists = Specialist.objects.all()
+#     return render(request, 'clinica_app/admin/specialist_list.html', {'specialists': specialists})
 
 def specialist_detail(request, pk):
     specialist = Specialist.objects.get(pk=pk)

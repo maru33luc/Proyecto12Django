@@ -140,7 +140,7 @@ class DoctorAvailabilityForm(forms.ModelForm):
         model = Slot
         fields = ['doctor', 'date', 'start_time', 'end_time' ]
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
+            'date': forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}),
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
        
@@ -169,6 +169,12 @@ class SlotForm(forms.ModelForm):
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
             'status': forms.Select(choices=Slot.STATUS_CHOICES),
         }
+
+    # doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    # doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+
+
+
 
 
 
