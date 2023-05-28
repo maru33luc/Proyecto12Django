@@ -46,7 +46,100 @@ def staff(request):
 
 def appointment(request):
     context = {}
+    
+    doctor_id = request.GET.get('doctor')
+    date = request.GET.get('date')
+    specialist_id = request.GET.get('specialist')
+    # Filter the slots based on the selected doctor or date
+    slots = Slot.objects.all()
+    # filtrar los slot con fecha mayor a la actual
+    # slots = slots.filter(date__gte=date.today())
+    #otra opcion me muestra error con esa
+    slots = slots.filter(date__gte=datetime.now())
+
+    slots = slots.filter(date__gte=datetime.now()) # Filtrar slots con fecha igual o posterior a hoy
+    print(slots)
+    if doctor_id:
+        slots = slots.filter(doctor_id=doctor_id)
+    
+    if date:
+        slots = slots.filter(date=date)
+    if specialist_id:
+        slots = slots.filter(doctor__specialist_id=specialist_id)
+        
+    doctor_selec = bool(doctor_id)
+    date_selected = bool(date)
+    specialist_selected = bool(specialist_id)
+    if request.method == 'POST':
+        form = AppointmentCreateForm(request.POST, request=request)
+        if form.is_valid():
+            
+             # Convert the start_time and end_time to datetime.time objects
+            start_time = datetime.strptime(request.POST['start_time'], '%H:%M').time()
+            end_time = datetime.strptime(request.POST['end_time'], '%H:%M').time()
+            # Assign the converted time values back to the form cleaned_data
+            form.cleaned_data['start_time'] = start_time
+            form.cleaned_data['end_time'] = end_time
+            #form.save()
+            appointment = form.save(commit=False)
+            appointment.patient = request.user.patient
+
+            # Check if the selected slot is still available
+            
+            slot_id = form.cleaned_data['slot_id']
+            try:
+                slot = Slot.objects.get(id=slot_id, status='available')
+                appointment.slot = slot
+                slot.status = 'booked'
+                slot.save()
+                appointment.save()
+                messages.success(request, 'Appointment created successfully.')
+                return redirect(reverse('appointment_show', kwargs={'pk': appointment.id}))
+
+            except Slot.DoesNotExist:
+                messages.error(request, 'The selected slot is no longer available.')
+        else:
+            print(form.errors)
+            messages.error(request, 'Failed to create appointment. Please check the form data.')
+    else:
+        form = AppointmentCreateForm(request=request)
+    # Get the list of specialists
+    specialist_list = Specialist.objects.all()
+
+    # Get the list of doctors based on the selected specialist
+    doctor_list = Doctor.objects.all()
+    if specialist_id:
+        doctor_list = doctor_list.filter(specialist_id=specialist_id)
+    current_date = timezone.now().date()  
+    doctor_selected = request.GET.get('doctor')
+    print(doctor_selected)
+    context = {
+        'form': form,
+        'doctor_list': doctor_list,
+        'specialist_list': specialist_list,
+        'slot_list': slots,
+        'doctor_selec': doctor_selec,
+        'doctor_selected': doctor_selected,
+        'date_selected': date_selected,
+        'specialist_selected': specialist_selected,
+        'current_date': current_date,
+    }
     return render(request, 'clinica_app/appointment.html', context)
+
+def appointment_show(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+    return render(request, 'clinica_app/appointment_show.html', {'appointment': appointment})
+
+
+
+
+
+
+
+
+
+
+
 
 def about_us(request):
     context = {}
