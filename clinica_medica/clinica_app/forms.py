@@ -243,15 +243,23 @@ class AppointmentCreateForm(forms.ModelForm):
 
         return cleaned_data
 
+
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.patient = self.request.user.patient
         instance.doctor_id = self.cleaned_data['doctor'].id
+    
+    # Convertir las cadenas de tiempo en objetos de tiempo
+        start_time = self.cleaned_data['start_time'].strftime('%H:%M')
+        end_time = self.cleaned_data['end_time'].strftime('%H:%M')
+        instance.start_time = start_time
+        instance.end_time = end_time
+    
         if commit:
             instance.save()
+    
         return instance
-
-
     
 
 class AppointmentEditForm(forms.ModelForm):

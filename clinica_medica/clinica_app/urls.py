@@ -27,7 +27,9 @@ urlpatterns = [
     path('appointments/', views.appointment_list, name='appointment_list'),
     path('appointments/create/', views.appointment_create, name='appointment_create'),
     path('appointments/<int:pk>/detail/', views.appointment_detail, name='appointment_detail'),
+    path('appointments/<int:pk>/show/', views.appointment_show, name='appointment_show'),
     path('appointments/<int:pk>/edit/', views.appointment_edit, name='appointment_edit'),
+    
     path('appointments/<int:pk>/cancel/', views.cancel_appointment, name='cancel_appointment'),
     ##doctor poner en admin##
   

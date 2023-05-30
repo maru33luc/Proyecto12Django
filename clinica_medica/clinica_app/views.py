@@ -42,9 +42,96 @@ def staff(request):
     }
     return render(request, 'clinica_app/staff.html', context)
 
+from datetime import datetime
+
 def appointment(request):
     context = {}
+    doctor_id = request.GET.get('doctor')
+    specialist_id = request.GET.get('specialist')
+    
+    slots = Slot.objects.filter(date__gte=datetime.now()) #filtra los slots para que esten ordenados por fechas_ horarios
+    
+    if specialist_id:
+        slots = slots.filter(doctor__specialist_id=specialist_id)
+
+    specialist_selected = bool(specialist_id)
+
+    if doctor_id:
+        slots = slots.filter(doctor_id=doctor_id)
+        selected_doctor = Doctor.objects.get(id=doctor_id)
+        specialist = selected_doctor.specialist  # Get the specialist of the selected doctor
+        date_str = request.GET.get('date')
+        if date_str:
+            date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor, date)
+        else:
+            has_appointment = False
+    elif specialist_id:
+        specialist = Specialist.objects.get(id=specialist_id)
+        has_appointment = request.user.patient.has_appointment_with_specialist(specialist)
+        selected_doctor = None
+    else:
+        selected_doctor = None
+        specialist = None
+        has_appointment = False       
+            
+    
+    if request.method == 'POST':
+        form = AppointmentCreateForm(request.POST, request=request)
+        if form.is_valid():
+            start_time = datetime.strptime(request.POST['start_time'], '%H:%M').time()
+            end_time = datetime.strptime(request.POST['end_time'], '%H:%M').time()
+            form.cleaned_data['start_time'] = start_time
+            form.cleaned_data['end_time'] = end_time
+            
+            appointment = form.save(commit=False)
+            appointment.patient = request.user.patient
+
+            slot_id = form.cleaned_data['slot_id']
+            slot = Slot.objects.get(id=slot_id, status='available')
+            
+            appointment.slot = slot
+            slot.status = 'booked'
+            slot.save()
+            appointment.save()
+            
+            messages.success(request, 'Appointment created successfully.')
+            return redirect(reverse('appointment_show', kwargs={'pk': appointment.id}))
+
+        else:
+            print(form.errors)
+            messages.error(request, 'Failed to create appointment. Please check the form data.')
+    else:
+        form = AppointmentCreateForm(request=request)
+    
+    specialist_list = Specialist.objects.all()
+    #ver si hace falta era para intentar q se vea solo los dres x especialidad
+    doctor_list = Doctor.objects.all()
+    if specialist_id:
+        doctor_list = doctor_list.filter(specialist_id=specialist_id)
+    
+    current_date = timezone.now().date()
+    
+    context = {
+        'form': form,
+        'doctor_list': doctor_list,
+        'specialist_list': specialist_list,
+        'slot_list': slots,
+        'doctor_selected': doctor_id,
+        'specialist_selected': specialist_selected,
+        'current_date': current_date,
+        'has_appointment': has_appointment,
+        'selected_doctor': selected_doctor,
+        'specialist': specialist
+    }
     return render(request, 'clinica_app/appointment.html', context)
+
+
+
+def appointment_show(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+    return render(request, 'clinica_app/appointment_show.html', {'appointment': appointment})
+
 
 def about_us(request):
     context = {}
