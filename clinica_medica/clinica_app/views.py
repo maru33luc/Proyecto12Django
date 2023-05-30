@@ -1,4 +1,3 @@
-from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
@@ -15,7 +14,6 @@ from django.views.generic.list import ListView
 from datetime import date
 
 # Create your views here.
-
 def index(request):
     patient_id = None
     if request.user.is_authenticated:
@@ -44,101 +42,95 @@ def staff(request):
     }
     return render(request, 'clinica_app/staff.html', context)
 
+from datetime import datetime
+
 def appointment(request):
     context = {}
-    
     doctor_id = request.GET.get('doctor')
-    date = request.GET.get('date')
     specialist_id = request.GET.get('specialist')
-    # Filter the slots based on the selected doctor or date
-    slots = Slot.objects.all()
-    # filtrar los slot con fecha mayor a la actual
-    # slots = slots.filter(date__gte=date.today())
-    #otra opcion me muestra error con esa
-    slots = slots.filter(date__gte=datetime.now())
-
-    slots = slots.filter(date__gte=datetime.now()) # Filtrar slots con fecha igual o posterior a hoy
-    print(slots)
-    if doctor_id:
-        slots = slots.filter(doctor_id=doctor_id)
     
-    if date:
-        slots = slots.filter(date=date)
+    slots = Slot.objects.filter(date__gte=datetime.now()) #filtra los slots para que esten ordenados por fechas_ horarios
+    
     if specialist_id:
         slots = slots.filter(doctor__specialist_id=specialist_id)
-        
-    doctor_selec = bool(doctor_id)
-    date_selected = bool(date)
+
     specialist_selected = bool(specialist_id)
+
+    if doctor_id:
+        slots = slots.filter(doctor_id=doctor_id)
+        selected_doctor = Doctor.objects.get(id=doctor_id)
+        specialist = selected_doctor.specialist  # Get the specialist of the selected doctor
+        date_str = request.GET.get('date')
+        if date_str:
+            date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor, date)
+        else:
+            has_appointment = False
+    elif specialist_id:
+        specialist = Specialist.objects.get(id=specialist_id)
+        has_appointment = request.user.patient.has_appointment_with_specialist(specialist)
+        selected_doctor = None
+    else:
+        selected_doctor = None
+        specialist = None
+        has_appointment = False       
+            
+    
     if request.method == 'POST':
         form = AppointmentCreateForm(request.POST, request=request)
         if form.is_valid():
-            
-             # Convert the start_time and end_time to datetime.time objects
             start_time = datetime.strptime(request.POST['start_time'], '%H:%M').time()
             end_time = datetime.strptime(request.POST['end_time'], '%H:%M').time()
-            # Assign the converted time values back to the form cleaned_data
             form.cleaned_data['start_time'] = start_time
             form.cleaned_data['end_time'] = end_time
-            #form.save()
+            
             appointment = form.save(commit=False)
             appointment.patient = request.user.patient
 
-            # Check if the selected slot is still available
-            
             slot_id = form.cleaned_data['slot_id']
-            try:
-                slot = Slot.objects.get(id=slot_id, status='available')
-                appointment.slot = slot
-                slot.status = 'booked'
-                slot.save()
-                appointment.save()
-                messages.success(request, 'Appointment created successfully.')
-                return redirect(reverse('appointment_show', kwargs={'pk': appointment.id}))
+            slot = Slot.objects.get(id=slot_id, status='available')
+            
+            appointment.slot = slot
+            slot.status = 'booked'
+            slot.save()
+            appointment.save()
+            
+            messages.success(request, 'Appointment created successfully.')
+            return redirect(reverse('appointment_show', kwargs={'pk': appointment.id}))
 
-            except Slot.DoesNotExist:
-                messages.error(request, 'The selected slot is no longer available.')
         else:
             print(form.errors)
             messages.error(request, 'Failed to create appointment. Please check the form data.')
     else:
         form = AppointmentCreateForm(request=request)
-    # Get the list of specialists
+    
     specialist_list = Specialist.objects.all()
-
-    # Get the list of doctors based on the selected specialist
+    #ver si hace falta era para intentar q se vea solo los dres x especialidad
     doctor_list = Doctor.objects.all()
     if specialist_id:
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
-    current_date = timezone.now().date()  
-    doctor_selected = request.GET.get('doctor')
-    print(doctor_selected)
+    
+    current_date = timezone.now().date()
+    
     context = {
         'form': form,
         'doctor_list': doctor_list,
         'specialist_list': specialist_list,
         'slot_list': slots,
-        'doctor_selec': doctor_selec,
-        'doctor_selected': doctor_selected,
-        'date_selected': date_selected,
+        'doctor_selected': doctor_id,
         'specialist_selected': specialist_selected,
         'current_date': current_date,
+        'has_appointment': has_appointment,
+        'selected_doctor': selected_doctor,
+        'specialist': specialist
     }
     return render(request, 'clinica_app/appointment.html', context)
+
+
 
 def appointment_show(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     return render(request, 'clinica_app/appointment_show.html', {'appointment': appointment})
-
-
-
-
-
-
-
-
-
-
 
 
 def about_us(request):
@@ -188,6 +180,7 @@ def patient_detail(request, pk):
     
     return render(request, 'clinica_app/patient/patient_detail.html', {'patient': patient})
 
+#Hacerlo andar
 
 def patient_update(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
@@ -216,6 +209,9 @@ def appointment_list(request):
     appointments = Appointment.objects.all().order_by('date', 'start_time')
     context = {'appointments': appointments}
     return render(request, 'clinica_app/appointments/appointment_list.html', context)
+
+
+
 
 
 @login_required
@@ -252,6 +248,7 @@ def delete_slot(request, pk):
     return render(request, 'clinica_app/admin/appointments/delete_slot.html', context)
 
 ### Slots###
+
 
 
 def slot_view(request):
@@ -309,7 +306,7 @@ def slot_view(request):
             Slot.objects.bulk_create(slots)
             slot_list = Slot.objects.filter(doctor=doctor).order_by('date', 'doctor', 'start_time')
             
-            return redirect('slot_view')          
+            return redirect('slot_view')
     else:
         form = DoctorAvailabilityForm()
     
@@ -343,17 +340,10 @@ def appointment_create(request):
     specialist_id = request.GET.get('specialist')
     # Filter the slots based on the selected doctor or date
     slots = Slot.objects.all()
-    # filtrar los slot con fecha mayor a la actual
-    # slots = slots.filter(date__gte=date.today())
-    #otra opcion me muestra error con esa
-    slots = slots.filter(date__gte=datetime.now())
-
-
     slots = slots.filter(date__gte=datetime.now()) # Filtrar slots con fecha igual o posterior a hoy
     print(slots)
     if doctor_id:
         slots = slots.filter(doctor_id=doctor_id)
-    
     if date:
         slots = slots.filter(date=date)
     if specialist_id:
@@ -380,7 +370,6 @@ def appointment_create(request):
             appointment.patient = request.user.patient
 
             # Check if the selected slot is still available
-            
             slot_id = form.cleaned_data['slot_id']
             try:
                 slot = Slot.objects.get(id=slot_id, status='available')
@@ -448,6 +437,8 @@ def appointment_edit(request, pk):
     return render(request, 'clinica_app/appointments/appointment_edit.html', {'form': form})
 
 
+
+
 def appointment_detail(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     return render(request, 'clinica_app/appointments/appointment_detail.html', {'appointment': appointment})
@@ -504,11 +495,17 @@ def login_admin(request):
                     
             else:
                 form.add_error(None, 'Invalid email or password')
+    
     else:
+        
         form = LoginForm()
+
+        
 
     context = {
         'form': form,
+        
+        
     }
 
     return render(request, 'clinica_app/admin/login.html', context)
@@ -641,6 +638,7 @@ def doctor_delete(request, pk):
     return render(request, 'clinica_app/admin/doctor_delete.html', context)   
 
 
+
 def doctor_create(request):
     
     if request.method == 'POST':
@@ -683,6 +681,24 @@ def doctor_update(request, pk):
     }    
     return render(request, 'clinica_app/admin/doctor_update.html', context)
 
+# def doctor_update(request, pk):
+#     doctor = Doctor.objects.get(id=pk)
+#     if request.method == 'POST':
+#         form = DoctorForm(request.POST)
+#         if form.is_valid():
+#             doctor.name = form.cleaned_data['name']
+#             doctor.save()
+#             return redirect('doctors')
+#     else:
+#         form = DoctorForm(initial={'name': doctor.name})
+#     context = {
+#         'form': form,
+#         'doctor': doctor
+#     }    
+#     return render(request, 'clinica_app/admin/doctor_update.html', context)
+
+
+
 
 
 ######### LOGIN y demas en uso
@@ -723,6 +739,7 @@ def update_profile(request):
 
 
 
+
 def login_view(request):
     
     if request.method == 'POST':
@@ -742,10 +759,15 @@ def login_view(request):
                 form.add_error(None, 'Invalid email or password')
     
     else:
+        
         form = LoginForm()
+
+        
 
     context = {
         'form': form,
+        
+        
     }
 
     return render(request, 'clinica_app/login1.html', context)
@@ -760,6 +782,5 @@ def logout_view(request):
     #     return redirect(reverse('home_admin'))  
     # else:
     return redirect('index')
-
 
 

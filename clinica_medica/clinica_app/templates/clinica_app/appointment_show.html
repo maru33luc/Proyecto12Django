@@ -1,7 +1,5 @@
-{% extends 'clinica_app/base1.html' %}
-{% block title %} Turnos {% endblock %}
+{% extends 'clinica_app/base1.html' %} {% block title %} Turnos {% endblock %}
 {% block main %}
-{% load static %}
 <!-- Hero Start -->
 <div class="container-fluid bg-primary py-5 hero-header mb-1">
     <div class="row py-3">
@@ -14,51 +12,44 @@
     </div>
 </div>
 <!-- Hero End -->
-
 <section class="appointment">
-    <table>
-        <tr>
-          <td><strong>Doctor:</strong></td>
-          <td>{{ appointment.doctor }}</td>
-        </tr>
-        <tr>
-          <td><strong>Fecha:</strong></td>
-          <td>{{ appointment.date }}</td>
-        </tr>
-        <tr>
-          <td><strong>Empieza:</strong></td>
-          <td>{{ appointment.start_time }}</td>
-        </tr>
-        <tr>
-          <td><strong>Termina:</strong></td>
-          <td>{{ appointment.end_time }}</td>
-        </tr>
-        <tr>
-          <td><strong>Notas:</strong></td>
-          <td>{{ appointment.notes }}</td>
-        </tr>
-      </table>
-      
-      <a href="{% url 'index'  %}" class="btn btn-success">Home</a>
-    
+  <!-- Appointment Start -->
+  <div class="container-fluid py-5">
+    <div class="container">
+      <div class="row gx-5">
+        <h3>Su turno</h3>
+        <table class="table table-striped">
+          <tr>
+            <td><strong>con el Doctor:</strong></td>
+            <td>{{ appointment.doctor }}</td>
+          </tr>
+          <tr>
+            <td><strong>Fecha:</strong></td>
+            <td>{{ appointment.date }}</td>
+          </tr>
+          <tr>
+            <td><strong>Empieza:</strong></td>
+            <td>{{ appointment.start_time }}</td>
+          </tr>
+          <tr>
+            <td><strong>Termina:</strong></td>
+            <td>{{ appointment.end_time }}</td>
+          </tr>
+          <tr>
+            <td><strong>Notas:</strong></td>
+            <td>{{ appointment.notes }}</td>
+          </tr>
+        </table>
+        <div class="col-sm-offset-2 col-sm-10">
+            
+            
+        <a href="{% url 'index'  %}" class="btn btn-primary btn-sm rounded-pill py-3 px-5 me-3">Home</a>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment End -->
 </section>
 
-<section>
-
-    
-
-</section>
-
-
-
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'lib/easing/easing.min.js' %" }></script>
-<script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
-<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
-<script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
-<script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
-<script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-<script src="{% static 'js/main.js' %}"></script>
 {% endblock %}

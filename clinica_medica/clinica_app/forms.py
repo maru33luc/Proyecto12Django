@@ -8,9 +8,6 @@ from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
-import datetime
-
-from django import forms
 
 
 class SignupForm(forms.Form):
@@ -58,6 +55,8 @@ class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
         model = get_user_model()
         fields = ['email', 'password']
+
+
 
     
 class LoginForm(forms.Form):
@@ -117,6 +116,20 @@ class SpecialistForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'})
         }
         
+   
+# class DoctorForm(forms.Form): #create Doctor
+#     specialist = forms.ModelChoiceField(queryset=Specialist.objects.all())
+#     # class Meta:   #voy a especificar q modelo pertenece
+#     model = Doctor
+#     fields = ['__all__'] #campos a utilizar en este form
+#     widgets = {
+#         'specialist': forms.Select(attrs={'class': 'form-control'}),
+#         'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+        
+            #'title': forms.TextInput(attrs= { 'class': 'form-control', 'placeholder': 'Write a title'}),
+            #'description': forms.Textarea(attrs= { 'class': 'form-control', 'placeholder': 'Write a description'}),
+            #'important': forms.CheckboxInput(attrs= { 'class': 'form-check-input m-auto'}
+        # }
   
 class DoctorForm(forms.ModelForm):
     class Meta:
@@ -135,6 +148,8 @@ class DoctorForm(forms.ModelForm):
         return doctor
   
     
+
+
 class DoctorAvailabilityForm(forms.ModelForm):
     class Meta:
         model = Slot
@@ -228,14 +243,24 @@ class AppointmentCreateForm(forms.ModelForm):
 
         return cleaned_data
 
+
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.patient = self.request.user.patient
         instance.doctor_id = self.cleaned_data['doctor'].id
+    
+    # Convertir las cadenas de tiempo en objetos de tiempo
+        start_time = self.cleaned_data['start_time'].strftime('%H:%M')
+        end_time = self.cleaned_data['end_time'].strftime('%H:%M')
+        instance.start_time = start_time
+        instance.end_time = end_time
+    
         if commit:
             instance.save()
+    
         return instance
-
+    
 
 class AppointmentEditForm(forms.ModelForm):
     class Meta:
@@ -246,5 +271,4 @@ class AppointmentEditForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
        
-
 

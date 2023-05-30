@@ -55,7 +55,18 @@ class Patient(models.Model):
     sw_number = models.CharField(max_length=20, verbose_name='Número de Obra Social', null=True, blank=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
     date_of_birth = models.DateField()
-   
+    
+    def has_appointment_with_doctor(self, doctor_id):
+        # Implement your logic to check if the patient has an appointment with the given doctor
+        # Return True or False based on the result of the check
+        # For example:
+        return self.appointments.filter(doctor_id=doctor_id).exists()
+    
+    def has_appointment_with_specialist(self, specialist):
+        doctors = Doctor.objects.filter(specialist=specialist)
+        appointments = self.appointments.filter(doctor__in=doctors)
+        return appointments.exists()
+    
     def __str__(self):
         
         return self.user.get_full_name()
@@ -108,28 +119,11 @@ class Slot(DoctorAvailability):
     def __str__(self):
         return f"{self.doctor} - {self.date} - {self.start_time} to {self.end_time}"
     
-    # def save(self, *args, **kwargs):
-    #     if self.status == 'available':
-    #     # Check if there is any appointment overlapping with this availability
-    #         overlapping_appointments = Appointment.objects.filter(
-    #             doctor=self.doctor,
-    #             date=self.date,
-    #             start_time__lt=self.end_time,
-    #             end_time__gt=self.start_time
-    #         )
-
-    #         for appointment in overlapping_appointments:
-    #             if (appointment.start_time <= self.start_time < appointment.end_time) or \
-    #             (appointment.start_time < self.end_time <= appointment.end_time):
-    #             # At least a portion of the availability slot is already booked
-    #                 self.status = 'booked'
-    #                 break
-
-    #     super().save(*args, **kwargs)
+    # TURNOS #
 
 
 class Appointment(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,  related_name='appointments')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField(default=datetime.time(9, 0)) # Add default start time
@@ -139,4 +133,3 @@ class Appointment(models.Model):
   
     def __str__(self):
         return f"{self.date} - {self.patient.get_full_name()}"
-
