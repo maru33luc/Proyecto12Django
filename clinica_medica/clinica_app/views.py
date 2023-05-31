@@ -48,9 +48,17 @@ def appointment(request):
     context = {}
     doctor_id = request.GET.get('doctor')
     specialist_id = request.GET.get('specialist')
-    
+    date = request.GET.get('date')
     slots = Slot.objects.filter(date__gte=datetime.now()) #filtra los slots para que esten ordenados por fechas_ horarios
     
+    # filter the slots based on the date selected
+    
+    if date:
+    #    date = datetime.strptime(date_str, '%Y-%m-%d').date()
+       slots = slots.filter(date=date)
+    else:
+      date = None    
+
     if specialist_id:
         slots = slots.filter(doctor__specialist_id=specialist_id)
 
@@ -74,7 +82,8 @@ def appointment(request):
         selected_doctor = None
         specialist = None
         has_appointment = False       
-            
+
+        
     
     if request.method == 'POST':
         form = AppointmentCreateForm(request.POST, request=request)
@@ -111,7 +120,7 @@ def appointment(request):
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
     
     current_date = timezone.now().date()
-    
+    date_selected = bool(date)
     context = {
         'form': form,
         'doctor_list': doctor_list,
@@ -122,8 +131,11 @@ def appointment(request):
         'current_date': current_date,
         'has_appointment': has_appointment,
         'selected_doctor': selected_doctor,
-        'specialist': specialist
+        'specialist': specialist,
+        'date_selected': date_selected,
     }
+
+    print(date)
     return render(request, 'clinica_app/appointment.html', context)
 
 
