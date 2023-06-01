@@ -130,6 +130,5 @@ class Appointment(models.Model):
     end_time = models.TimeField(null=True)
     notes = models.TextField(null=True, blank=True)
 
-  
     def __str__(self):
         return f"{self.date} - {self.patient.get_full_name()}"
