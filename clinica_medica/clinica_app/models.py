@@ -140,9 +140,9 @@ class Appointment(models.Model):
         if conflicting_appointments.exists():
             conflicting_appointment = conflicting_appointments.first()
             doctor_name = conflicting_appointment.doctor.__str__()  # Obtener la representación del doctor
-            error_message = f"Usted ya tiene un turno con el Dr.: {doctor_name} el día {self.date} a las {self.start_time}."
-            return error_message
-            
+            formatted_date = self.date.strftime('%d %b %Y')  # Formatear la fecha como "día mes año"
+            return f"Usted ya tiene un turno con el Dr. {doctor_name} el día {formatted_date} a las {self.start_time}."
+                        
         return None
     # def has_appointment_with_other_doctor(self):
     #     conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
