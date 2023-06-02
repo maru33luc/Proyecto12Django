@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.forms import inlineformset_factory
 from django.forms import formset_factory
 from django.views.generic.list import ListView
-from datetime import date
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 def index(request):
@@ -48,23 +48,36 @@ def appointment(request):
     context = {}
     doctor_id = request.GET.get('doctor')
     specialist_id = request.GET.get('specialist')
-    
+    date = request.GET.get('date')
     slots = Slot.objects.filter(date__gte=datetime.now()) #filtra los slots para que esten ordenados por fechas_ horarios
-    
+    selected_doctor = None  # Agregar esta línea
+    # filter the slots based on the date selected
+    show_error = False
+    if date:
+    #    date = datetime.strptime(date_str, '%Y-%m-%d').date()
+       slots = slots.filter(date=date)
+    else:
+      date = None    
+
     if specialist_id:
         slots = slots.filter(doctor__specialist_id=specialist_id)
 
     specialist_selected = bool(specialist_id)
-
+    
     if doctor_id:
-        slots = slots.filter(doctor_id=doctor_id)
-        selected_doctor = Doctor.objects.get(id=doctor_id)
-        specialist = selected_doctor.specialist  # Get the specialist of the selected doctor
-        date_str = request.GET.get('date')
-        if date_str:
-            date = datetime.strptime(date_str, '%Y-%m-%d').date()
-            has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor, date)
+        if doctor_id != 'None':
+            slots = slots.filter(doctor_id=doctor_id)
+            selected_doctor = Doctor.objects.get(id=doctor_id)
+            specialist = selected_doctor.specialist  # Get the specialist of the selected doctor
+            date_str = request.GET.get('date')
+            if date_str:
+                date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor, date)
+            else:
+                has_appointment = False
         else:
+            selected_doctor = None
+            specialist = None
             has_appointment = False
     elif specialist_id:
         specialist = Specialist.objects.get(id=specialist_id)
@@ -73,8 +86,9 @@ def appointment(request):
     else:
         selected_doctor = None
         specialist = None
-        has_appointment = False       
-            
+        has_appointment = False
+
+        
     
     if request.method == 'POST':
         form = AppointmentCreateForm(request.POST, request=request)
@@ -90,16 +104,27 @@ def appointment(request):
             slot_id = form.cleaned_data['slot_id']
             slot = Slot.objects.get(id=slot_id, status='available')
             
+            if appointment.has_appointment_with_other_doctor():
+                error_message = appointment.has_appointment_with_other_doctor()
+                messages.error(request, error_message)
+                show_error = True
+                return redirect('appointment')
+            else:
+                show_error = False
+                
             appointment.slot = slot
             slot.status = 'booked'
             slot.save()
             appointment.save()
             
             messages.success(request, 'Appointment created successfully.')
+            
             return redirect(reverse('appointment_show', kwargs={'pk': appointment.id}))
 
         else:
             print(form.errors)
+            
+            
             messages.error(request, 'Failed to create appointment. Please check the form data.')
     else:
         form = AppointmentCreateForm(request=request)
@@ -111,7 +136,23 @@ def appointment(request):
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
     
     current_date = timezone.now().date()
-    
+    appointments = request.user.patient.appointments.filter(date__gte=current_date)
+    has_appointment = appointments.exists()
+    date_selected = bool(date)
+    stored_messages = request.session.get('appointment_messages', None)
+    if stored_messages:
+    # Pasar los mensajes almacenados a la plantilla
+        context['stored_messages'] = stored_messages
+    # Clear the appointment messages from the session before filtering
+    if 'appointment_messages' in request.session:
+        del request.session['appointment_messages']
+    # stored_messages = request.session.get('appointment_messages', None)
+    # if stored_messages:
+    # # Convert message objects to strings
+    #     stored_messages = [str(message) for message in stored_messages]
+    # # Pass the stored messages as strings to the template
+    #     context['stored_messages'] = stored_messages
+
     context = {
         'form': form,
         'doctor_list': doctor_list,
@@ -122,8 +163,14 @@ def appointment(request):
         'current_date': current_date,
         'has_appointment': has_appointment,
         'selected_doctor': selected_doctor,
-        'specialist': specialist
+        'specialist': specialist,
+        'date_selected': date_selected,
+        'stored_messages': stored_messages,
+        'show_error': show_error,
+        'has_appointment': has_appointment,
     }
+
+    
     return render(request, 'clinica_app/appointment.html', context)
 
 
@@ -132,6 +179,18 @@ def appointment_show(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     return render(request, 'clinica_app/appointment_show.html', {'appointment': appointment})
 
+
+def patient_appointments(request):
+    current_date = timezone.now().date()
+    patient = request.user.patient
+    appointments = Appointment.objects.filter(patient=patient)
+    
+    context = {
+        'current_date': current_date,
+        'patient_appointments': appointments
+    }
+    
+    return render(request, 'clinica_app/patient_appointments.html', context)
 
 def about_us(request):
     context = {}
@@ -782,6 +841,5 @@ def logout_view(request):
     #     return redirect(reverse('home_admin'))  
     # else:
     return redirect('index')
-
 
 
