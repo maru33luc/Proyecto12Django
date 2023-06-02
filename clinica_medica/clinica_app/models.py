@@ -140,7 +140,7 @@ class Appointment(models.Model):
         if conflicting_appointments.exists():
             conflicting_appointment = conflicting_appointments.first()
             doctor_name = conflicting_appointment.doctor.__str__()  # Obtener la representación del doctor
-            error_message = f"You already have an appointment with {doctor_name} on {self.date} at {self.start_time}."
+            error_message = f"Usted ya tiene un turno con el Dr.: {doctor_name} el día {self.date} a las {self.start_time}."
             return error_message
             
         return None

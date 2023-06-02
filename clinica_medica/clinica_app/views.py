@@ -11,7 +11,6 @@ from django.utils import timezone
 from django.forms import inlineformset_factory
 from django.forms import formset_factory
 from django.views.generic.list import ListView
-from datetime import date
 from django.core.exceptions import ValidationError
 
 # Create your views here.
@@ -137,6 +136,8 @@ def appointment(request):
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
     
     current_date = timezone.now().date()
+    appointments = request.user.patient.appointments.filter(date__gte=current_date)
+    has_appointment = appointments.exists()
     date_selected = bool(date)
     stored_messages = request.session.get('appointment_messages', None)
     if stored_messages:
@@ -165,10 +166,11 @@ def appointment(request):
         'specialist': specialist,
         'date_selected': date_selected,
         'stored_messages': stored_messages,
-        'show_error': show_error
+        'show_error': show_error,
+        'has_appointment': has_appointment,
     }
 
-    print(date)
+    
     return render(request, 'clinica_app/appointment.html', context)
 
 
@@ -177,6 +179,18 @@ def appointment_show(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     return render(request, 'clinica_app/appointment_show.html', {'appointment': appointment})
 
+
+def patient_appointments(request):
+    current_date = timezone.now().date()
+    patient = request.user.patient
+    appointments = Appointment.objects.filter(patient=patient)
+    
+    context = {
+        'current_date': current_date,
+        'patient_appointments': appointments
+    }
+    
+    return render(request, 'clinica_app/patient_appointments.html', context)
 
 def about_us(request):
     context = {}

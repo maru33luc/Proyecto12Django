@@ -28,14 +28,14 @@
                     </div>
                     {% if user.is_patient == True %}
                     <p class="mb-5">Ahora si, usted puede reservar un turno. </p>
-                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'doctors' %}">Turnos</a>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_appointments' %}">Tus turnos</a>
                     {% else %}
                     <p class="mb-5">Si usted aún no completo sus datos luego de registrarse en el sistema, debe hacerlo,
                         de lo contrario no podrá acceder al sistema de turnos. </p>
                     <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar
                         Datos</a>
                     {% endif %}
-                    <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="">Leer más</a>
+                    <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="{% url 'staff' %}">Staff</a>
                 </div>
                 <div class="col-lg-6">
                     <div class="bg-light text-center rounded p-5">
