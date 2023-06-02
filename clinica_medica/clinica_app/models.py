@@ -62,6 +62,7 @@ class Patient(models.Model):
         # For example:
         return self.appointments.filter(doctor_id=doctor_id).exists()
     
+    
     def has_appointment_with_specialist(self, specialist):
         doctors = Doctor.objects.filter(specialist=specialist)
         appointments = self.appointments.filter(doctor__in=doctors)
@@ -130,6 +131,26 @@ class Appointment(models.Model):
     end_time = models.TimeField(null=True)
     notes = models.TextField(null=True, blank=True)
 
-  
+    
+    def has_appointment_with_other_doctor(self):
+        conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
+            date=self.date,
+         start_time=self.start_time
+        )
+        if conflicting_appointments.exists():
+            conflicting_appointment = conflicting_appointments.first()
+            doctor_name = conflicting_appointment.doctor.__str__()  # Obtener la representación del doctor
+            error_message = f"You already have an appointment with {doctor_name} on {self.date} at {self.start_time}."
+            return error_message
+            
+        return None
+    # def has_appointment_with_other_doctor(self):
+    #     conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
+    #      date=self.date,
+    #      start_time=self.start_time
+    #     )
+    #     return conflicting_appointments.exists()
+    
+    
     def __str__(self):
         return f"{self.date} - {self.patient.get_full_name()}"

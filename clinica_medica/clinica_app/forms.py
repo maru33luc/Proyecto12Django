@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
-
+from django.core.exceptions import ValidationError
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
@@ -220,9 +220,8 @@ class AppointmentCreateForm(forms.ModelForm):
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
         notes = cleaned_data.get('notes')
-        print("start_time:", start_time)
-        print("end_time:", end_time)
-        # Check if the doctor is available for the selected date and time
+
+          # Check if the doctor is available for the selected date and time
         if doctor and date and start_time and end_time:
             print("start_time:", start_time)
             print("end_time:", end_time)
