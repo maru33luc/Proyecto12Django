@@ -70,13 +70,7 @@
                                             style="height: 55px;" min="{{ current_date|date:'Y-m-d' }}">
                                     </div>
                                 </div>
-                                <!-- <div class="col-12 col-sm-6">
-                                    <div class="time" id="time" data-target-input="nearest">
-                                        <input type="text" class="form-control bg-white border-0 datetimepicker-input"
-                                            placeholder="Time" data-target="#time" data-toggle="datetimepicker"
-                                            style="height: 55px;">
-                                    </div>
-                                </div>  -->
+
                               
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">Filtrar</button>
@@ -156,7 +150,7 @@
   </ul>
 {% endif %}
             
-
+<p>Current Time: {{ current_time }}</p>
 </div>     
 
     <table class="table table-hover">
@@ -173,6 +167,7 @@
         </thead>
         <tbody>
             {% for slot in slot_list %}
+            {%  slot.start_time|time:'H:i' >= current_date|time:'H:i' %}
     <tr>
         <td>{{ slot.doctor }}</td>
         <td>{{ slot.doctor.specialist.name }}</td>
@@ -198,10 +193,12 @@
             {% endif %}
         </td>
     </tr>
+    {% endif %}
 {% empty %}
     <tr>
         <td colspan="7">No available slots found.</td>
     </tr>
+    
 {% endfor %}
 
         </tbody>

@@ -49,18 +49,27 @@ def appointment(request):
     doctor_id = request.GET.get('doctor')
     specialist_id = request.GET.get('specialist')
     date = request.GET.get('date')
-    slots = Slot.objects.filter(date__gte=datetime.now()) #filtra los slots para que esten ordenados por fechas_ horarios
-    selected_doctor = None  # Agregar esta línea
-    # filter the slots based on the date selected
+    
+    # Obtiene la hora actual
+    current_time = datetime.now().time()
+    print(type(current_time))
+
+# Filtra los slots con hora igual o posterior a la hora actual
+    slots = Slot.objects.filter(date__gte=datetime.now())
+    # slots = Slot.objects.filter(start_time__gte=current_time)
+    selected_doctor = None
+    
     show_error = False
     if date:
     #    date = datetime.strptime(date_str, '%Y-%m-%d').date()
        slots = slots.filter(date=date)
+
     else:
       date = None    
 
     if specialist_id:
         slots = slots.filter(doctor__specialist_id=specialist_id)
+
 
     specialist_selected = bool(specialist_id)
     
@@ -87,8 +96,6 @@ def appointment(request):
         selected_doctor = None
         specialist = None
         has_appointment = False
-
-        
     
     if request.method == 'POST':
         form = AppointmentCreateForm(request.POST, request=request)
@@ -108,7 +115,18 @@ def appointment(request):
                 error_message = appointment.has_appointment_with_other_doctor()
                 messages.error(request, error_message)
                 show_error = True
-                return redirect('appointment')
+                current_date = timezone.now().date()
+                patient = request.user.patient
+                appointments = Appointment.objects.filter(patient=patient)
+    
+                context = {
+                    'current_date': current_date,
+                    'patient_appointments': appointments,
+                    'show_error': show_error,
+                }
+    
+                return render(request, 'clinica_app/patient_appointments.html', context)
+               
             else:
                 show_error = False
                 
@@ -136,7 +154,11 @@ def appointment(request):
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
     
     current_date = timezone.now().date()
+    
     appointments = request.user.patient.appointments.filter(date__gte=current_date)
+    
+    
+    
     has_appointment = appointments.exists()
     date_selected = bool(date)
     stored_messages = request.session.get('appointment_messages', None)
@@ -146,13 +168,9 @@ def appointment(request):
     # Clear the appointment messages from the session before filtering
     if 'appointment_messages' in request.session:
         del request.session['appointment_messages']
-    # stored_messages = request.session.get('appointment_messages', None)
-    # if stored_messages:
-    # # Convert message objects to strings
-    #     stored_messages = [str(message) for message in stored_messages]
-    # # Pass the stored messages as strings to the template
-    #     context['stored_messages'] = stored_messages
-
+    
+    # print(type(slots[1].start_time))
+    
     context = {
         'form': form,
         'doctor_list': doctor_list,
@@ -168,6 +186,7 @@ def appointment(request):
         'stored_messages': stored_messages,
         'show_error': show_error,
         'has_appointment': has_appointment,
+        'current_time': current_time
     }
 
     
