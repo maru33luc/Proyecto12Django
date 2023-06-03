@@ -153,4 +153,4 @@ class Appointment(models.Model):
     
     
     def __str__(self):
-        return f"{self.date} - {self.patient.get_full_name()}"
+        return f"{self.patient.user.get_full_name()} - {self.date} - {self.start_time} "

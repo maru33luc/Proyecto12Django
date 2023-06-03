@@ -59,10 +59,10 @@
                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pacientes</a>
                   <div class="dropdown-menu">
                       <a href="{% url 'patient_detail' patient_id %}" class="dropdown-item">Tus Datos</a>
-                      <a href="#" class="dropdown-item">Turnos</a>
-                      <a href="#" class="dropdown-item">Sent Items</a>
+                      <a href="{% url 'patient_appointments' %}" class="dropdown-item">Tus turnos</a>
+                      <!-- <a href="#" class="dropdown-item">Sent Items</a>
                       <div class="dropdown-divider"></div>
-                      <a href="#"class="dropdown-item">Trash</a>
+                      <a href="#"class="dropdown-item">Trash</a> -->
                   </div>
                 </li>
                 {% endif %}

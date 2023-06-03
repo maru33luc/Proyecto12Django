@@ -12,6 +12,7 @@ from django.forms import inlineformset_factory
 from django.forms import formset_factory
 from django.views.generic.list import ListView
 from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import permission_required, login_required
 
 # Create your views here.
 def index(request):
@@ -698,6 +699,7 @@ def doctors(request):
         'doctors': doctors
     })
 
+@permission_required('clinica_app.can_view_doctor')
 def doctor_detail(request, pk):
     doctor = Doctor.objects.get(pk=pk)
     #specialist = get_object_or_404(Specialist, pk=pk)
@@ -742,6 +744,7 @@ def doctor_create(request):
     }    
     return render(request, 'clinica_app/admin/doctor_create.html', context)
 
+@permission_required('clinica_app.can_change_doctor')
 def doctor_update(request, pk):
     doctor = Doctor.objects.get(id=pk)
     if request.method == 'POST':
