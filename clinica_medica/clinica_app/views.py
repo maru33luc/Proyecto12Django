@@ -52,28 +52,30 @@ def appointment(request):
     
     # Obtiene la hora actual
     current_time = datetime.now().time()
+    print(type(current_time))
 
 # Filtra los slots con hora igual o posterior a la hora actual
-    slots = Slot.objects.filter(start_time__gte=current_time)
+    slots = Slot.objects.filter(date__gte=datetime.now())
+    # slots = Slot.objects.filter(start_time__gte=current_time)
     selected_doctor = None
     
     show_error = False
     if date:
     #    date = datetime.strptime(date_str, '%Y-%m-%d').date()
-       slots = slots.filter(date=date, start_time__gte=current_time)
+       slots = slots.filter(date=date)
 
     else:
       date = None    
 
     if specialist_id:
-        slots = slots.filter(doctor__specialist_id=specialist_id, start_time__gte=current_time)
+        slots = slots.filter(doctor__specialist_id=specialist_id)
 
 
     specialist_selected = bool(specialist_id)
     
     if doctor_id:
         if doctor_id != 'None':
-            slots = slots.filter(doctor_id=doctor_id, start_time__gte=current_time)
+            slots = slots.filter(doctor_id=doctor_id)
             selected_doctor = Doctor.objects.get(id=doctor_id)
             specialist = selected_doctor.specialist  # Get the specialist of the selected doctor
             date_str = request.GET.get('date')
@@ -124,7 +126,7 @@ def appointment(request):
                 }
     
                 return render(request, 'clinica_app/patient_appointments.html', context)
-                return redirect('patient_appointments')
+               
             else:
                 show_error = False
                 
@@ -167,6 +169,8 @@ def appointment(request):
     if 'appointment_messages' in request.session:
         del request.session['appointment_messages']
     
+    # print(type(slots[1].start_time))
+    
     context = {
         'form': form,
         'doctor_list': doctor_list,
@@ -182,7 +186,7 @@ def appointment(request):
         'stored_messages': stored_messages,
         'show_error': show_error,
         'has_appointment': has_appointment,
-        'current_time': current_time,
+        'current_time': current_time
     }
 
     
