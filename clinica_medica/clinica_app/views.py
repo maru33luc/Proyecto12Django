@@ -50,10 +50,7 @@ def appointment(request):
     specialist_id = request.GET.get('specialist')
     date = request.GET.get('date')
     
-    # Obtiene la hora actual
-    current_time = datetime.now().time()
-    print(type(current_time))
-
+    
 # Filtra los slots con hora igual o posterior a la hora actual
     slots = Slot.objects.filter(date__gte=datetime.now())
     # slots = Slot.objects.filter(start_time__gte=current_time)
@@ -140,7 +137,6 @@ def appointment(request):
             return redirect(reverse('appointment_show', kwargs={'pk': appointment.id}))
 
         else:
-            print(form.errors)
             
             
             messages.error(request, 'Failed to create appointment. Please check the form data.')
@@ -168,7 +164,9 @@ def appointment(request):
     # Clear the appointment messages from the session before filtering
     if 'appointment_messages' in request.session:
         del request.session['appointment_messages']
-    
+        
+    if current_date in slots.values_list('date', flat=True):
+        slots = slots.filter(start_time__gte=datetime.now().time())
     # print(type(slots[1].start_time))
     
     context = {
@@ -186,7 +184,7 @@ def appointment(request):
         'stored_messages': stored_messages,
         'show_error': show_error,
         'has_appointment': has_appointment,
-        'current_time': current_time
+        
     }
 
     

@@ -150,7 +150,7 @@
   </ul>
 {% endif %}
             
-<p>Current Time: {{ current_time }}</p>
+
 </div>     
 
     <table class="table table-hover">
@@ -167,7 +167,7 @@
         </thead>
         <tbody>
             {% for slot in slot_list %}
-            {%  slot.start_time|time:'H:i' >= current_date|time:'H:i' %}
+           
     <tr>
         <td>{{ slot.doctor }}</td>
         <td>{{ slot.doctor.specialist.name }}</td>
@@ -193,7 +193,7 @@
             {% endif %}
         </td>
     </tr>
-    {% endif %}
+   
 {% empty %}
     <tr>
         <td colspan="7">No available slots found.</td>
