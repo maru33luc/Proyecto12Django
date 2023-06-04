@@ -62,7 +62,6 @@ class Patient(models.Model):
         # For example:
         return self.appointments.filter(doctor_id=doctor_id).exists()
     
-    
     def has_appointment_with_specialist(self, specialist):
         doctors = Doctor.objects.filter(specialist=specialist)
         appointments = self.appointments.filter(doctor__in=doctors)
@@ -92,7 +91,6 @@ class Doctor(models.Model):
    
     def __str__(self):
         return self.user.get_full_name()
-    
 
 # TURNOS #
 class DoctorAvailability(models.Model):
@@ -104,7 +102,6 @@ class DoctorAvailability(models.Model):
 
     class Meta:
         abstract = True
-
 
 class Slot(DoctorAvailability):   
     STATUS_CHOICES = [
@@ -122,7 +119,6 @@ class Slot(DoctorAvailability):
     
     # TURNOS #
 
-
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE,  related_name='appointments')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
@@ -130,7 +126,6 @@ class Appointment(models.Model):
     start_time = models.TimeField(default=datetime.time(9, 0)) # Add default start time
     end_time = models.TimeField(null=True)
     notes = models.TextField(null=True, blank=True)
-
     
     def has_appointment_with_other_doctor(self):
         conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
@@ -144,13 +139,6 @@ class Appointment(models.Model):
             return f"Usted ya tiene un turno con el Dr. {doctor_name} el día {formatted_date} a las {self.start_time}."
                         
         return None
-    # def has_appointment_with_other_doctor(self):
-    #     conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
-    #      date=self.date,
-    #      start_time=self.start_time
-    #     )
-    #     return conflicting_appointments.exists()
-    
     
     def __str__(self):
         return f"{self.patient.user.get_full_name()} - {self.date} - {self.start_time} "

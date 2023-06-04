@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
@@ -51,7 +52,6 @@ def appointment(request):
     specialist_id = request.GET.get('specialist')
     date = request.GET.get('date')
     
-    
 # Filtra los slots con hora igual o posterior a la hora actual
     slots = Slot.objects.filter(date__gte=datetime.now())
     # slots = Slot.objects.filter(start_time__gte=current_time)
@@ -61,16 +61,13 @@ def appointment(request):
     if date:
     #    date = datetime.strptime(date_str, '%Y-%m-%d').date()
        slots = slots.filter(date=date)
-
     else:
       date = None    
 
     if specialist_id:
         slots = slots.filter(doctor__specialist_id=specialist_id)
 
-
     specialist_selected = bool(specialist_id)
-    
     if doctor_id:
         if doctor_id != 'None':
             slots = slots.filter(doctor_id=doctor_id)
@@ -136,10 +133,7 @@ def appointment(request):
             messages.success(request, 'Appointment created successfully.')
             
             return redirect(reverse('appointment_show', kwargs={'pk': appointment.id}))
-
-        else:
-            
-            
+        else:   
             messages.error(request, 'Failed to create appointment. Please check the form data.')
     else:
         form = AppointmentCreateForm(request=request)
@@ -153,8 +147,6 @@ def appointment(request):
     current_date = timezone.now().date()
     
     appointments = request.user.patient.appointments.filter(date__gte=current_date)
-    
-    
     
     has_appointment = appointments.exists()
     date_selected = bool(date)
@@ -184,19 +176,13 @@ def appointment(request):
         'date_selected': date_selected,
         'stored_messages': stored_messages,
         'show_error': show_error,
-        'has_appointment': has_appointment,
-        
-    }
-
-    
+        'has_appointment': has_appointment, 
+    } 
     return render(request, 'clinica_app/appointment.html', context)
-
-
 
 def appointment_show(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     return render(request, 'clinica_app/appointment_show.html', {'appointment': appointment})
-
 
 def patient_appointments(request):
     current_date = timezone.now().date()
@@ -206,8 +192,7 @@ def patient_appointments(request):
     context = {
         'current_date': current_date,
         'patient_appointments': appointments
-    }
-    
+    } 
     return render(request, 'clinica_app/patient_appointments.html', context)
 
 def about_us(request):
@@ -251,13 +236,10 @@ def patient_create(request):
     }
     return render(request, 'clinica_app/patient/patient_create.html', context)
 
-
 def patient_detail(request, pk):
     patient = get_object_or_404(Patient, pk=pk, user=request.user)
     
     return render(request, 'clinica_app/patient/patient_detail.html', {'patient': patient})
-
-#Hacerlo andar
 
 def patient_update(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
@@ -278,18 +260,12 @@ def patient_delete(request, pk):
     patient.delete()
     return redirect('patients')
 
-
 ### Turnos ####
-
 
 def appointment_list(request):
     appointments = Appointment.objects.all().order_by('date', 'start_time')
     context = {'appointments': appointments}
     return render(request, 'clinica_app/appointments/appointment_list.html', context)
-
-
-
-
 
 @login_required
 def edit_slot(request, pk):
@@ -310,7 +286,6 @@ def edit_slot(request, pk):
     }
     return render(request, 'clinica_app/admin/appointments/edit_slot.html', context)
 
-
 @login_required
 def delete_slot(request, pk):
     slot = get_object_or_404(Slot, id=pk)
@@ -325,8 +300,6 @@ def delete_slot(request, pk):
     return render(request, 'clinica_app/admin/appointments/delete_slot.html', context)
 
 ### Slots###
-
-
 
 def slot_view(request):
     doctor_id = request.GET.get('doctor')
@@ -385,8 +358,7 @@ def slot_view(request):
             
             return redirect('slot_view')
     else:
-        form = DoctorAvailabilityForm()
-    
+        form = DoctorAvailabilityForm() 
    
      # mostrar la slot_list ordenada por fecha y hora
     if flag==False:
@@ -409,6 +381,7 @@ def slot_view(request):
         'specialist_list': specialist_list,
     }
     return render(request, 'clinica_app/admin/appointments/slots.html', context)
+
 ### ultimo ap_create ###
 
 def appointment_create(request):
@@ -427,8 +400,6 @@ def appointment_create(request):
         slots = slots.filter(doctor__specialist_id=specialist_id)
 
     # Now you can access the associated specialist for each slot
-    
-        
     doctor_selec = bool(doctor_id)
     date_selected = bool(date)
     specialist_selected = bool(specialist_id)
@@ -487,21 +458,6 @@ def appointment_create(request):
     }
     return render(request, 'clinica_app/appointments/appointment_create.html', context)
 
-
-
-
-# def get_available_dates(request):
-#     doctor_id = request.GET.get('doctor_id')
-#     available_dates = DoctorAvailability.objects.filter(
-#         doctor_id=doctor_id,
-#         status='available'
-#     ).values_list('date', flat=True).distinct()
-    
-#     return render(request, 'clinica_app/available_dates.html', {'dates': available_dates})
-
-
-
-
 def appointment_edit(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
     if request.method == 'POST':
@@ -512,9 +468,6 @@ def appointment_edit(request, pk):
     else:
         form = AppointmentEditForm(instance=appointment)
     return render(request, 'clinica_app/appointments/appointment_edit.html', {'form': form})
-
-
-
 
 def appointment_detail(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
@@ -537,13 +490,7 @@ def cancel_appointment(request, pk):
     }
     return render(request, 'clinica_app/appointments/cancel_appointment.html', context)
 
-
-
-
-
 ###Admin ###
-
-
 def home_admin(request):
     patients = Patient.objects.all()
     doctors = Doctor.objects.all()
@@ -568,29 +515,20 @@ def login_admin(request):
             if user is not None:
                 login(request, user)
                 return redirect('home_admin')
-                                 
-                    
+      
             else:
                 form.add_error(None, 'Invalid email or password')
     
     else:
-        
         form = LoginForm()
-
-        
-
     context = {
         'form': form,
-        
-        
     }
 
     return render(request, 'clinica_app/admin/login.html', context)
 
 ## Patients ##
-#Chequear porque me muestra usuarios
 
-    
 def patients(request):
     patients = Patient.objects.all()
     return render(request, 'clinica_app/admin/patients.html', {
@@ -641,14 +579,9 @@ class SpecialistsListView(ListView):
     context_object_name = 'specialists'
     template_name = 'clinica_app/admin/specialist_list.html'
     ordering = ['name']
-# @login_required
-# def specialist_list(request):
-#     specialists = Specialist.objects.all()
-#     return render(request, 'clinica_app/admin/specialist_list.html', {'specialists': specialists})
 
 def specialist_detail(request, pk):
     specialist = Specialist.objects.get(pk=pk)
-    #specialist = get_object_or_404(Specialist, pk=pk)
     return render(request, 'clinica_app/admin/specialist_detail.html', {'specialist': specialist})
 
 def specialist_delete(request, pk):
@@ -660,7 +593,6 @@ def specialist_delete(request, pk):
         'specialist': specialist
     } 
     return render(request, 'clinica_app/admin/specialist_delete.html', context)   
-
 
 def specialist_create(request):
     if request.method == 'POST':
@@ -702,7 +634,7 @@ def doctors(request):
 @permission_required('clinica_app.can_view_doctor')
 def doctor_detail(request, pk):
     doctor = Doctor.objects.get(pk=pk)
-    #specialist = get_object_or_404(Specialist, pk=pk)
+
     return render(request, 'clinica_app/admin/doctor_detail.html', {'doctor': doctor})
 
 def doctor_delete(request, pk):
@@ -714,7 +646,6 @@ def doctor_delete(request, pk):
         'doctor': doctor
     } 
     return render(request, 'clinica_app/admin/doctor_delete.html', context)   
-
 
 
 def doctor_create(request):
@@ -760,25 +691,6 @@ def doctor_update(request, pk):
     }    
     return render(request, 'clinica_app/admin/doctor_update.html', context)
 
-# def doctor_update(request, pk):
-#     doctor = Doctor.objects.get(id=pk)
-#     if request.method == 'POST':
-#         form = DoctorForm(request.POST)
-#         if form.is_valid():
-#             doctor.name = form.cleaned_data['name']
-#             doctor.save()
-#             return redirect('doctors')
-#     else:
-#         form = DoctorForm(initial={'name': doctor.name})
-#     context = {
-#         'form': form,
-#         'doctor': doctor
-#     }    
-#     return render(request, 'clinica_app/admin/doctor_update.html', context)
-
-
-
-
 
 ######### LOGIN y demas en uso
 
@@ -817,8 +729,6 @@ def update_profile(request):
     return render(request, 'clinica_app/profile_update.html', {'form': form})
 
 
-
-
 def login_view(request):
     
     if request.method == 'POST':
@@ -831,22 +741,15 @@ def login_view(request):
                 login(request, user)
                 if user.is_admin or user.is_superuser or request.GET.get('admin') == 'True':
                     return redirect(reverse('home_admin'))
-
                 else:
                     return redirect('welcome')
             else:
                 form.add_error(None, 'Invalid email or password')
-    
     else:
-        
         form = LoginForm()
-
-        
 
     context = {
         'form': form,
-        
-        
     }
 
     return render(request, 'clinica_app/login1.html', context)
