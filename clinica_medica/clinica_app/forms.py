@@ -8,6 +8,10 @@ from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
+<<<<<<< HEAD
+=======
+from django.core.exceptions import ValidationError
+>>>>>>> anto
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
@@ -57,7 +61,6 @@ class CustomAuthenticationForm(AuthenticationForm):
 class LoginForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password')
-
 
 class ContactoForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
@@ -122,7 +125,11 @@ class DoctorForm(forms.ModelForm):
         if commit:
             doctor.save()
         return doctor
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> anto
 class DoctorAvailabilityForm(forms.ModelForm):
     class Meta:
         model = Slot
@@ -157,6 +164,13 @@ class SlotForm(forms.ModelForm):
             'status': forms.Select(choices=Slot.STATUS_CHOICES),
         }
 
+<<<<<<< HEAD
+=======
+    # doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    # doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+
+
+>>>>>>> anto
 class AppointmentCreateForm(forms.ModelForm):
     slot_id = forms.IntegerField(widget=forms.HiddenInput())
    
@@ -184,9 +198,8 @@ class AppointmentCreateForm(forms.ModelForm):
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
         notes = cleaned_data.get('notes')
-        print("start_time:", start_time)
-        print("end_time:", end_time)
-        # Check if the doctor is available for the selected date and time
+
+          # Check if the doctor is available for the selected date and time
         if doctor and date and start_time and end_time:
             print("start_time:", start_time)
             print("end_time:", end_time)
@@ -221,8 +234,13 @@ class AppointmentCreateForm(forms.ModelForm):
         if commit:
             instance.save()
     
+<<<<<<< HEAD
         return instance
     
+=======
+        return instance 
+
+>>>>>>> anto
 class AppointmentEditForm(forms.ModelForm):
     class Meta:
         model = Appointment

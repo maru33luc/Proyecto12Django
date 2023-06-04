@@ -29,7 +29,7 @@ urlpatterns = [
     path('appointments/<int:pk>/detail/', views.appointment_detail, name='appointment_detail'),
     path('appointments/<int:pk>/show/', views.appointment_show, name='appointment_show'),
     path('appointments/<int:pk>/edit/', views.appointment_edit, name='appointment_edit'),
-    
+    path('patient_appointments/', views.patient_appointments, name='patient_appointments'),
     path('appointments/<int:pk>/cancel/', views.cancel_appointment, name='cancel_appointment'),
     ##doctor poner en admin##
   

@@ -28,14 +28,14 @@
                     </div>
                     {% if user.is_patient == True %}
                     <p class="mb-5">Ahora si, usted puede reservar un turno. </p>
-                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'doctors' %}">Turnos</a>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_appointments' %}">Tus turnos</a>
                     {% else %}
                     <p class="mb-5">Si usted aún no completo sus datos luego de registrarse en el sistema, debe hacerlo,
                         de lo contrario no podrá acceder al sistema de turnos. </p>
                     <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar
                         Datos</a>
                     {% endif %}
-                    <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="">Leer más</a>
+                    <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="{% url 'staff' %}">Staff</a>
                 </div>
                 <div class="col-lg-6">
                     <div class="bg-light text-center rounded p-5">
@@ -70,14 +70,7 @@
                                             style="height: 55px;" min="{{ current_date|date:'Y-m-d' }}">
                                     </div>
                                 </div>
-                                <!-- <div class="col-12 col-sm-6">
-                                    <div class="time" id="time" data-target-input="nearest">
-                                        <input type="text" class="form-control bg-white border-0 datetimepicker-input"
-                                            placeholder="Time" data-target="#time" data-toggle="datetimepicker"
-                                            style="height: 55px;">
-                                    </div>
-                                </div>  -->
-                              
+
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">Filtrar</button>
                                 </div>
@@ -128,8 +121,6 @@
                              {% endif %}  
                             {% endfor %}
 
-
-                               
                               </ul>
                          {% else %}
                              <p>No tiene turnos programados con médicos de la especialidad: {{ specialist.name }}</p>
@@ -137,8 +128,23 @@
                      {% endwith %}
                  {% endif %}
 
-
             {% endif %}
+
+            {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+            {% if stored_messages %}
+  <ul class="messages">
+    {% for message in stored_messages %}
+  <div class="alert alert-danger">{{ message|safe }}</div>
+{% endfor %}
+
+  </ul>
+{% endif %}
 
 </div>     
 
@@ -156,7 +162,11 @@
         </thead>
         <tbody>
             {% for slot in slot_list %}
+<<<<<<< HEAD
 
+=======
+           
+>>>>>>> anto
     <tr>
         <td>{{ slot.doctor }}</td>
         <td>{{ slot.doctor.specialist.name }}</td>
@@ -182,11 +192,16 @@
             {% endif %}
         </td>
     </tr>
+<<<<<<< HEAD
     
+=======
+   
+>>>>>>> anto
 {% empty %}
     <tr>
         <td colspan="7">No available slots found.</td>
     </tr>
+    
 {% endfor %}
 
         </tbody>
@@ -195,11 +210,8 @@
 </section>
 
 
-
-
-
 <!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'lib/easing/easing.min.js' %" }></script>
 <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
@@ -207,5 +219,5 @@
 <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
 <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
 <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script> -->
 {% endblock %}

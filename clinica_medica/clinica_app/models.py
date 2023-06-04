@@ -91,7 +91,6 @@ class Doctor(models.Model):
    
     def __str__(self):
         return self.user.get_full_name()
-    
 
 # TURNOS #
 class DoctorAvailability(models.Model):
@@ -103,7 +102,6 @@ class DoctorAvailability(models.Model):
 
     class Meta:
         abstract = True
-
 
 class Slot(DoctorAvailability):   
     STATUS_CHOICES = [
@@ -121,7 +119,6 @@ class Slot(DoctorAvailability):
     
     # TURNOS #
 
-
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE,  related_name='appointments')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
@@ -129,6 +126,23 @@ class Appointment(models.Model):
     start_time = models.TimeField(default=datetime.time(9, 0)) # Add default start time
     end_time = models.TimeField(null=True)
     notes = models.TextField(null=True, blank=True)
+<<<<<<< HEAD
 
+=======
+    
+    def has_appointment_with_other_doctor(self):
+        conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
+            date=self.date,
+         start_time=self.start_time
+        )
+        if conflicting_appointments.exists():
+            conflicting_appointment = conflicting_appointments.first()
+            doctor_name = conflicting_appointment.doctor.__str__()  # Obtener la representación del doctor
+            formatted_date = self.date.strftime('%d %b %Y')  # Formatear la fecha como "día mes año"
+            return f"Usted ya tiene un turno con el Dr. {doctor_name} el día {formatted_date} a las {self.start_time}."
+                        
+        return None
+    
+>>>>>>> anto
     def __str__(self):
-        return f"{self.date} - {self.patient.get_full_name()}"
+        return f"{self.patient.user.get_full_name()} - {self.date} - {self.start_time} "
