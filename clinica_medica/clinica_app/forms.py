@@ -8,10 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
-<<<<<<< HEAD
-=======
 from django.core.exceptions import ValidationError
->>>>>>> anto
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
@@ -125,11 +122,7 @@ class DoctorForm(forms.ModelForm):
         if commit:
             doctor.save()
         return doctor
-<<<<<<< HEAD
-
-=======
   
->>>>>>> anto
 class DoctorAvailabilityForm(forms.ModelForm):
     class Meta:
         model = Slot
@@ -164,13 +157,10 @@ class SlotForm(forms.ModelForm):
             'status': forms.Select(choices=Slot.STATUS_CHOICES),
         }
 
-<<<<<<< HEAD
-=======
     # doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
     # doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
 
 
->>>>>>> anto
 class AppointmentCreateForm(forms.ModelForm):
     slot_id = forms.IntegerField(widget=forms.HiddenInput())
    
@@ -234,13 +224,8 @@ class AppointmentCreateForm(forms.ModelForm):
         if commit:
             instance.save()
     
-<<<<<<< HEAD
-        return instance
-    
-=======
         return instance 
 
->>>>>>> anto
 class AppointmentEditForm(forms.ModelForm):
     class Meta:
         model = Appointment

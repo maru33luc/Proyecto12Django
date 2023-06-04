@@ -126,9 +126,6 @@ class Appointment(models.Model):
     start_time = models.TimeField(default=datetime.time(9, 0)) # Add default start time
     end_time = models.TimeField(null=True)
     notes = models.TextField(null=True, blank=True)
-<<<<<<< HEAD
-
-=======
     
     def has_appointment_with_other_doctor(self):
         conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
@@ -143,6 +140,5 @@ class Appointment(models.Model):
                         
         return None
     
->>>>>>> anto
     def __str__(self):
         return f"{self.patient.user.get_full_name()} - {self.date} - {self.start_time} "
