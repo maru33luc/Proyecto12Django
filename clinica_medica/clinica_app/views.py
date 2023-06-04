@@ -50,8 +50,13 @@ def appointment(request):
     doctor_id = request.GET.get('doctor')
     specialist_id = request.GET.get('specialist')
     date = request.GET.get('date')
+
+#filtre los slots teniendo en cuenta la fecha y la hora actuales en adelante, y si tienen la fecha de hoy que se fije la hora actual
+    #slots = Slot.objects.filter(date__gte=datetime.now(), start_time__gte=datetime.now().time()) 
     slots = Slot.objects.filter(date__gte=datetime.now()) #filtra los slots para que esten ordenados por fechas_ horarios
-    
+   
+
+
     # filter the slots based on the date selected
     
     if date:
@@ -112,6 +117,7 @@ def appointment(request):
     else:
         form = AppointmentCreateForm(request=request)
     
+    #current_time = datetime.now().time()
     specialist_list = Specialist.objects.all()
     #ver si hace falta era para intentar q se vea solo los dres x especialidad
     doctor_list = Doctor.objects.all()
@@ -119,6 +125,10 @@ def appointment(request):
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
     
     current_date = timezone.now().date()
+    #Aca filtra los slots para que se vean solo los que tienen la fecha de hoy en adelante y 
+    # si tienen la fecha de hoy que se fije la hora actual
+    if current_date in slots.values_list('date', flat=True):
+        slots = slots.filter(start_time__gte=datetime.now().time())
     date_selected = bool(date)
     context = {
         'form': form,
@@ -132,6 +142,7 @@ def appointment(request):
         'selected_doctor': selected_doctor,
         'specialist': specialist,
         'date_selected': date_selected,
+        #'current_time': current_time,
     }
 
     print(date)
@@ -184,7 +195,16 @@ def patient_create(request):
 
 
 def patient_detail(request, pk):
-    patient = get_object_or_404(Patient, pk=pk, user=request.user)
+    
+    if not request.user.is_patient:
+        
+        print('no es paciente')
+        raise Http404()
+        
+    else : 
+        patient = Patient.objects.get(pk=pk, user=request.user)
+
+    #patient = get_object_or_404(Patient, pk=pk, user=request.user)
     
     return render(request, 'clinica_app/patient/patient_detail.html', {'patient': patient})
 
