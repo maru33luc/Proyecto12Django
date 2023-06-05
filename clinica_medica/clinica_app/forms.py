@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from datetime import datetime, date, timedelta
 import re
-from .models import User, Patient, Doctor, Specialist, DoctorAvailability, Appointment, Slot
+from .models import User, Patient, Doctor, Specialist, DoctorAvailability, Appointment, Slot , Branch_office
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
@@ -139,14 +139,17 @@ class DoctorForm(forms.ModelForm):
             'specialist': forms.Select(attrs={'class': 'form-control'}),
             'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         }  
-    
+           
 
     def save(self, commit=True):
         doctor = super().save(commit=False)
         if commit:
             doctor.save()
         return doctor
-  
+class Branch_officeForm(forms.ModelForm):
+    class Meta:
+        model = Branch_office
+        fields = ['name','address','phone']       
     
 
 
