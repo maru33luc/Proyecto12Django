@@ -79,9 +79,9 @@ class Specialist(models.Model):
         return self.name
 #ManytoMany
 class Branch_office(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Branch_office', unique=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, verbose_name='Branch_office', unique=True)    
     phone = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     def __str__(self):
         return self.name
 
