@@ -149,8 +149,18 @@ class DoctorForm(forms.ModelForm):
 class Branch_officeForm(forms.ModelForm):
     class Meta:
         model = Branch_office
-        fields = ['name','address','phone']       
-    
+        fields = ['name','phone','address']
+        widgets = {
+            'branch_office': forms.Select(attrs={'class': 'form-control'}),
+            
+        }  
+           
+
+    def save(self, commit=True):
+        branch_office = super().save(commit=False)
+        if commit:
+            branch_office.save()
+        return branch_office
 
 
 class DoctorAvailabilityForm(forms.ModelForm):
