@@ -49,9 +49,7 @@
                                         {% for specialist in specialist_list %}
                                         <option value="{{ specialist.id }}">{{ specialist.name }}</option>
                                         {% endfor %}
-                                        <!-- <option value="1">Department 1</option>
-                                        <option value="2">Department 2</option>
-                                        <option value="3">Department 3</option> -->
+                                
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
@@ -71,7 +69,6 @@
                                     </div>
                                 </div>
 
-                              
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">Filtrar</button>
                                 </div>
@@ -122,15 +119,12 @@
                              {% endif %}  
                             {% endfor %}
 
-
-                               
                               </ul>
                          {% else %}
                              <p>No tiene turnos programados con médicos de la especialidad: {{ specialist.name }}</p>
                          {% endif %}
                      {% endwith %}
                  {% endif %}
-
 
             {% endif %}
 
@@ -149,7 +143,6 @@
 
   </ul>
 {% endif %}
-            
 
 </div>     
 
@@ -207,11 +200,8 @@
 </section>
 
 
-
-
-
 <!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'lib/easing/easing.min.js' %" }></script>
 <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
@@ -219,5 +209,5 @@
 <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
 <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
 <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script> -->
 {% endblock %}

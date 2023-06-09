@@ -27,19 +27,7 @@
     {% block styles %} {% endblock %}
 </head>
 <body>
-    <!--
-    <header>
-        <h1 class="logo">LOGO DE LA CLÍNICA</h1>
-        <nav>
-            <ul>
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#servicios">Servicios</a></li>
-                <li><a href="#equipo">Equipo</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
-        </nav>
-    </header>
-    -->
+ 
     <header>
      
         <!-- Navbar -->
@@ -76,9 +64,7 @@
                   <div class="dropdown-menu">
                       <a href="{% url 'patient_detail' patient_id %}" class="dropdown-item">Tus Datos</a>
                       <a href="{% url 'patient_appointments' %}" class="dropdown-item">Tus turnos</a>
-                      <!-- <a href="#" class="dropdown-item">Sent Items</a>
-                      <div class="dropdown-divider"></div>
-                      <a href="#"class="dropdown-item">Trash</a> -->
+                   
                   </div>
               </li>
               {% endif %}

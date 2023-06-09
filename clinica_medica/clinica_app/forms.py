@@ -24,7 +24,6 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = ["email", "password1", "password2",  "first_name", "last_name"]
 
-
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
@@ -55,14 +54,10 @@ class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
         model = get_user_model()
         fields = ['email', 'password']
-
-
-
     
 class LoginForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password')
-
 
 class ContactoForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
@@ -84,7 +79,6 @@ class PatientForm(forms.ModelForm):
                 'type': 'date',
                 'max': (date.today() - timedelta(days=18*365)).strftime('%Y-%m-%d'),
                 'min': date(1920, 1, 1).strftime('%Y-%m-%d'),
-                
             }
         )
     )
@@ -97,7 +91,6 @@ class PatientForm(forms.ModelForm):
         if not dni.isdigit() or len(dni) != 8:
             raise forms.ValidationError('DNI debe ser un número y contener solo 8 dígitos' )
         return dni
-        
     
     def clean_phone(self):
         phone = str(self.cleaned_data['phone'])
@@ -106,7 +99,6 @@ class PatientForm(forms.ModelForm):
             raise forms.ValidationError('El número de teléfono debe ser al menos de 10 digitos.')
         return phone
 
-    
 class SpecialistForm(forms.ModelForm):
     
     class Meta:
@@ -115,47 +107,35 @@ class SpecialistForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'})
         }
-        
-   
-# class DoctorForm(forms.Form): #create Doctor
-#     specialist = forms.ModelChoiceField(queryset=Specialist.objects.all())
-#     # class Meta:   #voy a especificar q modelo pertenece
-#     model = Doctor
-#     fields = ['__all__'] #campos a utilizar en este form
-#     widgets = {
-#         'specialist': forms.Select(attrs={'class': 'form-control'}),
-#         'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-        
-            #'title': forms.TextInput(attrs= { 'class': 'form-control', 'placeholder': 'Write a title'}),
-            #'description': forms.Textarea(attrs= { 'class': 'form-control', 'placeholder': 'Write a description'}),
-            #'important': forms.CheckboxInput(attrs= { 'class': 'form-check-input m-auto'}
-        # }
   
 class DoctorForm(forms.ModelForm):
+    branch_offices = forms.ModelMultipleChoiceField(
+        queryset=Branch_office.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+    )
+    
     class Meta:
         model = Doctor
-        fields = ['dni','phone','address','city','mr_number','specialist','image_profile']
+        fields = ['dni','phone','address','city','mr_number','specialist','image_profile','branch_offices']
         widgets = {
             'specialist': forms.Select(attrs={'class': 'form-control'}),
             'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         }  
-           
-
     def save(self, commit=True):
         doctor = super().save(commit=False)
         if commit:
             doctor.save()
+            self.save_m2m()  
         return doctor
+    
 class Branch_officeForm(forms.ModelForm):
     class Meta:
         model = Branch_office
         fields = ['name','phone','address']
         widgets = {
             'branch_office': forms.Select(attrs={'class': 'form-control'}),
-            
         }  
            
-
     def save(self, commit=True):
         branch_office = super().save(commit=False)
         if commit:
@@ -171,7 +151,6 @@ class DoctorAvailabilityForm(forms.ModelForm):
             'date': forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}),
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
-       
         }
     def clean(self):
         cleaned_data = super().clean()
@@ -197,14 +176,6 @@ class SlotForm(forms.ModelForm):
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
             'status': forms.Select(choices=Slot.STATUS_CHOICES),
         }
-
-    # doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    # doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-
-
-
-
-
 
 class AppointmentCreateForm(forms.ModelForm):
     slot_id = forms.IntegerField(widget=forms.HiddenInput())
@@ -255,8 +226,6 @@ class AppointmentCreateForm(forms.ModelForm):
 
         return cleaned_data
 
-
-
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.patient = self.request.user.patient
@@ -271,8 +240,7 @@ class AppointmentCreateForm(forms.ModelForm):
         if commit:
             instance.save()
     
-        return instance
-    
+        return instance 
 
 class AppointmentEditForm(forms.ModelForm):
     class Meta:
