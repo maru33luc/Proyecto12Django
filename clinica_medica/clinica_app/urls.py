@@ -18,6 +18,9 @@ urlpatterns = [
     path('profile', views.profile, name='profile'),
     path('update_profile', views.update_profile, name='update_profile'),  
     path('logout', views.logout_view, name='logout'),  
+    ### doctors ###
+    path('doctor/appointments/', views.doctor_appointments, name='doctor_appointments'),
+    path('doctor/<int:doctor_id>/', views.doctor_detail, name='doctor_detail'),
     #### patients ####
     path('patient/create/', views.patient_create, name='patient_create'),
     path('patient/<int:pk>/', views.patient_detail, name='patient_detail'),
@@ -70,7 +73,7 @@ urlpatterns = [
     #doctors#
 
     path('admin/doctors', views.doctors, name="doctors"), 
-    path('admin/doctor/<int:pk>/', views.doctor_detail, name='doctor_detail'),
+    
     path('admin/doctor/new/', views.doctor_create, name='doctor_create'),
     path('admin/doctor/<int:pk>/update/', views.doctor_update, name='doctor_update'),
     path('admin/doctor/<int:pk>/delete/', views.doctor_delete, name='doctor_delete'),
