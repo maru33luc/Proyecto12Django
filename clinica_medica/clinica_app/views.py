@@ -79,7 +79,7 @@ def appointment(request):
             date_str = request.GET.get('date')
             if date_str:
                 date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor, date)
+                has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor.id)
             else:
                 has_appointment = False
         else:
