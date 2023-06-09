@@ -230,7 +230,7 @@ def delete_slot(request, pk):
     return render(request, 'clinica_app/admin/appointments/delete_slot.html', context)
 
 #---------------------------------- APPOINTMENT ----------------------------------
-
+@login_required
 def appointment(request):
     context = {}
     doctor_id = request.GET.get('doctor')
@@ -239,7 +239,7 @@ def appointment(request):
 
     # Filtra los slots con hora igual o posterior a la hora actual
     slots = Slot.objects.filter(date__gte=datetime.now())
-    # slots = Slot.objects.filter(start_time__gte=current_time)
+
     selected_doctor = None
     
     show_error = False
@@ -260,7 +260,7 @@ def appointment(request):
             date_str = request.GET.get('date')
             if date_str:
                 date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                #has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor, date)
+              
                 has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor.id)
             else:
                 has_appointment = False
@@ -688,10 +688,9 @@ def specialist_update(request, pk):
 #---------------------------------- DOCTORS ---------------------------------- 
 def doctors(request):
     doctors = Doctor.objects.all()
-    # necesito traer la branch_office del doctor
+ 
     branch_offices = {}
  
-    # Iterar sobre los doctores y obtener las sucursales asociadas a cada uno
     for doctor in doctors:
         branch_offices[doctor] = doctor.branch_offices.all()
         print(branch_offices[doctor])
@@ -700,10 +699,7 @@ def doctors(request):
         'branch_office': branch_offices
     })
 
-# def doctor_detail(request, pk):
-#     doctor = Doctor.objects.get(pk=pk)
 
-#     return render(request, 'clinica_app/admin/doctor_detail.html', {'doctor': doctor})
 @login_required(login_url='/clinica_app/log_in')
 def doctor_detail(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id, user=request.user)
@@ -764,21 +760,7 @@ def doctor_update(request, pk):
     }    
     return render(request, 'clinica_app/admin/doctor_update.html', context)
 
-# def is_doctor(user):
-#     return user.is_authenticated and user.is_doctor
 
-# @user_passes_test(is_doctor, login_url='/clinica_app/log_in')
-# def doctor_appointments(request):
-#     doctor = Doctor.objects.get(user=request.user)  # Obtener el doctor actual
-#     appointments = doctor.appointment_set.all()  # Obtener los turnos del doctor
-
-#     context = {
-#         'doctor': doctor,
-#         'appointments': appointments
-#     }
-
-#     return render(request, 'clinica_app/doctor_appointments.html', context)
-# @login_required(login_url='/clinica_app/log_in')
 @login_required
 def doctor_appointments(request):
     if request.user.is_doctor:
