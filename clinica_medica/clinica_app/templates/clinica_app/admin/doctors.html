@@ -51,20 +51,14 @@
         Sin imagen
     {% endif %}</td>
     
-
-
-
-   
       <td>
     <a style="margin-right: 30px;" href="{% url 'doctor_update' doctor.id %}" class="btn btn-warning btn-sm">Editar</a>
-    
     <a href="{% url 'doctor_delete' doctor.id %}" class="btn btn-danger btn-sm">Eliminar</a>
-    
+
     </td>
-    
+
     </tr>
-    
-    
+
     {% empty %}
       <p>No doctors found.</p>
     {% endfor %}

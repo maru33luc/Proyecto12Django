@@ -134,10 +134,8 @@ class Branch_officeForm(forms.ModelForm):
         fields = ['name','phone','address']
         widgets = {
             'branch_office': forms.Select(attrs={'class': 'form-control'}),
-            
         }  
            
-
     def save(self, commit=True):
         branch_office = super().save(commit=False)
         if commit:
@@ -178,10 +176,6 @@ class SlotForm(forms.ModelForm):
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
             'status': forms.Select(choices=Slot.STATUS_CHOICES),
         }
-
-    # doctoravailability_start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    # doctoravailability_end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-
 
 class AppointmentCreateForm(forms.ModelForm):
     slot_id = forms.IntegerField(widget=forms.HiddenInput())
