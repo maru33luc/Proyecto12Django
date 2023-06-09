@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_bootstrap5',
+    'bootstrap5',
     'clinica_app',
 ]
 AUTH_USER_MODEL = "clinica_app.User"
@@ -90,9 +90,9 @@ WSGI_APPLICATION = 'clinica_medica.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "clinica_medica",
+        "NAME": "Clinica_medica",
         "USER": "postgres",
-        "PASSWORD": "Maru29luc",
+        "PASSWORD": "1234",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -123,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
+LOGIN_URL = '/clinica_app/log_in'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

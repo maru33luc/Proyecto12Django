@@ -68,6 +68,17 @@
                   </div>
               </li>
               {% endif %}
+              {% if user.is_doctor %}
+              {% with doctor=user.doctor %}
+                  <li class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Doctores</a>
+                      <div class="dropdown-menu">
+                          <a href="{% url 'doctor_detail' doctor.id %}" class="dropdown-item">Tus Datos</a>
+                          <a href="{% url 'doctor_appointments' %}" class="dropdown-item">Tus turnos</a>
+                      </div>
+                  </li>
+              {% endwith %}
+          {% endif %}
               {% if user.is_authenticated %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'logout' %}">Log Out</a>

@@ -13,7 +13,7 @@ from django.forms import inlineformset_factory
 from django.forms import formset_factory
 from django.views.generic.list import ListView
 from django.core.exceptions import ValidationError
-from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 
 # Create your views here.
 def index(request):
@@ -700,11 +700,17 @@ def doctors(request):
         'branch_office': branch_offices
     })
 
-def doctor_detail(request, pk):
-    doctor = Doctor.objects.get(pk=pk)
+# def doctor_detail(request, pk):
+#     doctor = Doctor.objects.get(pk=pk)
 
-    return render(request, 'clinica_app/admin/doctor_detail.html', {'doctor': doctor})
-
+#     return render(request, 'clinica_app/admin/doctor_detail.html', {'doctor': doctor})
+@login_required(login_url='/clinica_app/log_in')
+def doctor_detail(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id, user=request.user)
+    context = {
+        'doctor': doctor,
+    }
+    return render(request, 'clinica_app/doctor_detail.html', context)
 def doctor_delete(request, pk):
     doctor = Doctor.objects.get(id=pk)
     if request.method == 'POST':
@@ -758,7 +764,38 @@ def doctor_update(request, pk):
     }    
     return render(request, 'clinica_app/admin/doctor_update.html', context)
 
+# def is_doctor(user):
+#     return user.is_authenticated and user.is_doctor
 
+# @user_passes_test(is_doctor, login_url='/clinica_app/log_in')
+# def doctor_appointments(request):
+#     doctor = Doctor.objects.get(user=request.user)  # Obtener el doctor actual
+#     appointments = doctor.appointment_set.all()  # Obtener los turnos del doctor
+
+#     context = {
+#         'doctor': doctor,
+#         'appointments': appointments
+#     }
+
+#     return render(request, 'clinica_app/doctor_appointments.html', context)
+# @login_required(login_url='/clinica_app/log_in')
+@login_required
+def doctor_appointments(request):
+    if request.user.is_doctor:
+        doctor = Doctor.objects.get(user=request.user)  # Obtener el doctor actual
+        appointments = doctor.appointment_set.all()  # Obtener los turnos del doctor
+         # Filtrar turnos por fecha si se proporciona un valor en la URL
+        date = request.GET.get('date')
+        if date:
+            appointments = appointments.filter(date=date)
+        context = {
+            'doctor': doctor,
+            'appointments': appointments
+        }
+
+        return render(request, 'clinica_app/doctor_appointments.html', context)
+    else:
+        return redirect('log_in')
 #---------------------------------- LOGIN y demas en uso ----------------------------------
 def register(request):
     if request.method == 'POST':
