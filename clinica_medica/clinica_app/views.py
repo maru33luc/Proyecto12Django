@@ -1,9 +1,9 @@
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
+from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, Branch_officeForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
 from django.contrib.auth.decorators import login_required
-from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability, Slot
+from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability, Slot, Branch_office
 from clinica_app.models import User
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate,login,logout
@@ -498,12 +498,15 @@ def home_admin(request):
     patients = Patient.objects.all()
     doctors = Doctor.objects.all()
     specialists = Specialist.objects.all()
+    branch_offices = Branch_office.objects.all()
+
     isadmin = True
     context = {
         'specialists': specialists,
         'doctors' : doctors,
         'patients': patients,
         'isadmin': isadmin,
+        'branch_offices':branch_offices
     }
     return render(request, 'clinica_app/admin/home_admin.html', context)
 
@@ -527,6 +530,63 @@ def login_admin(request):
         'form': form,
     }
     return render(request, 'clinica_app/admin/login.html', context)
+
+#Branch_offices
+def branch_offices(request):
+    branch_offices = Branch_office.objects.all()
+    return render(request, 'clinica_app/admin/branch_offices.html', {
+        'branch_offices': branch_offices
+    })
+
+@permission_required('clinica_app.can_view_branch_office')
+def branch_office_detail(request, pk):
+    branch_office = Branch_office.objects.get(pk=pk)
+    return render(request, 'clinica_app/admin/branch_office_detail.html', {'branch_office': branch_office})
+
+def branch_office_delete(request, pk):
+    branch_office = Branch_office.objects.get(id=pk)
+    if request.method == 'POST':
+        branch_office.delete()
+        return redirect('branch_offices')
+    context = {
+        'branch_office': branch_office
+    } 
+    return render(request, 'clinica_app/admin/branch_office_delete.html', context)   
+
+def branch_office_create(request):
+    
+    if request.method == 'POST':
+        branch_office_form = Branch_officeForm(request.POST, request.FILES)
+        if branch_office_form.is_valid():
+            branch_office = branch_office_form.save(commit=False)
+            branch_office.save()
+            return redirect(reverse('branch_offices'))
+        else:
+            print(branch_office_form.errors)
+            print(user_form.errors)
+    else:
+        branch_office_form = Branch_officeForm()
+        
+    context = {
+        'branch_office_form': branch_office_form
+    }    
+    return render(request, 'clinica_app/admin/branch_office_create.html', context)
+
+@permission_required('clinica_app.can_change_branch_office')
+def branch_office_update(request, pk):
+    branch_office = Branch_office.objects.get(id=pk)
+    if request.method == 'POST':
+        form = Branch_officeForm(request.POST, request.FILES, instance=branch_office)
+        if form.is_valid():
+            form.save()
+            return redirect('branch_offices')
+    else:
+        form = Branch_officeForm(instance=branch_office)
+    context = {
+        'form': form,
+        'branch_office': branch_office
+    }    
+    return render(request, 'clinica_app/admin/branch_office_update.html', context)
 
 ## Patients ##
 def patients(request):
@@ -627,8 +687,16 @@ def specialist_update(request, pk):
 ## doctors ##   
 def doctors(request):
     doctors = Doctor.objects.all()
+    # necesito traer la branch_office del doctor
+    branch_offices = {}
+ 
+    # Iterar sobre los doctores y obtener las sucursales asociadas a cada uno
+    for doctor in doctors:
+        branch_offices[doctor] = doctor.branch_offices.all()
+        print(branch_offices[doctor])
     return render(request, 'clinica_app/admin/doctors.html', {
-        'doctors': doctors
+        'doctors': doctors,
+        'branch_office': branch_offices
     })
 
 @permission_required('clinica_app.can_view_doctor')
@@ -649,7 +717,6 @@ def doctor_delete(request, pk):
 
 
 def doctor_create(request):
-    
     if request.method == 'POST':
         user_form = CustomUserCreationForm(request.POST)
         doctor_form = DoctorForm(request.POST, request.FILES)
@@ -675,7 +742,7 @@ def doctor_create(request):
     }    
     return render(request, 'clinica_app/admin/doctor_create.html', context)
 
-@permission_required('clinica_app.can_change_doctor')
+#@permission_required('clinica_app.can_change_doctor')
 def doctor_update(request, pk):
     doctor = Doctor.objects.get(id=pk)
     if request.method == 'POST':

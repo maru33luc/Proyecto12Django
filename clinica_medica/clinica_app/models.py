@@ -77,6 +77,13 @@ class Specialist(models.Model):
 
     def __str__(self):
         return self.name
+#ManytoMany
+class Branch_office(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Branch_office', unique=True)    
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    def __str__(self):
+        return self.name
 
 class Doctor(models.Model):
     # name= models.CharField(max_length=50, verbose_name='Nombre y Apellido', null=True, blank=True)
@@ -89,7 +96,10 @@ class Doctor(models.Model):
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
     image_profile = models.ImageField(upload_to='doctor_images/', null=True, blank=True)
-   
+    #ManytoMany
+    branch_offices = models.ManyToManyField(Branch_office, related_name='doctors')
+
+       
     def __str__(self):
         return self.user.get_full_name()
     

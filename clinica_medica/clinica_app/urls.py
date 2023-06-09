@@ -41,6 +41,16 @@ urlpatterns = [
     path('delete_slot/<int:pk>/', views.delete_slot, name='delete_slot'),
     
     #### ADMIN ####
+    
+    #brnach_office
+    path('admin/branch_offices', views.branch_offices, name="branch_offices"), 
+    path('admin/branch_office/<int:pk>/', views.branch_office_detail, name='branch_office_detail'),
+    path('admin/branch_office/new/', views.branch_office_create, name='branch_office_create'),
+    path('admin/branch_office/<int:pk>/update/', views.branch_office_update, name='branch_office_update'),
+    path('admin/branch_office/<int:pk>/delete/', views.branch_office_delete, name='branch_office_delete'),
+    
+
+
     path('admin/home_admin', views.home_admin, name='home_admin'),
     path('admin/login_admin', views.login_admin, name='login_admin'),
     #patients#

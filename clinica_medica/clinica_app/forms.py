@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from datetime import datetime, date, timedelta
 import re
-from .models import User, Patient, Doctor, Specialist, DoctorAvailability, Appointment, Slot
+from .models import User, Patient, Doctor, Specialist, DoctorAvailability, Appointment, Slot , Branch_office
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
@@ -109,20 +109,42 @@ class SpecialistForm(forms.ModelForm):
         }
   
 class DoctorForm(forms.ModelForm):
+    branch_offices = forms.ModelMultipleChoiceField(
+        queryset=Branch_office.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+    )
+    
     class Meta:
         model = Doctor
-        fields = ['dni','phone','address','city','mr_number','specialist','image_profile']
+        fields = ['dni','phone','address','city','mr_number','specialist','image_profile','branch_offices']
         widgets = {
             'specialist': forms.Select(attrs={'class': 'form-control'}),
             'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         }  
-
     def save(self, commit=True):
         doctor = super().save(commit=False)
         if commit:
             doctor.save()
+            self.save_m2m()  
         return doctor
-  
+    
+class Branch_officeForm(forms.ModelForm):
+    class Meta:
+        model = Branch_office
+        fields = ['name','phone','address']
+        widgets = {
+            'branch_office': forms.Select(attrs={'class': 'form-control'}),
+            
+        }  
+           
+
+    def save(self, commit=True):
+        branch_office = super().save(commit=False)
+        if commit:
+            branch_office.save()
+        return branch_office
+
+
 class DoctorAvailabilityForm(forms.ModelForm):
     class Meta:
         model = Slot

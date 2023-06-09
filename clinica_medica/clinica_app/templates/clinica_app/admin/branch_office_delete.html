@@ -1,0 +1,33 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+{% block title %}
+	<title>Delete</title>
+{% endblock title %}
+{% block content %}
+<form action="" method="POST" class="form-horizontal">
+
+    {% csrf_token %}
+    
+    <br><br>
+    
+    <div class="alert alert-danger" role="alert">
+    
+    Are you sure you want to delete "{{ branch_office.name }}"?
+    
+    </div>
+    
+    <p>
+    
+    <a href="{% url 'branch_offices' %}"> <-- Volver</a>
+    
+    </p>
+    
+    <p>
+    
+    <button class="btn btn-danger" type="submit" >Confirmar </button>
+    
+    </p>
+    
+    </form>
+    
+    {% endblock content %}
