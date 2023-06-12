@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bootstrap5',
+    'django_bootstrap5',
     'clinica_app',
 ]
 AUTH_USER_MODEL = "clinica_app.User"
@@ -89,9 +89,9 @@ WSGI_APPLICATION = 'clinica_medica.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "Clinica_medica",
+        "NAME": "clinica_medica",
         "USER": "postgres",
-        "PASSWORD": "1234",
+        "PASSWORD": "Benja5673+",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
