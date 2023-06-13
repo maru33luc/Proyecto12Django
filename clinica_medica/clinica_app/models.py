@@ -55,7 +55,15 @@ class Patient(models.Model):
     sw_number = models.CharField(max_length=20, verbose_name='Número de Obra Social', null=True, blank=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
     date_of_birth = models.DateField()
-   
+    
+    def has_appointment_with_doctor(self, doctor_id):
+        return self.appointments.filter(doctor_id=doctor_id).exists()
+    
+    def has_appointment_with_specialist(self, specialist):
+        doctors = Doctor.objects.filter(specialist=specialist)
+        appointments = self.appointments.filter(doctor__in=doctors)
+        return appointments.exists()
+    
     def __str__(self):
         
         return self.user.get_full_name()
@@ -63,6 +71,15 @@ class Patient(models.Model):
 class Specialist(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return self.name
+    
+#ManytoMany
+
+class Branch_office(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Branch_office', unique=True)    
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     def __str__(self):
         return self.name
 
@@ -77,12 +94,13 @@ class Doctor(models.Model):
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
     image_profile = models.ImageField(upload_to='doctor_images/', null=True, blank=True)
-   
+    #ManytoMany
+    branch_offices = models.ManyToManyField(Branch_office, related_name='doctors')
+       
     def __str__(self):
         return self.user.get_full_name()
     
-
-# TURNOS #
+# SLOTS #
 class DoctorAvailability(models.Model):
    
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
@@ -104,39 +122,31 @@ class Slot(DoctorAvailability):
     class Meta:
         unique_together = ['doctor', 'date', 'start_time', 'end_time']
 
-   
     def __str__(self):
         return f"{self.doctor} - {self.date} - {self.start_time} to {self.end_time}"
     
-    # def save(self, *args, **kwargs):
-    #     if self.status == 'available':
-    #     # Check if there is any appointment overlapping with this availability
-    #         overlapping_appointments = Appointment.objects.filter(
-    #             doctor=self.doctor,
-    #             date=self.date,
-    #             start_time__lt=self.end_time,
-    #             end_time__gt=self.start_time
-    #         )
-
-    #         for appointment in overlapping_appointments:
-    #             if (appointment.start_time <= self.start_time < appointment.end_time) or \
-    #             (appointment.start_time < self.end_time <= appointment.end_time):
-    #             # At least a portion of the availability slot is already booked
-    #                 self.status = 'booked'
-    #                 break
-
-    #     super().save(*args, **kwargs)
-
+    # TURNOS #
 
 class Appointment(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,  related_name='appointments')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField(default=datetime.time(9, 0)) # Add default start time
     end_time = models.TimeField(null=True)
     notes = models.TextField(null=True, blank=True)
+    
+    def has_appointment_with_other_doctor(self):
+        conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
+            date=self.date,
+         start_time=self.start_time
+        )
+        if conflicting_appointments.exists():
+            conflicting_appointment = conflicting_appointments.first()
+            doctor_name = conflicting_appointment.doctor.__str__()  # Obtener la representación del doctor
+            formatted_date = self.date.strftime('%d %b %Y')  # Formatear la fecha como "día mes año"
+            return f"Usted ya tiene un turno con el Dr. {doctor_name} el día {formatted_date} a las {self.start_time}."
+                        
+        return None
 
-  
     def __str__(self):
-        return f"{self.date} - {self.patient.get_full_name()}"
-
+        return f"{self.patient.user.get_full_name()} - {self.date} - {self.start_time} "

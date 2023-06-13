@@ -1,0 +1,170 @@
+{% extends 'clinica_app/base1.html' %}
+{% block title %} Turnos {% endblock %}
+{% block main %}
+{% load static %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Reserva de turnos</h1>
+            <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="{% url 'appointment' %}" class="h4 text-white">Turnos</a>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+
+<section class="appointment">
+    <!-- Appointment Start -->
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="row gx-5">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="mb-4">
+                        <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">Turnos</h5>
+                        <h1 class="display-4">Consulte sus turnos</h1>
+                    </div>
+                    {% if user.is_patient == True %}
+                    <p class="mb-5">Ahora si, usted puede reservar un turno. </p>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'doctors' %}">Turnos</a>
+                    {% else %}
+                    <p class="mb-5">Si usted aún no completo sus datos luego de registrarse en el sistema, debe hacerlo,
+                        de lo contrario no podrá acceder al sistema de turnos. </p>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar
+                        Datos</a>
+                    {% endif %}
+
+
+                    <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="">Leer más</a>
+                </div>
+                <div class="col-lg-6">
+                    <div class="bg-light text-center rounded p-5">
+                        <h1 class="mb-4">Reserve un turno</h1>
+                        <form method="get">
+                            <div class="row g-3">
+                                <div class="col-12 col-sm-6">
+                                    <select name="specialist" id="specialist" class="form-select bg-white border-0"
+                                        style="height: 55px;">
+                                        <option value="">Especialidad</option>
+                                        {% for specialist in specialist_list %}
+                                        <option value="{{ specialist.id }}">{{ specialist.name }}</option>
+                                        {% endfor %}
+                                        <!-- <option value="1">Department 1</option>
+                                        <option value="2">Department 2</option>
+                                        <option value="3">Department 3</option> -->
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <select name="doctor" id="doctor" class="form-select bg-white border-0" style="height: 55px;">
+                                        <option value="">Doctor</option>
+                                        {% for doctor in doctor_list %}
+                                        <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+                                        {% endfor %}
+                                        <!-- <option value="1">Doctor 1</option>
+                                        <option value="2">Doctor 2</option>
+                                        <option value="3">Doctor 3</option> -->
+                                    </select>
+                                </div>
+                                <!-- <div class="col-12 col-sm-6">
+                                    <input type="text" class="form-control bg-white border-0" placeholder="Su nombre"
+                                        style="height: 55px;">
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <input type="email" class="form-control bg-white border-0" placeholder="Su Email"
+                                        style="height: 55px;">
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="date" id="date" data-target-input="nearest">
+                                        <input type="text" class="form-control bg-white border-0 datetimepicker-input"
+                                            placeholder="Date" data-target="#date" data-toggle="datetimepicker"
+                                            style="height: 55px;">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="time" id="time" data-target-input="nearest">
+                                        <input type="text" class="form-control bg-white border-0 datetimepicker-input"
+                                            placeholder="Time" data-target="#time" data-toggle="datetimepicker"
+                                            style="height: 55px;">
+                                    </div>
+                                </div> -->
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100 py-3" type="submit">Filtrar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Appointment End -->
+    
+</section>
+
+<section>
+
+    {% if doctor_selec or date_selected or specialist_selected %}
+    <form method="post" action="{% url 'appointment' %}">
+      {% csrf_token %}
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Doctor</th>
+            <th>Especialidad</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Termina</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for slot in slot_list %}
+            <tr>
+              <td>{{ slot.doctor }}</td>
+              <td>{{ slot.doctor.specialist.name }}</td>
+              <td>{{ slot.date }}</td>
+              <td>{{ slot.start_time }}</td>
+              <td>{{ slot.end_time }}</td>
+              <td>{{ slot.get_status_display }}</td>
+              <td>
+                {% if slot.status == 'available' %}
+                  <input type="hidden" name="doctor" value="{{ slot.doctor.id }}" id="doctor">
+                  <input type="hidden" name="date" value="{{ slot.date }}" id="date">
+                  <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}" id="start_time">
+                  <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}" id="end_time">
+                  <input type="hidden" name="notes" value="" id="notes">
+                  <input type="hidden" name="slot_id" value="{{ slot.id }}" id="slot_id">
+                  <button type="submit" class="btn btn-primary">Reservar</button>
+                  
+                {% else %}
+                  Sin turnos disponibles
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">No available slots found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </form>
+    {% endif %}
+
+</section>
+
+
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'lib/easing/easing.min.js' %" }></script>
+<script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+<script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+<script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+<script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% endblock %}

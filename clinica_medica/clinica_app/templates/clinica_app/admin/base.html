@@ -55,12 +55,15 @@
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'specialist_list' %}">Especialidades</a>
                   </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'branch_offices' %}">Sucursales</a>
+                  </li>
                   <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Turnos</a>
                     <div class="dropdown-menu">
                         <a href="{% url 'slot_view'  %}" class="dropdown-item">Slots</a>
                         <a href="{% url 'appointment_list' %}" class="dropdown-item">turnos</a>
-                        <a href="{% url 'appointment_create' %}" class="dropdown-item">alta</a>
+                        <a href="{% url 'appointment_create' %}" class="dropdown-item">alta</a>                       
                         <div class="dropdown-divider"></div>
                         <a href="#"class="dropdown-item">Trash</a>
                     </div>
