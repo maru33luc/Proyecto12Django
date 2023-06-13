@@ -43,7 +43,10 @@ def staff(request):
     return render(request, 'clinica_app/staff.html', context)
 
 from datetime import datetime
-
+def branch(request):    
+    context = {      
+    }
+    return render(request, 'clinica_app/branch.html', context)
 
 def about_us(request):
     context = {}
