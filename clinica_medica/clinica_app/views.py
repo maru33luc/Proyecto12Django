@@ -15,7 +15,7 @@ from django.views.generic.list import ListView
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 
-# Create your views here.
+
 def index(request):
     patient_id = None
     if request.user.is_authenticated:
@@ -67,7 +67,7 @@ def welcome(request):
     return render(request, 'clinica_app/welcome.html', context)
     
 #---------------------------------- PATIENT ----------------------------------
-
+@login_required
 def patient_create(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
@@ -88,6 +88,7 @@ def patient_create(request):
     }
     return render(request, 'clinica_app/patient/patient_create.html', context)
 
+@login_required
 def patient_detail(request, pk):
     patient = get_object_or_404(Patient, pk=pk, user=request.user)
     
@@ -255,9 +256,11 @@ def appointment(request):
     if doctor_id:
         if doctor_id != 'None':
             slots = slots.filter(doctor_id=doctor_id)
+        
             selected_doctor = Doctor.objects.get(id=doctor_id)
             specialist = selected_doctor.specialist  # Get the specialist of the selected doctor
             date_str = request.GET.get('date')
+            
             if date_str:
                 date = datetime.strptime(date_str, '%Y-%m-%d').date()
               
@@ -329,15 +332,18 @@ def appointment(request):
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
     
     current_date = timezone.now().date()
+    
     #Aca filtra los slots para que se vean solo los que tienen la fecha de hoy en adelante y 
     # si tienen la fecha de hoy que se fije la hora actual
-    if current_date in slots.values_list('date', flat=True):
-        slots = slots.filter(start_time__gte=datetime.now().time())
 
+    # COMENTE ESTO PORQUE NO ME DEJABA VER LOS SLOTS DE OTROS DIAS---------------------------------------
+    # if current_date in slots.values_list('date', flat=True):
+    #     slots = slots.filter(start_time__gte=datetime.now().time()) 
+    
     if request.user.is_patient:
         appointments = request.user.patient.appointments.filter(date__gte=current_date)
         has_appointment = appointments.exists()
-    
+
     date_selected = bool(date)
     stored_messages = request.session.get('appointment_messages', None)
     if stored_messages:
@@ -346,10 +352,31 @@ def appointment(request):
     # Clear the appointment messages from the session before filtering
     if 'appointment_messages' in request.session:
         del request.session['appointment_messages']
-        
-    if current_date in slots.values_list('date', flat=True):
-        slots = slots.filter(start_time__gte=datetime.now().time())
     
+    # Calcular la fecha de inicio de la semana (lunes)
+    start_of_week = current_date - timedelta(days=current_date.weekday())
+    # Obtener los días de la semana a partir de hoy
+
+    weekdays = [start_of_week + timedelta(days=i) for i in range(7)]
+    
+    # sorted_slots = sorted(slots, key=lambda slot: slot.start_time)
+
+     # Generar lista de horas
+    start_hour = time(8, 0)  # Hora de inicio
+    end_hour = time(20, 0)  # Hora de fin
+    interval = 20  # Intervalo de minutos
+    hours = []
+    current_hour = start_hour
+
+    if date is None:
+        date = datetime.now().date()  # Asignar fecha actual si date es None
+
+    while current_hour <= end_hour:
+        hours.append(current_hour.strftime('%H:%M'))
+        current_hour = (datetime.combine(date.today(), current_hour) + timedelta(minutes=interval)).time()
+
+    weekdays_length = len(weekdays) + 1  # Obtener la longitud de weekdays y sumar 1
+   
     context = {
         'form': form,
         'doctor_list': doctor_list,
@@ -365,7 +392,10 @@ def appointment(request):
         'stored_messages': stored_messages,
         'show_error': show_error,
         'has_appointment': has_appointment, 
-    } 
+        'weekdays': weekdays,
+        'hours': hours,
+        'weekdays_length': weekdays_length,
+    }
     return render(request, 'clinica_app/appointment.html', context)
 
 def appointment_show(request, pk):
