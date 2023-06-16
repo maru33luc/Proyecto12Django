@@ -51,8 +51,9 @@ urlpatterns = [
     path('admin/branch_office/new/', views.branch_office_create, name='branch_office_create'),
     path('admin/branch_office/<int:pk>/update/', views.branch_office_update, name='branch_office_update'),
     path('admin/branch_office/<int:pk>/delete/', views.branch_office_delete, name='branch_office_delete'),
-    
-
+    #appointments
+    path('admin/appointments/doctors_consults', views.doctors_consults, name='doctors_consults'), 
+    path('admin/appointments/patients_consults', views.patients_consults, name='patients_consults'), 
 
     path('admin/home_admin', views.home_admin, name='home_admin'),
     path('admin/login_admin', views.login_admin, name='login_admin'),
