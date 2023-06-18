@@ -59,10 +59,10 @@ class LoginForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password')
 
-class ContactoForm(forms.Form):
-    first_name = forms.CharField(label="Nombre: ", required=True)
-    last_name = forms.CharField(label="Apellido: ", required=True)
+class ContactForm(forms.Form):
+    sender = forms.CharField(label="Nombre: ", required=True)
     email = forms.EmailField(label="Email: ", required=True)
+    message = forms.CharField(label="Mensaje:", widget=forms.Textarea, required=True)
 
 class PatientForm(forms.ModelForm):
     

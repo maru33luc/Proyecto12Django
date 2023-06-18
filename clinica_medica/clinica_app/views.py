@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, Branch_officeForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
+from .forms import ContactForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, Branch_officeForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
 from django.contrib.auth.decorators import login_required
 from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability, Slot, Branch_office
 from clinica_app.models import User
@@ -49,19 +49,23 @@ def about_us(request):
     context = {}
     return render(request, 'clinica_app/about_us.html', context)
 
+
+
 def contact(request):
-    context = {}
-    return render(request, 'clinica_app/contact.html', context)
-
-def contacto(request):
+    contact_form = ContactForm()
     if request.method == 'POST':
-        contacto_form = ContactoForm(request.POST)
-    else:
-        contacto_form = ContactoForm()
-    return render(request, 'clinica_app/contacto.html', {
-        'contacto_form': contacto_form
+        sender = request.POST.get('sender')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+         # Almacenar el mensaje de éxito
+        messages.success(request, 'El mensaje se envió con éxito.')
+        return redirect('contact_exit')
+        
+    return render(request, 'clinica_app/contact.html', {
+        'contact_form': contact_form
     })
-
+def contact_exit(request):
+    return render(request, 'clinica_app/contact_exit.html')
 def welcome(request):
     context = {}
     return render(request, 'clinica_app/welcome.html', context)
