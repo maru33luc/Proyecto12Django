@@ -47,9 +47,9 @@
               {% endif %}
             </tr>
             <tr>
-              <!-- {% if doctor_id %}
-              <th>Paciente</th>
-              {% endif %} -->
+              {% if not doctor_id %}
+              <th>Doctor</th>
+              {% endif %}
              
               <th>Paciente</th>
               
@@ -63,9 +63,9 @@
           <tbody>
             {% for appointment in appointments %}
               <tr>
-                <!-- {% if doctor_id %}
-                <td>{{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}</td>
-                {% endif %} -->
+                 {% if not doctor_id %}
+                <td>{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</td>
+                {% endif %} 
                
                 <td>{{ appointment.patient.user.last_name }} {{ appointment.patient.user.first_name }} </td>
                
