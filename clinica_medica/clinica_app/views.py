@@ -18,6 +18,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
+from django.core.paginator import Paginator
 
 
 
@@ -261,13 +262,17 @@ def appointment(request):
     # Clear the appointment messages from the session before filtering
     if 'appointment_messages' in request.session:
         del request.session['appointment_messages']
-    
-    # Calcular la fecha de inicio de la semana (lunes)
+
+    if date is None:
+        date = datetime.now().date()  # Asignar fecha actual si date es None
+     # Calcular la fecha de inicio de la semana (lunes)
     start_of_week = current_date - timedelta(days=current_date.weekday())
     # Obtener los días de la semana a partir de hoy
 
     weekdays = [start_of_week + timedelta(days=i) for i in range(30)]
-    
+    # printear el texto 'dias de la semana' + weekdays
+   
+
     # sorted_slots = sorted(slots, key=lambda slot: slot.start_time)
 
      # Generar lista de horas
@@ -277,8 +282,7 @@ def appointment(request):
     hours = []
     current_hour = start_hour
 
-    if date is None:
-        date = datetime.now().date()  # Asignar fecha actual si date es None
+    
 
     while current_hour <= end_hour:
         hours.append(current_hour.strftime('%H:%M'))
@@ -288,6 +292,20 @@ def appointment(request):
 
     weekdays_length = len(weekdays) + 1  # Obtener la longitud de weekdays y sumar 1
     
+
+
+    # Create a Paginator object with the weekdays and specify the number of items per page
+    paginator = Paginator(weekdays, 7)
+
+    # Get the current page number from the request's GET parameters
+    page_number = request.GET.get('page')
+
+    # Get the Page object for the current page number
+    page_obj = paginator.get_page(page_number)
+
+    # Get the list of weekdays for the current page
+    weekdays_list = page_obj.object_list
+
     context = {
         'form': form,
         'doctor_list': doctor_list,
@@ -304,8 +322,11 @@ def appointment(request):
         'show_error': show_error,
         'has_appointment': has_appointment, 
         'weekdays': weekdays,
+        'weekdays_list': weekdays_list,
         'hours': hours,
         'weekdays_length': weekdays_length,
+        'page_obj': page_obj,
+        'doctor_id': doctor_id,
     }
     return render(request, 'clinica_app/appointment.html', context)
 
