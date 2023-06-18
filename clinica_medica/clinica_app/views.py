@@ -14,6 +14,7 @@ from django.forms import formset_factory
 from django.views.generic.list import ListView
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
+from django.views import View
 
 
 def index(request):
@@ -54,18 +55,37 @@ def about_us(request):
 def contact(request):
     contact_form = ContactForm()
     if request.method == 'POST':
-        sender = request.POST.get('sender')
-        email = request.POST.get('email')
-        message = request.POST.get('message')
-         # Almacenar el mensaje de éxito
-        messages.success(request, 'El mensaje se envió con éxito.')
-        return redirect('contact_exit')
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            if form.send_email():
+                messages.success(request, 'El mensaje se envió con éxito.')
+            else:
+                messages.error(request, 'Hubo un error al enviar el mensaje.')
+            return redirect('contact_exit')
+    else:
+        form = ContactForm()
         
     return render(request, 'clinica_app/contact.html', {
-        'contact_form': contact_form
+        'contact_form': form
     })
 def contact_exit(request):
     return render(request, 'clinica_app/contact_exit.html')
+class ContactView(View):
+    form_class = ContactForm
+    template_name = 'clinica_app/contact.html'
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            form.send_email()
+            messages.success(request, 'El mensaje se envió con éxito.')
+            return redirect('mensaje_exitoso')
+        return render(request, self.template_name, {'form': form})
+    
 def welcome(request):
     context = {}
     return render(request, 'clinica_app/welcome.html', context)
