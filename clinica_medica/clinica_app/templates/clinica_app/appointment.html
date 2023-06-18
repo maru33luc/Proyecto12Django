@@ -94,7 +94,11 @@
 
 <section>
     <div class="container">
-        {% if specialist_selected or selected_doctor or date_selected %}
+        
+       
+
+        {% if specialist_selected or selected_doctor or date_selected  %}
+
             {% if selected_doctor %}
                 <h2>Doctor seleccionado: {{ selected_doctor }}</h2>
                 <p>Especialidad: {{ selected_doctor.specialist.name }}</p>
@@ -148,7 +152,64 @@
                 </ul>
             {% endif %}
         </div>
+        
+        <!-- que me muestre el siguiente codigo si y solo si no hay doctor_selected-->
+        {% if not doctor_selected %}
 
+          
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Especialidad</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Termina</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for slot in slot_list %}
+                    
+                <tr>
+                    <td>{{ slot.doctor }}</td>
+                    <td>{{ slot.doctor.specialist.name }}</td>
+                    <td>{{ slot.date }}</td>
+                    <td>{{ slot.start_time }}</td>
+                    <td>{{ slot.end_time }}</td>
+                    <td>{{ slot.get_status_display }}</td>
+                    <td>
+                        {% if slot.status == 'available' %}
+            
+                            <form method="post" action="{% url 'appointment' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
+                                <input type="hidden" name="date" value="{{ slot.date }}">
+                                <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
+                                <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
+                                <input type="hidden" name="notes" value="">
+                                <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                                <button type="submit" class="btn btn-primary">Reservar</button>
+                            </form>
+                        {% else %}
+                            Sin turnos disponibles
+                        {% endif %}
+                    </td>
+                </tr>
+            
+            {% empty %}
+                <tr>
+                    <td colspan="7">No available slots found.</td>
+                </tr>
+                
+            {% endfor %}
+            
+                    </tbody>
+                </table>
+
+            
+       {% else %}
         <div class="container">
             <h3>Horarios disponibles:</h3>
             <table class="agenda-table table table-bordered table-striped">
@@ -199,7 +260,7 @@
                 </tbody>
             </table>
         </div>
-        
+        {% endif %}
         
     </section>
 

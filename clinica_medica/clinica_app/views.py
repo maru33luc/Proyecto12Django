@@ -330,7 +330,7 @@ def appointment(request):
     doctor_list = Doctor.objects.all()
     if specialist_id:
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
-    
+   
     current_date = timezone.now().date()
     
     #Aca filtra los slots para que se vean solo los que tienen la fecha de hoy en adelante y 
@@ -357,7 +357,7 @@ def appointment(request):
     start_of_week = current_date - timedelta(days=current_date.weekday())
     # Obtener los días de la semana a partir de hoy
 
-    weekdays = [start_of_week + timedelta(days=i) for i in range(7)]
+    weekdays = [start_of_week + timedelta(days=i) for i in range(30)]
     
     # sorted_slots = sorted(slots, key=lambda slot: slot.start_time)
 
@@ -373,10 +373,12 @@ def appointment(request):
 
     while current_hour <= end_hour:
         hours.append(current_hour.strftime('%H:%M'))
-        current_hour = (datetime.combine(date.today(), current_hour) + timedelta(minutes=interval)).time()
+        current_hour = (datetime.combine(datetime.strptime(str(date), '%Y-%m-%d').date(), current_hour) + timedelta(minutes=interval)).time()
+
+        # current_hour = (datetime.combine(date.today(), current_hour) + timedelta(minutes=interval)).time()
 
     weekdays_length = len(weekdays) + 1  # Obtener la longitud de weekdays y sumar 1
-   
+    
     context = {
         'form': form,
         'doctor_list': doctor_list,
