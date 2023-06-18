@@ -210,56 +210,81 @@
 
             
        {% else %}
-        <div class="container">
-            <h3>Horarios disponibles:</h3>
-            <table class="agenda-table table table-bordered table-striped">
-                <thead class="thead-dark">
+       <div class="container">
+        <h3>Horarios disponibles:</h3>
+        <table id="datatable" class="agenda-table table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Hora</th>
+                    {% for day in weekdays_list %}
+                        <th scope="col">
+                            {{ day|date:"l" }}
+                            <br>
+                            {{ day|date:"d-m-Y" }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+
+                
+                {% for hour in hours %}
                     <tr>
-                        <th scope="col">Hora</th>
-                        {% for day in weekdays %}
-                            <th scope="col">
-                                {{ day|date:"l" }}
-                                <br>
-                                {{ day|date:"d-m-Y" }}
-                            </th>
+                        <td>{{ hour }}</td>
+                        {% for day in weekdays_list %}
+                            <td>
+                                {% for slot in slot_list %}
+                                    {% if slot.date == day and slot.start_time|time:'H:i' == hour %}
+                                        {% if slot.status == 'available' %}
+                                            <form method="POST" action="{% url 'appointment' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
+                                                <input type="hidden" name="date" value="{{ slot.date }}">
+                                                <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
+                                                <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
+                                                <input type="hidden" name="notes" value="">
+                                                <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                                                <button type="submit" class="btn btn-primary">Reservar</button>
+                                            </form>
+                                        {% else %}
+                                            Ocupado
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            
                         {% endfor %}
                     </tr>
-                </thead>
-                <tbody>
-                    {% for hour in hours %}
-                        <tr>
-                            <td>{{ hour }}</td>
-                            {% for day in weekdays %}
-                                <td>
-                                    {% for slot in slot_list %}
-                                        {% if slot.date == day and slot.start_time|time:'H:i' == hour %}
-                                            {% if slot.status == 'available' %}
-                                                <form method="POST" action="{% url 'appointment' %}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
-                                                    <input type="hidden" name="date" value="{{ slot.date }}">
-                                                    <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
-                                                    <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
-                                                    <input type="hidden" name="notes" value="">
-                                                    <input type="hidden" name="slot_id" value="{{ slot.id }}">
-                                                    <button type="submit" class="btn btn-primary">Reservar</button>
-                                                </form>
-                                            {% else %}
-                                                Ocupado
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="{{ weekdays|length  }}">No hay slots disponibles.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                {% empty %}
+                    <tr>
+                        <td >No hay slots disponibles.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Display pagination links -->
+    <!-- <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="current-page">{{ page_obj.number }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+        {% endif %}
+    </div> -->
+    <ul class="pagination">
+        <!-- Enlaces de página -->
+        {% for page_num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
+                <a class="page-link" href="?page={{ page_num }}&doctor={{ doctor_id }}"> {{ page_num }} </a>
+            </li>
+        {% endfor %}
+    </ul>
+    
+    
+    
         {% endif %}
         
     </section>
@@ -267,15 +292,16 @@
     {% endif %}
 </section>
 
-<script>
+<!-- <script>
     $(document).ready(function() {
-        $('#datatable').DataTable(
-            {
-                paging: false
-            }
-        );
-        
+      $('#datatable').DataTable({
+        paging: true,  // Habilitar paginación
+        lengthChange: false,  // Ocultar selector de cantidad de filas por página
+        searching: false,  // Ocultar barra de búsqueda
+      });
     });
-</script>
+    </script>
+     -->
+    
 
 {% endblock %}
