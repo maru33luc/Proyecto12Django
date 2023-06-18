@@ -45,6 +45,10 @@ urlpatterns = [
     
     #### ADMIN ####
     
+        #appointments
+    path('admin/appointments/doctors_consults', views.doctors_consults, name='doctors_consults'), 
+    path('admin/appointments/patients_consults', views.patients_consults, name='patients_consults'), 
+
     #brnach_office
     path('admin/branch_offices', views.branch_offices, name="branch_offices"), 
     path('admin/branch_office/<int:pk>/', views.branch_office_detail, name='branch_office_detail'),
@@ -56,6 +60,7 @@ urlpatterns = [
 
     path('admin/home_admin', views.home_admin, name='home_admin'),
     path('admin/login_admin', views.login_admin, name='login_admin'),
+    
     #patients#
     
     path('patients', views.patients, name="patients"), 

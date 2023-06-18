@@ -564,6 +564,91 @@ def login_admin(request):
     }
     return render(request, 'clinica_app/admin/login.html', context)
 
+#---------------------------------- ADM APPOINTMENTS ----------------------------------
+
+def doctors_consults(request):
+    appointments = Appointment.objects.all()
+    patients = Patient.objects.all()
+    doctors = Doctor.objects.all()
+    doctor_id = request.GET.get('doctor')
+    date = request.GET.get('date')
+    patient_id = request.GET.get('patient')
+    doctor = None
+    flag= False
+
+        
+    # Aplica los filtros si se proporcionaron valores
+    if doctor_id:
+        appointments = appointments.filter(doctor_id=doctor_id)
+        doctor = Doctor.objects.get(id=doctor_id)  # Recupera el objeto Doctor según el ID
+        flag = True
+    if patient_id:
+        appointments = appointments.filter(patient_id=patient_id)
+        flag = True
+    if date:
+        appointments = appointments.filter(date=date)
+        flag = True
+    # mostrar la slot_list ordenada por fecha y hora
+    if flag==False:
+        filtered_appointments = appointments.order_by('date', 'start_time')
+    
+    else:
+        filtered_appointments = appointments
+
+    context = {
+        'appointments': filtered_appointments,
+        'doctors': doctors,
+        'patients': patients,
+        'doctor': doctor,
+        'doctor_id': doctor_id,
+        'patient_id': patient_id, 
+        'date': date
+    }
+    return render(request, 'clinica_app/admin/appointments/doctors_consults.html', context)
+
+def patients_consults(request):
+    appointments = Appointment.objects.all()
+    patients = Patient.objects.all()
+    doctors = Doctor.objects.all()
+    doctor_id = request.GET.get('doctor')
+    date = request.GET.get('date')
+    patient_id = request.GET.get('patient')
+    patient = None
+    flag= False
+
+    
+    # Aplica los filtros si se proporcionaron valores
+    if doctor_id:
+        appointments = appointments.filter(doctor_id=doctor_id)
+        flag = True
+    if patient_id:
+        appointments = appointments.filter(patient_id=patient_id)
+        patient = Patient.objects.get(id=patient_id)  # Recupera el objeto Patient según el ID
+        flag = True
+    if date:
+        appointments = appointments.filter(date=date)
+        flag = True
+     # mostrar la slot_list ordenada por fecha y hora
+    if flag==False:
+        filtered_appointments = appointments.order_by('date', 'start_time')
+       
+    else:
+        filtered_appointments = appointments
+
+    context = {
+        'appointments': filtered_appointments,
+        'doctors': doctors,
+        'patients': patients,
+        'patient': patient,
+        'doctor_id': doctor_id,
+        'patient_id': patient_id, 
+        'date': date
+    }
+    return render(request, 'clinica_app/admin/appointments/patients_consults.html', context)
+
+
+
+
 #---------------------------------- BRANCH OFFICES ----------------------------------
 def branch_offices(request):
     branch_offices = Branch_office.objects.all()
