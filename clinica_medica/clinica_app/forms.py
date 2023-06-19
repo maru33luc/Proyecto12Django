@@ -9,6 +9,7 @@ from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail, BadHeaderError
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
@@ -59,10 +60,27 @@ class LoginForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password')
 
-class ContactoForm(forms.Form):
-    first_name = forms.CharField(label="Nombre: ", required=True)
-    last_name = forms.CharField(label="Apellido: ", required=True)
+class ContactForm(forms.Form):
+    sender = forms.CharField(label="Nombre: ", required=True)
     email = forms.EmailField(label="Email: ", required=True)
+    message = forms.CharField(label="Mensaje:", widget=forms.Textarea, required=True)
+
+    def send_email(self):
+        sender = self.cleaned_data['sender']
+        email = self.cleaned_data['email']
+        message = self.cleaned_data['message']
+
+        subject = 'Nuevo mensaje de contacto'
+        body = f"Remitente: {sender}\nEmail: {email}\nMensaje: {message}"
+        from_email = settings.EMAIL_HOST_USER
+        to_email = [settings.EMAIL_HOST_USER]  # Puedes configurar la dirección de correo electrónico de destino
+
+        try:
+            send_mail(subject, body, from_email, to_email, fail_silently=False)
+            return True  # El correo se envió exitosamente
+        except BadHeaderError as e:
+            print(e)  # Opcional: muestra el error en la consola para depuración
+            return False  # Hubo un error al enviar el correo
 
 class PatientForm(forms.ModelForm):
     

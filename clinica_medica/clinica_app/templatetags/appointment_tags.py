@@ -19,3 +19,20 @@ def has_appointment_with_specialist(patient, specialist):
 # @register.filter
 # def has_appointment_with_doctor(patient, doctor, date):
 #     return patient.has_appointment_with_doctor(doctor, date)
+
+
+@register.filter
+def get_range(start, end):
+    return range(start, end + 1)
+
+
+@register.filter
+def range_filter(value):
+    return range(value)
+
+@register.filter
+def get_slot(slot_list, day, hour):
+    for slot in slot_list:
+        if slot.date.weekday() == day.weekday() and slot.start_time.strftime("%H:%M") == hour:
+            return slot
+    return None

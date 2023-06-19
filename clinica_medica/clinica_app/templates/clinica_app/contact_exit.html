@@ -1,5 +1,5 @@
 {% extends 'clinica_app/base1.html' %}
-{% block title %} {% endblock %}
+{% block title %}Contacto {% endblock %}
 {% block main %}
 {% load static %}
 <!-- Hero Start -->
@@ -35,12 +35,18 @@
         </div>
       </div>
       <div class="contact-form-wrapper">
-        <form action="{% url 'contact' %}" method="post">
-          {% csrf_token %}
-          {{ contacto_form }}
-          <input type="submit" value="Contact">
-        </form>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="alert alert-success mt-5">
+                        <h3 class="display-4">¡Mensaje recibido con éxito!</h3>
+                        <p class="lead">Gracias por contactarnos. Tu mensaje ha sido recibido correctamente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   </section>
-  {% endblock %}
+             
+{% endblock %}

@@ -13,6 +13,7 @@ urlpatterns = [
     
     path('appointment', views.appointment, name="appointment"),
     path('contact', views.contact, name="contact"),
+    path('contact_exit/', views.contact_exit, name='contact_exit'),
     path('about_us', views.about_us, name="about_us"),
     path('welcome', views.welcome, name='welcome'),
     path('log_in', views.login_view, name='log_in'),
@@ -37,9 +38,7 @@ urlpatterns = [
     path('patient_appointments/', views.patient_appointments, name='patient_appointments'),
     path('appointments/<int:pk>/cancel/', views.cancel_appointment, name='cancel_appointment'),
     ##doctor poner en admin##
-  
-    path('contacto', views.contacto, name="contacto"), 
-    # path('doctor_availability/<int:doctor_id>/', views.doctor_availability_detail, name='doctor_availability_detail')
+      
     ## slots ##
     path('slots/', views.slot_view, name='slot_view'),
     path('edit_slot/<int:pk>/', views.edit_slot, name='edit_slot'),
@@ -49,6 +48,10 @@ urlpatterns = [
     
     #### ADMIN ####
     
+        #appointments
+    path('admin/appointments/doctors_consults', views.doctors_consults, name='doctors_consults'), 
+    path('admin/appointments/patients_consults', views.patients_consults, name='patients_consults'), 
+
     #brnach_office
     path('admin/branch_offices', views.branch_offices, name="branch_offices"), 
     path('admin/branch_office/<int:pk>/', views.branch_office_detail, name='branch_office_detail'),
@@ -60,6 +63,7 @@ urlpatterns = [
 
     path('admin/home_admin', views.home_admin, name='home_admin'),
     path('admin/login_admin', views.login_admin, name='login_admin'),
+    
     #patients#
     
     path('patients', views.patients, name="patients"), 
