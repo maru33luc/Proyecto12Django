@@ -1,9 +1,9 @@
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, Branch_officeForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
+from clinica_app.forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, Branch_officeForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
 from django.contrib.auth.decorators import login_required
-from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability, Slot, Branch_office
+from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability, Slot, Branch_office, Branch
 from clinica_app.models import User
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate,login,logout
@@ -43,14 +43,17 @@ def staff(request):
     return render(request, 'clinica_app/staff.html', context)
 
 from datetime import datetime
-def branch(request):    
-    context = {      
+
+def branch(request):
+    #branch = Branch.objects.get()
+    context = {
+        'branch': branch,
     }
     return render(request, 'clinica_app/branch.html', context)
-
 def about_us(request):
     context = {}
     return render(request, 'clinica_app/about_us.html', context)
+
 
 def contact(request):
     context = {}
@@ -537,10 +540,13 @@ def login_admin(request):
 
 #---------------------------------- BRANCH OFFICES ----------------------------------
 def branch_offices(request):
-    branch_offices = Branch_office.objects.all()
-    return render(request, 'clinica_app/admin/branch_offices.html', {
+    branch_offices = Branch.objects.all()
+    context = {
         'branch_offices': branch_offices
-    })
+    }
+    return render(request, 'clinica_app/admin/branch_offices.html',context) 
+        
+    
 
 @permission_required('clinica_app.can_view_branch_office')
 def branch_office_detail(request, pk):

@@ -1,5 +1,5 @@
 {% extends 'clinica_app/base1.html' %}
-{% block title %}Sucursales {% endblock %}
+{% block title %}Sucursales{% endblock %}
 {% block main %}
 {% load static %}
 <!-- Hero Start -->
@@ -14,11 +14,10 @@
   </div>
 </div>
 <!-- Hero End -->
-   
 
 <section class="seccion">
     <!-- Sección 2 -->
-      <div class="texto">
+    <div class="texto">
         <h2>Nuestras sucursales</h2>
         <p>Nos complace informarles que nuestra clínica ha expandido sus servicios a través de la apertura de nuevas sucursales en diferentes áreas geográficas. Esta expansión tiene como objetivo brindarles una atención médica de calidad y acercar nuestros servicios a ustedes, nuestros valiosos pacientes.
 
@@ -35,43 +34,26 @@
           No dudes en comunicarte con nosotros para obtener más información sobre nuestras sucursales, servicios y horarios de atención.
           
           Estamos aquí para cuidar de su salud y bienestar.
-      </div>
-      <div class="imagen">
+    </div>
+    <div class="imagen">
         <img src="{% static 'assets/img/sucursales_inicio.jpeg' %}" alt="Imagen 2">
-      </div>
-  
-  
+    </div>
 </section> 
-
 
 <section class="section-4">
     <div class="heading">
-      <h4></h4>
+        <h4>Sucursales</h4>
     </div>
     <div class="row">
-      <figure class="figure">
-        <img src="{% static 'assets/img/sucursal1.jpeg' %}" alt="">
-        <div>
-          <h3>Sucursal <span>Nuñez</span></h3>
-          <a href="#"></a>
-        </div>
-      </figure>
-      <figure class="figure">
-        <img src="{% static 'assets/img/sucursal2.jpeg' %}" alt="">
-        <div>
-          <h3>Sucursal <span>Belgrano</span></h3>
-          <a href="#"></a>
-        </div>
-      </figure>
-      <figure class="figure">
-        <img src="{% static 'assets/img/sucursal3.jpeg' %}" alt="">
-        <div>
-          <h3>Sucursal <span>Saavedra</span></h3>
-          <a href="#"></a>
-        </div>
-      </figure>
+        {% for branch_office in branch_offices %}
+        <figure class="figure">
+            <img src="{% static 'assets/img/sucursal1.jpeg' %}" alt="">
+            <div>
+                <h2>{{ branch_office.nombre }}</h2>
+                <a href="#">{{ branch_office.enlace }}</a>
+            </div>
+        </figure>
+        {% endfor %}
     </div>
-  </section>
-
-             
+</section>
 {% endblock %}

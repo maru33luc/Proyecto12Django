@@ -74,12 +74,22 @@ class Specialist(models.Model):
     def __str__(self):
         return self.name
     
-#ManytoMany
+#ManytoManyfrom django.db import models
 
 class Branch_office(models.Model):
+    name = models.CharField(max_length=100 )
+    phone = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
+    enlace = models.URLField()
+
+    def __str__(self):
+        return self.name
+
+
+class Branch(models.Model):
     name = models.CharField(max_length=255, verbose_name='Branch_office', unique=True)    
-    phone = models.CharField(max_length=255, blank=True, null=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
+    
+    
     def __str__(self):
         return self.name
 

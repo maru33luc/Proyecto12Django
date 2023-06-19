@@ -10,6 +10,7 @@ urlpatterns = [
     path('services/', views.services, name="services"),
     path('staff', views.staff, name="staff"),
     path('branch', views.branch, name="branch"),
+    
     path('appointment', views.appointment, name="appointment"),
     path('contact', views.contact, name="contact"),
     path('about_us', views.about_us, name="about_us"),
@@ -43,6 +44,8 @@ urlpatterns = [
     path('slots/', views.slot_view, name='slot_view'),
     path('edit_slot/<int:pk>/', views.edit_slot, name='edit_slot'),
     path('delete_slot/<int:pk>/', views.delete_slot, name='delete_slot'),
+
+
     
     #### ADMIN ####
     
