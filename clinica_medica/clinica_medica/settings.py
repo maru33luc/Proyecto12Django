@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bootstrap5',
+    'django_bootstrap5',
     'clinica_app',
 ]
 AUTH_USER_MODEL = "clinica_app.User"
@@ -90,9 +90,9 @@ WSGI_APPLICATION = 'clinica_medica.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "Clinica_medica",
+        "NAME": "clinica_medica",
         "USER": "postgres",
-        "PASSWORD": "1234",
+        "PASSWORD": "Maru29luc",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -154,6 +154,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'atorresgolf@gmail.com'
-EMAIL_HOST_PASSWORD = 'btevzwmrahasopfu'
+EMAIL_HOST_USER = 'maru33luc@gmail.com'
+EMAIL_HOST_PASSWORD = 'vsubfjyjsywemmgf'
 
