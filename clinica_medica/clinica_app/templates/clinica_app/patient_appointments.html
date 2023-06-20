@@ -34,6 +34,7 @@
                         <th>Fecha</th>
                         <th>Hora de inicio</th>
                         <th>Doctor</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,6 +44,7 @@
                                 <td>{{ appointment.date }}</td>
                                 <td>{{ appointment.start_time }}</td>
                                 <td>{{ appointment.doctor }}</td>
+                                <td><a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-sm btn-outline-danger">Cancelar</a></td>
                             </tr>
                         {% endif %}
                     {% endfor %}
