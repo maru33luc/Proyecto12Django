@@ -272,7 +272,7 @@ def appointment(request):
     start_of_week = current_date - timedelta(days=current_date.weekday())
     # Obtener los días de la semana a partir de hoy
 
-    # weekdays = [start_of_week + timedelta(days=i) for i in range(30)]
+    # weekdays = [start_of_week + timedelta(days=i) for i in range(30) if (start_of_week + timedelta(days=i)).weekday()<6]
 
     if date is None:
         date = datetime.now().date()  # Asignar fecha actual si date es None
@@ -297,6 +297,10 @@ def appointment(request):
 
     weekdays_length = len(weekdays) + 1  # Obtener la longitud de weekdays y sumar 1
 
+    paginator = Paginator(weekdays, 6)
+
+
+    # Create a Paginator object with the weekdays and specify the number of items per page
     paginator = Paginator(weekdays, 6)
 
     # Get the current page number from the request's GET parameters
@@ -375,18 +379,17 @@ def cancel_appointment(request, pk):
 
     if request.user != appointment.patient.user:
         raise Http404()
-
     slot = Slot.objects.get(doctor_id=appointment.doctor_id, date=appointment.date, start_time=appointment.start_time)
 
-
     if request.method == 'POST':
-
+        # Cambia el estado del slot a "available"
         slot.status = 'available'
         slot.save()
-
+      
         appointment.delete()
+
         messages.success(request, 'Appointment cancelled successfully.')
-        return redirect('appointment_list')
+        return redirect('patient_appointments')
 
     context = {
         'appointment': appointment,
