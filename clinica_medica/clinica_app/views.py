@@ -14,16 +14,18 @@ from django.forms import formset_factory
 from django.views.generic.list import ListView
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
-<<<<<<< HEAD
+
 from django.core.paginator import Paginator
-=======
+
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 from django.core.paginator import Paginator
+from django.db.models import Q
+from django.utils import timezone
+from datetime import datetime
 
->>>>>>> main
 
 
 def index(request):
@@ -147,7 +149,9 @@ def appointment(request):
     date = request.GET.get('date')
 
     # Filtra los slots con hora igual o posterior a la hora actual
-    slots = Slot.objects.filter(date__gte=datetime.now())
+    #slots = Slot.objects.filter(date__gte=datetime.now())
+    current_datetime = timezone.now()
+    slots = Slot.objects.filter(date__gte=current_datetime.date(), start_time__gte=current_datetime.time())
 
     selected_doctor = None
     
@@ -247,13 +251,6 @@ def appointment(request):
    
     current_date = timezone.now().date()
     
-    #Aca filtra los slots para que se vean solo los que tienen la fecha de hoy en adelante y 
-    # si tienen la fecha de hoy que se fije la hora actual
-
-    # COMENTE ESTO PORQUE NO ME DEJABA VER LOS SLOTS DE OTROS DIAS---------------------------------------
-    # if current_date in slots.values_list('date', flat=True):
-    #     slots = slots.filter(start_time__gte=datetime.now().time()) 
-    
     if request.user.is_patient:
         appointments = request.user.patient.appointments.filter(date__gte=current_date)
         has_appointment = appointments.exists()
@@ -266,7 +263,7 @@ def appointment(request):
     # Clear the appointment messages from the session before filtering
     if 'appointment_messages' in request.session:
         del request.session['appointment_messages']
-<<<<<<< HEAD
+
     
     if date is None:
         date = datetime.now().date()  # Asignar fecha actual si date es None
@@ -275,8 +272,7 @@ def appointment(request):
     start_of_week = current_date - timedelta(days=current_date.weekday())
     # Obtener los días de la semana a partir de hoy
 
-    weekdays = [start_of_week + timedelta(days=i) for i in range(30)]
-=======
+    # weekdays = [start_of_week + timedelta(days=i) for i in range(30)]
 
     if date is None:
         date = datetime.now().date()  # Asignar fecha actual si date es None
@@ -286,22 +282,12 @@ def appointment(request):
 
     weekdays = [start_of_week + timedelta(days=i) for i in range(30) if (start_of_week + timedelta(days=i)).weekday() < 6]
 
-    #weekdays = [start_of_week + timedelta(days=i) for i in range(30)]
->>>>>>> main
-    # printear el texto 'dias de la semana' + weekdays
-   
-
-    # sorted_slots = sorted(slots, key=lambda slot: slot.start_time)
-
      # Generar lista de horas
     start_hour = time(8, 0)  # Hora de inicio
     end_hour = time(20, 0)  # Hora de fin
     interval = 20  # Intervalo de minutos
     hours = []
     current_hour = start_hour
-
-    
-    
 
     while current_hour <= end_hour:
         hours.append(current_hour.strftime('%H:%M'))
@@ -310,15 +296,8 @@ def appointment(request):
         # current_hour = (datetime.combine(date.today(), current_hour) + timedelta(minutes=interval)).time()
 
     weekdays_length = len(weekdays) + 1  # Obtener la longitud de weekdays y sumar 1
-    
 
-
-    # Create a Paginator object with the weekdays and specify the number of items per page
-<<<<<<< HEAD
-    paginator = Paginator(weekdays, 7)
-=======
     paginator = Paginator(weekdays, 6)
->>>>>>> main
 
     # Get the current page number from the request's GET parameters
     page_number = request.GET.get('page')
@@ -328,11 +307,6 @@ def appointment(request):
 
     # Get the list of weekdays for the current page
     weekdays_list = page_obj.object_list
-<<<<<<< HEAD
-   
-    
-=======
->>>>>>> main
 
     context = {
         'form': form,
@@ -402,7 +376,14 @@ def cancel_appointment(request, pk):
     if request.user != appointment.patient.user:
         raise Http404()
 
+    slot = Slot.objects.get(doctor_id=appointment.doctor_id, date=appointment.date, start_time=appointment.start_time)
+
+
     if request.method == 'POST':
+
+        slot.status = 'available'
+        slot.save()
+
         appointment.delete()
         messages.success(request, 'Appointment cancelled successfully.')
         return redirect('appointment_list')
