@@ -1,9 +1,9 @@
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import ContactoForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, Branch_officeForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
+from .forms import ContactForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, Branch_officeForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
 from django.contrib.auth.decorators import login_required
-from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability, Slot, Branch_office, Branch
+from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability, Slot, Branch_office
 from clinica_app.models import User
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate,login,logout
@@ -48,14 +48,8 @@ def staff(request):
     }
     return render(request, 'clinica_app/staff.html', context)
 
-from datetime import datetime
 
-def branch(request):
-    #branch = Branch.objects.get()
-    context = {
-        'branch': branch,
-    }
-    return render(request, 'clinica_app/branch.html', context)
+
 def about_us(request):
     context = {}
     return render(request, 'clinica_app/about_us.html', context)
@@ -589,7 +583,7 @@ def patients_consults(request):
 
 #---------------------------------- BRANCH OFFICES ----------------------------------
 def branch_offices(request):
-    branch_offices = Branch.objects.all()
+    branch_offices = Branch_office.objects.all()
     context = {
         'branch_offices': branch_offices
     }
@@ -1011,3 +1005,17 @@ def logout_view(request):
     return redirect('index')
 
 
+
+
+
+
+
+
+
+
+def branch(request):
+    branches = Branch_office.objects.all()
+    context = {
+        'branches': branches,
+    }
+    return render(request, 'clinica_app/branch.html', context)

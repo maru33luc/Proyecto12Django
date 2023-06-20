@@ -45,12 +45,12 @@
         <h4>Sucursales</h4>
     </div>
     <div class="row">
-        {% for branch_office in branch_offices %}
+        {% for branch in branches %}
         <figure class="figure">
             <img src="{% static 'assets/img/sucursal1.jpeg' %}" alt="">
             <div>
-                <h2>{{ branch_office.nombre }}</h2>
-                <a href="#">{{ branch_office.enlace }}</a>
+                <h2>{{ branch.name }}</h2>
+                <a href="#"></a>
             </div>
         </figure>
         {% endfor %}

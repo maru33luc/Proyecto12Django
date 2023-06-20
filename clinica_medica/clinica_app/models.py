@@ -80,18 +80,15 @@ class Branch_office(models.Model):
     name = models.CharField(max_length=100 )
     phone = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
-    enlace = models.URLField()
+   
 
     def __str__(self):
         return self.name
 
 
-class Branch(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Branch_office', unique=True)    
+
     
-    
-    def __str__(self):
-        return self.name
+   
 
 class Doctor(models.Model):
     # name= models.CharField(max_length=50, verbose_name='Nombre y Apellido', null=True, blank=True)
