@@ -47,10 +47,18 @@
     <div class="row">
         {% for branch in branches %}
         <figure class="figure">
-            <img src="{% static 'assets/img/sucursal1.jpeg' %}" alt="">
+            {% if branch.id == 1 %}
+            <img src="{% static 'assets/img/sucursal1.jpeg' %}" alt="emergency">
+            {% elif branch.id == 2 %}
+            <img src="{% static 'assets/img/sucursal2.jpeg' %}" alt="hospital">
+            {% elif branch.id == 3 %}
+            <img src="{% static 'assets/img/sucursal3.jpeg' %}" alt="arboles y hospital">
+            {% elif branch.id == 4 %}
+            <img src="{% static 'assets/img/sucursal4.jpeg' %}" alt="edificio vidriado">
+            {% endif %}
+            
             <div>
                 <h2>{{ branch.name }}</h2>
-                <a href="#"></a>
             </div>
         </figure>
         {% endfor %}
