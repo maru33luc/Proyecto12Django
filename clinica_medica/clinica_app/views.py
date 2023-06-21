@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import ContactForm, CustomUserCreationForm, CustomUserChangeForm, LoginForm, PatientForm, DoctorForm, Branch_officeForm, SpecialistForm, DoctorAvailabilityForm, AppointmentCreateForm, AppointmentEditForm, SlotForm
 from django.contrib.auth.decorators import login_required
-from .models import Patient, Specialist, Doctor, Appointment, DoctorAvailability, Slot, Branch_office
+from .models import Patient, Specialist, Doctor, Appointment, Slot, Branch_office
 from clinica_app.models import User
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate,login,logout
@@ -21,11 +21,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from django.core.paginator import Paginator
 from django.db.models import Q
-from django.utils import timezone
-from datetime import datetime
-from django.utils import timezone
+
+
 
 
 def index(request):
@@ -54,14 +52,10 @@ def staff(request):
     }
     return render(request, 'clinica_app/staff.html', context)
 
-from datetime import datetime
-
 
 def about_us(request):
     context = {}
     return render(request, 'clinica_app/about_us.html', context)
-
-
 
 def contact(request):
     contact_form = ContactForm()
@@ -141,7 +135,7 @@ def patient_delete(request, pk):
 
 
 #---------------------------------- APPOINTMENT ----------------------------------
-
+from django.utils import timezone
 
 @login_required
 def appointment(request):
@@ -150,11 +144,13 @@ def appointment(request):
     specialist_id = request.GET.get('specialist')
     date = request.GET.get('date')
 
-    current_datetime = timezone.now()
-
-    # Filtra los slots con fecha igual o posterior a la fecha actual y hora igual o posterior a la hora actual
-    slots = Slot.objects.filter(date__gte=current_datetime.date(), start_time__gte=current_datetime.time())
-
+    slots = Slot.objects.all()
+    current_datetime = timezone.localtime().now()
+    current_date = current_datetime.date()
+    current_time = current_datetime.time()
+     
+    slots = Slot.objects.filter(Q(date__gt=current_date) | Q(date=current_date, start_time__gte=current_time))
+   
     selected_doctor = None
     show_error = False
 
@@ -316,7 +312,6 @@ def appointment(request):
         'show_error': show_error,
         'has_appointment': has_appointment,
         'weekdays': weekdays,
-
         'weekdays_list': weekdays_list,
         'hours': hours,
         'weekdays_length': weekdays_length,
