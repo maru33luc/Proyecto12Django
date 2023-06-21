@@ -25,7 +25,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime
-
+from django.utils import timezone
 
 
 def index(request):
@@ -141,6 +141,8 @@ def patient_delete(request, pk):
 
 
 #---------------------------------- APPOINTMENT ----------------------------------
+
+
 @login_required
 def appointment(request):
     context = {}
@@ -148,34 +150,33 @@ def appointment(request):
     specialist_id = request.GET.get('specialist')
     date = request.GET.get('date')
 
-    # Filtra los slots con hora igual o posterior a la hora actual
-    #slots = Slot.objects.filter(date__gte=datetime.now())
     current_datetime = timezone.now()
+
+    # Filtra los slots con fecha igual o posterior a la fecha actual y hora igual o posterior a la hora actual
     slots = Slot.objects.filter(date__gte=current_datetime.date(), start_time__gte=current_datetime.time())
 
     selected_doctor = None
-    
     show_error = False
+
     if date:
-       slots = slots.filter(date=date)
+        slots = slots.filter(date=date)
     else:
-      date = None    
+        date = None
 
     if specialist_id:
         slots = slots.filter(doctor__specialist_id=specialist_id)
 
     specialist_selected = bool(specialist_id)
+
     if doctor_id:
         if doctor_id != 'None':
             slots = slots.filter(doctor_id=doctor_id)
-        
             selected_doctor = Doctor.objects.get(id=doctor_id)
-            specialist = selected_doctor.specialist  # Get the specialist of the selected doctor
+            specialist = selected_doctor.specialist
             date_str = request.GET.get('date')
-            
+
             if date_str:
                 date = datetime.strptime(date_str, '%Y-%m-%d').date()
-              
                 has_appointment = request.user.patient.has_appointment_with_doctor(selected_doctor.id)
             else:
                 has_appointment = False
@@ -190,7 +191,7 @@ def appointment(request):
     else:
         selected_doctor = None
         specialist = None
-        has_appointment = False     
+        has_appointment = False
 
     if request.method == 'POST':
         form = AppointmentCreateForm(request.POST, request=request)
@@ -199,13 +200,13 @@ def appointment(request):
             end_time = datetime.strptime(request.POST['end_time'], '%H:%M').time()
             form.cleaned_data['start_time'] = start_time
             form.cleaned_data['end_time'] = end_time
-            
+
             appointment = form.save(commit=False)
             appointment.patient = request.user.patient
 
             slot_id = form.cleaned_data['slot_id']
             slot = Slot.objects.get(id=slot_id, status='available')
-            
+
             if appointment.has_appointment_with_other_doctor():
                 error_message = appointment.has_appointment_with_other_doctor()
                 messages.error(request, error_message)
@@ -213,22 +214,23 @@ def appointment(request):
                 current_date = timezone.now().date()
                 patient = request.user.patient
                 appointments = Appointment.objects.filter(patient=patient)
-    
+
                 context = {
                     'current_date': current_date,
                     'patient_appointments': appointments,
                     'show_error': show_error,
                 }
                 return render(request, 'clinica_app/patient_appointments.html', context)
-               
+
             else:
                 show_error = False
-                
+
             appointment.slot = slot
             slot.status = 'booked'
             slot.save()
             appointment.save()
             messages.success(request, 'Appointment created successfully.')
+
             ###mail al paciente
             subject = 'Confirmación de turno'
             html_message = render_to_string('clinica_app/confirmation.html', {'appointment': appointment})
@@ -236,53 +238,45 @@ def appointment(request):
             from_email = settings.EMAIL_HOST_USER
             to_email = [appointment.patient.user.email]  # Reemplaza "paciente.email" con el campo de email del paciente en tu modelo
             send_mail(subject, plain_message, from_email, to_email, html_message=html_message)
+
             return redirect(reverse('appointment_show', kwargs={'pk': appointment.id}))
-        else:   
+        else:
             messages.error(request, 'Failed to create appointment. Please check the form data.')
     else:
         form = AppointmentCreateForm(request=request)
-    
-    #current_time = datetime.now().time()
-    specialist_list = Specialist.objects.all()
 
+    specialist_list = Specialist.objects.all()
     doctor_list = Doctor.objects.all()
+
     if specialist_id:
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
-   
+
     current_date = timezone.now().date()
-    
+
     if request.user.is_patient:
         appointments = request.user.patient.appointments.filter(date__gte=current_date)
         has_appointment = appointments.exists()
 
     date_selected = bool(date)
     stored_messages = request.session.get('appointment_messages', None)
+
     if stored_messages:
-    # Pasar los mensajes almacenados a la plantilla
+        # Pasar los mensajes almacenados a la plantilla
         context['stored_messages'] = stored_messages
+
     # Clear the appointment messages from the session before filtering
     if 'appointment_messages' in request.session:
         del request.session['appointment_messages']
 
-    
     if date is None:
         date = datetime.now().date()  # Asignar fecha actual si date es None
 
     # Calcular la fecha de inicio de la semana (lunes)
     start_of_week = current_date - timedelta(days=current_date.weekday())
     # Obtener los días de la semana a partir de hoy
-
-    # weekdays = [start_of_week + timedelta(days=i) for i in range(30) if (start_of_week + timedelta(days=i)).weekday()<6]
-
-    if date is None:
-        date = datetime.now().date()  # Asignar fecha actual si date es None
-     # Calcular la fecha de inicio de la semana (lunes)
-    start_of_week = current_date - timedelta(days=current_date.weekday())
-    # Obtener los días de la semana a partir de hoy
-
     weekdays = [start_of_week + timedelta(days=i) for i in range(30) if (start_of_week + timedelta(days=i)).weekday() < 6]
 
-     # Generar lista de horas
+    # Generar lista de horas
     start_hour = time(8, 0)  # Hora de inicio
     end_hour = time(20, 0)  # Hora de fin
     interval = 20  # Intervalo de minutos
@@ -293,14 +287,8 @@ def appointment(request):
         hours.append(current_hour.strftime('%H:%M'))
         current_hour = (datetime.combine(datetime.strptime(str(date), '%Y-%m-%d').date(), current_hour) + timedelta(minutes=interval)).time()
 
-        # current_hour = (datetime.combine(date.today(), current_hour) + timedelta(minutes=interval)).time()
-
     weekdays_length = len(weekdays) + 1  # Obtener la longitud de weekdays y sumar 1
 
-    paginator = Paginator(weekdays, 6)
-
-
-    # Create a Paginator object with the weekdays and specify the number of items per page
     paginator = Paginator(weekdays, 6)
 
     # Get the current page number from the request's GET parameters
@@ -326,16 +314,18 @@ def appointment(request):
         'date_selected': date_selected,
         'stored_messages': stored_messages,
         'show_error': show_error,
-        'has_appointment': has_appointment, 
+        'has_appointment': has_appointment,
         'weekdays': weekdays,
-        'weekdays_list': weekdays_list,
+
         'weekdays_list': weekdays_list,
         'hours': hours,
         'weekdays_length': weekdays_length,
         'page_obj': page_obj,
         'doctor_id': doctor_id,
     }
+
     return render(request, 'clinica_app/appointment.html', context)
+
 
 def appointment_show(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
@@ -696,11 +686,89 @@ def patient_update_admin(request, pk):
 
 #---------------------------------- SLOTS ----------------------------------
 
+def generate_slots(doctor, start_time, end_time, start_date=None, weekday=None, limit_date=None):
+    interval = timedelta(minutes=20)
+
+    # Opción 1: Generar slots en un date específico puse start_date = date desde slot_view
+    if start_date and not weekday and not limit_date:
+        
+
+        current_date = start_date
+        current_datetime = datetime.combine(current_date, start_time)
+        end_datetime = datetime.combine(current_date, end_time)
+        #end_datetime = datetime.combine(datetime.today(), end_time)
+        #slots = []
+
+        while current_datetime < end_datetime:
+            existing_slot = Slot.objects.filter(
+                doctor=doctor,
+                date=current_date,
+                start_time=current_datetime.time(),
+                end_time=(current_datetime + interval).time()
+            ).exists()
+
+            if not existing_slot:
+                new_slot = Slot(doctor=doctor, date=current_date, start_time=current_datetime.time(), end_time=(current_datetime + interval).time())
+                new_slot.save()
+
+            current_datetime += interval
+
+    # Opción 2: Generar slots en base al weekday y limit_date
+    elif not start_date and weekday is not None and limit_date:
+        current_date = start_date if start_date else datetime.now().date()
+
+        while current_date <= limit_date:
+            if current_date.weekday() == weekday:
+                current_datetime = datetime.combine(current_date, start_time)
+                end_datetime = datetime.combine(current_date, end_time)
+
+                while current_datetime < end_datetime:
+                    existing_slot = Slot.objects.filter(
+                        doctor=doctor,
+                        date=current_date,
+                        start_time=current_datetime.time(),
+                        end_time=(current_datetime + interval).time()
+                    ).exists()
+
+                    if not existing_slot:
+                        new_slot = Slot(doctor=doctor, date=current_date, start_time=current_datetime.time(), end_time=(current_datetime + interval).time())
+                        new_slot.save()
+
+                    current_datetime += interval
+
+            current_date += timedelta(days=1)
+
+    # Opción 3: Generar slots en base al weekday, start_date y end_date
+    elif not start_date and weekday is not None and start_date and limit_date:
+        current_date = start_date
+
+        while current_date <= limit_date:
+            if current_date.weekday() == weekday:
+                current_datetime = datetime.combine(current_date, start_time)
+                end_datetime = datetime.combine(current_date, end_time)
+
+                while current_datetime < end_datetime:
+                    existing_slot = Slot.objects.filter(
+                        doctor=doctor,
+                        date=current_date,
+                        start_time=current_datetime.time(),
+                        end_time=(current_datetime + interval).time()
+                    ).exists()
+
+                    if not existing_slot:
+                        new_slot = Slot(doctor=doctor, date=current_date, start_time=current_datetime.time(), end_time=(current_datetime + interval).time())
+                        new_slot.save()
+
+                    current_datetime += interval
+
+            current_date += timedelta(days=1)
+
+
 def slot_view(request):
     doctor_id = request.GET.get('doctor')
     date = request.GET.get('date')
     specialist_id = request.GET.get('specialist')
-    flag= False
+    flag = False
 
     # Obtén todos los turnos
     slots = Slot.objects.all().order_by('date', 'start_time')
@@ -714,59 +782,43 @@ def slot_view(request):
         flag = True
     if specialist_id:
         slots = slots.filter(doctor__specialist_id=specialist_id)
-        flag = True
-   ##-----------------------  
+
+
     if request.method == 'POST':
         form = DoctorAvailabilityForm(request.POST)
         if form.is_valid():
-            slot = form.save(commit=False)
-
-            # Obtén los datos del formulario
             doctor = form.cleaned_data['doctor']
             start_time = form.cleaned_data['start_time']
             end_time = form.cleaned_data['end_time']
-            
-            # Calcula el intervalo de veinte minutos
-            interval = timedelta(minutes=20)
+            limit_date = form.cleaned_data['limit_date']
+            weekday = int(form.cleaned_data['weekday'])
+            start_date = form.cleaned_data['start_date']
+            date = form.cleaned_data['date']
 
-            # Crea múltiples registros basados en el intervalo de veinte minutos
-            current_datetime = datetime.combine(datetime.today(), start_time)
-            end_datetime = datetime.combine(datetime.today(), end_time)
-            slots = []
+            if weekday != 0:
+                generate_slots(doctor, start_time, end_time, weekday=weekday-1, limit_date=limit_date)
+            elif start_date:
+                generate_slots(doctor, start_time, end_time, start_date=start_date, limit_date=limit_date)
+            elif date:
+                generate_slots(doctor, start_time, end_time, start_date=date, limit_date=limit_date)
 
-            while current_datetime < end_datetime:
-                current_time = current_datetime.time()
-
-                slot = Slot(
-                    doctor=slot.doctor,
-                    date=slot.date,
-                    start_time=current_time,
-                    end_time=(current_datetime + interval).time(),
-                    # Otros campos relevantes para los registros
-                )
-                slots.append(slot)
-                current_datetime += interval
-
-            Slot.objects.bulk_create(slots)
-            slot_list = Slot.objects.filter(doctor=doctor).order_by('date', 'doctor', 'start_time')
-            
+        
             return redirect('slot_view')
     else:
-        form = DoctorAvailabilityForm() 
-   
-     # mostrar la slot_list ordenada por fecha y hora
-    if flag==False:
+        form = DoctorAvailabilityForm()    
+
+    if flag == False:
         filtered_slots = slots.order_by('date', 'start_time')
-       
     else:
         filtered_slots = slots
 
     specialist_list = Specialist.objects.all()
 
-    # Get the list of doctors based on the selected specialist
+    # Obtén la lista de doctores según el especialista seleccionado
     doctor_list = Doctor.objects.all()
     if specialist_id:
         doctor_list = doctor_list.filter(specialist_id=specialist_id)
+
     context = {
         'form': form,
         'doctor_list': doctor_list,
@@ -774,6 +826,7 @@ def slot_view(request):
         'specialist_list': specialist_list,
     }
     return render(request, 'clinica_app/admin/appointments/slots.html', context)
+
 
 @login_required
 def edit_slot(request, pk):

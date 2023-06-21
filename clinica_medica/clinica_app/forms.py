@@ -160,16 +160,37 @@ class Branch_officeForm(forms.ModelForm):
             branch_office.save()
         return branch_office
 
-
 class DoctorAvailabilityForm(forms.ModelForm):
+    WEEKDAYS_CHOICES = [
+        (0, 'Seleccionar día'),
+        (1, 'Lunes'),
+        (2, 'Martes'),
+        (3, 'Miércoles'),
+        (4, 'Jueves'),
+        (5, 'Viernes'),
+        (6, 'Sábado'),
+        (7, 'Domingo'),
+    ]
+    
+    date = forms.DateField(label='Fecha', required=False,widget=forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}))
+    weekday = forms.ChoiceField(choices=WEEKDAYS_CHOICES, label='Día de la semana', required=False)
+    start_date = forms.DateField(label='Día de inicio', required=False, widget=forms.DateInput(attrs={'type': 'date', 'min': datetime.today().strftime('%Y-%m-%d') }))
+
+
+    limit_date = forms.DateField(
+        label='hasta fecha',
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+
     class Meta:
         model = Slot
-        fields = ['doctor', 'date', 'start_time', 'end_time' ]
+        fields = ['doctor', 'date','weekday',  'start_date', 'limit_date','start_time', 'end_time']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}),
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
     def clean(self):
         cleaned_data = super().clean()
         start_time = cleaned_data.get('start_time')
@@ -181,8 +202,16 @@ class DoctorAvailabilityForm(forms.ModelForm):
 
         if start_time and end_time and end_time <= start_time:
             self.add_error('end_time', 'El end_time debe ser posterior al start_time.')
+        
+       
+        weekday = int(cleaned_data.get('weekday'))
+        start_date = cleaned_data.get('start_date')
+
+        if not selected_date and weekday == 0 and not start_date:
+            self.add_error('weekday', 'Debes seleccionar un día de la semana o una fecha.')
 
         return cleaned_data
+
     
 class SlotForm(forms.ModelForm):
     class Meta:
