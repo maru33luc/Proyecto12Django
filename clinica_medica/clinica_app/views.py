@@ -25,7 +25,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime
-from django.utils import timezone
+
 
 
 def index(request):
@@ -150,10 +150,12 @@ def appointment(request):
     specialist_id = request.GET.get('specialist')
     date = request.GET.get('date')
 
-    current_datetime = timezone.now()
-
-    # Filtra los slots con fecha igual o posterior a la fecha actual y hora igual o posterior a la hora actual
-    slots = Slot.objects.filter(date__gte=current_datetime.date(), start_time__gte=current_datetime.time())
+    current_datetime = timezone.localtime().now()
+    current_date = current_datetime.date()
+    current_time = current_datetime.time()
+     
+    slots = Slot.objects.filter(Q(date__gt=current_date) | Q(date=current_date, start_time__gte=current_time))
+   
 
     selected_doctor = None
     show_error = False
