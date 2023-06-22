@@ -254,9 +254,7 @@ class AppointmentCreateForm(forms.ModelForm):
 
           # Check if the doctor is available for the selected date and time
         if doctor and date and start_time and end_time:
-            print("start_time:", start_time)
-            print("end_time:", end_time)
-            # Check if the start time is earlier than the end time
+              # Check if the start time is earlier than the end time
             if start_time >= end_time:
                 self.add_error('start_time', 'Start time must be earlier than end time.')
 

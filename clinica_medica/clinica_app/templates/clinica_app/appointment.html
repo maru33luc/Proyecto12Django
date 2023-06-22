@@ -87,9 +87,7 @@
 
 <section>
     <div class="container">
-        
-       
-
+ 
         {% if specialist_selected or selected_doctor or date_selected  %}
 
             {% if selected_doctor %}
@@ -97,11 +95,16 @@
                 <p>Especialidad: {{ selected_doctor.specialist.name }}</p>
                 {% with has_appointment=request.user.patient|has_appointment_with_doctor:doctor_selected %}
                     {% if has_appointment %}
-                        <p>Usted ya tiene un turno con el Dr.: {{ selected_doctor }}{{ doctor.user.first_name }} {{ doctor.user.last_name }}</p>
+                        <p>Sus turnos con el Dr.: {{ selected_doctor }}{{ doctor.user.first_name }} {{ doctor.user.last_name }}</p>
                         <ul>
                             {% for appointment in request.user.patient.appointments.all %}
                                 {% if appointment.doctor == selected_doctor %}
-                                    <li>{{ appointment.date }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
+                                    {% if appointment.date >= current_date %}
+                                     <li>{{ appointment.date }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
+                                    {% else %}
+                                    <p>Ya se atendio el: </p>
+                                    <li style='color:rgb(48, 0, 153)'>{{ appointment.date }} - {{ appointment.start_time }} 
+                                        {% endif %}
                                 {% endif %}
                             {% endfor %}
                         </ul>
