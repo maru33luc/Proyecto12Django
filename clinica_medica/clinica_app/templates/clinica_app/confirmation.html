@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmación de turno</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h3>Su turno ha sido reservado</h3>
+        <h3>con éxito</h3>
+        <table class="table table-striped">
+          <tr>
+            <td><strong>Con el Doctor:</strong></td>
+            <td>{{ appointment.doctor }}</td>
+          </tr>
+          <tr>
+            <td><strong>Fecha:</strong></td>
+            <td>{{ appointment.date }}</td>
+          </tr>
+          <tr>
+            <td><strong>Empieza:</strong></td>
+            <td>{{ appointment.start_time }}</td>
+          </tr>
+          <tr>
+            <td><strong>Termina:</strong></td>
+            <td>{{ appointment.end_time }}</td>
+          </tr>
+          <tr>
+            <td><strong>Notas:</strong></td>
+            <td>{{ appointment.notes }}</td>
+          </tr>
+        </table>
+        <h3>Lo esperamos!</h3>
+        <div class="text-center">
+          <a href="{% url 'index' %}" class="btn btn-primary btn-sm rounded-pill py-3 px-5 me-3">Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

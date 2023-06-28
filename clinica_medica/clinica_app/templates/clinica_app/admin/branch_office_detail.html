@@ -1,0 +1,35 @@
+{% extends 'clinica_app/admin/base.html' %}
+{% block title %}
+	<title>Sucursales</title>
+{% endblock title %}
+{% load messages %}
+{% block content %}
+
+<main class="container">
+    <div class="row">
+    <div class="col-md-4 offset-md-4 mt-5">
+        <h1 class="text-secondary">{{branch_office.name}}</h1>
+        {{ error }} 
+        <form action="" method="POST">
+           
+            {% csrf_token %}
+            {{form.as_p}}
+            <button class="btn btn-primary">Update</button>
+        </form> 
+    <div class="mt-5 d-flex">
+     
+      <form action="{% url 'branch_office_complete' branch_office.id %}" method="POST">
+        {% csrf_token %}
+          <button class="btn btn-secondary ">Complete</button>
+     </form>
+    
+        <form action="{% url 'branch_office_delete' branch_office.id %}" method="POST">
+        {% csrf_token %}
+            <button class="btn btn-danger ms-3">Delete</button>
+        </form>
+    </div>
+    </div>
+    </div>
+</main>
+
+{% endblock %}

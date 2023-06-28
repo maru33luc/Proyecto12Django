@@ -1,5 +1,7 @@
 {% extends 'clinica_app/base1.html' %}
+
 {% block title %} Turnos {% endblock %}
+
 {% block main %}
 {% load static %}
 {% load appointment_tags %}
@@ -28,14 +30,14 @@
                     </div>
                     {% if user.is_patient == True %}
                     <p class="mb-5">Ahora si, usted puede reservar un turno. </p>
-                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'doctors' %}">Turnos</a>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_appointments' %}">Tus turnos</a>
                     {% else %}
                     <p class="mb-5">Si usted aún no completo sus datos luego de registrarse en el sistema, debe hacerlo,
                         de lo contrario no podrá acceder al sistema de turnos. </p>
                     <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar
                         Datos</a>
                     {% endif %}
-                    <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="">Leer más</a>
+                    <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="{% url 'staff' %}">Staff</a>
                 </div>
                 <div class="col-lg-6">
                     <div class="bg-light text-center rounded p-5">
@@ -49,9 +51,7 @@
                                         {% for specialist in specialist_list %}
                                         <option value="{{ specialist.id }}">{{ specialist.name }}</option>
                                         {% endfor %}
-                                        <!-- <option value="1">Department 1</option>
-                                        <option value="2">Department 2</option>
-                                        <option value="3">Department 3</option> -->
+                                
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
@@ -70,14 +70,7 @@
                                             style="height: 55px;" min="{{ current_date|date:'Y-m-d' }}">
                                     </div>
                                 </div>
-                                <!-- <div class="col-12 col-sm-6">
-                                    <div class="time" id="time" data-target-input="nearest">
-                                        <input type="text" class="form-control bg-white border-0 datetimepicker-input"
-                                            placeholder="Time" data-target="#time" data-toggle="datetimepicker"
-                                            style="height: 55px;">
-                                    </div>
-                                </div>  -->
-                              
+
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">Filtrar</button>
                                 </div>
@@ -93,117 +86,187 @@
 </section>
 
 <section>
-   
     <div class="container">
-    {% if specialist_selected  or selected_doctor or date_selected %}
-             {% if selected_doctor %}
-               
-                 {% with has_appointment=request.user.patient|has_appointment_with_doctor:doctor_selected %}
+        
+       
+
+        {% if specialist_selected or selected_doctor or date_selected  %}
+
+            {% if selected_doctor %}
+                <h2>Doctor seleccionado: {{ selected_doctor }}</h2>
+                <p>Especialidad: {{ selected_doctor.specialist.name }}</p>
+                {% with has_appointment=request.user.patient|has_appointment_with_doctor:doctor_selected %}
                     {% if has_appointment %}
-                      <p>Usted ya tiene un turno con el Dr.: {{ selected_doctor }}{{ doctor.user.first_name }} {{ doctor.user.last_name }}</p>
-                     <ul>
-                     {% for appointment in request.user.patient.appointments.all %}
-                          {% if appointment.doctor == selected_doctor %}
-                             <li>{{ appointment.date }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
-                          {% endif %}
-                     {% endfor %}
-                     </ul>
-    
+                        <p>Usted ya tiene un turno con el Dr.: {{ selected_doctor }}{{ doctor.user.first_name }} {{ doctor.user.last_name }}</p>
+                        <ul>
+                            {% for appointment in request.user.patient.appointments.all %}
+                                {% if appointment.doctor == selected_doctor %}
+                                    <li>{{ appointment.date }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
                     {% else %}
-                         <p>No tiene turnos programados con el Dr.{{ selected_doctor }}{{ doctor.user.first_name }} {{ doctor.user.last_name }}.</p>
+                        <p>No tiene turnos programados con el Dr.{{ selected_doctor }}{{ doctor.user.first_name }} {{ doctor.user.last_name }}.</p>
                     {% endif %}
                 {% endwith %}
             {% else %}
-                 {% if specialist_selected %}
-                 {% with has_appointment=request.user.patient|has_appointment_with_specialist:specialist_selected %}
+                {% if specialist_selected %}
+                    <h2>Especialidad seleccionada: {{ specialist.name }}</h2>
+                    {% with has_appointment=request.user.patient|has_appointment_with_specialist:specialist_selected %}
+                        {% if has_appointment %}
+                            <p>Usted ya tiene turnos con médicos de la especialidad: {{ specialist.name }}</p>
+                            <ul>
+                                {% for appointment in request.user.patient.appointments.all %}
+                                    {% if appointment.doctor.specialist.id == specialist.id %}
+                                        <li>{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }} - {{ appointment.date }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No tiene turnos programados con médicos de la especialidad: {{ specialist.name }}</p>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            {% endif %}
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if stored_messages %}
+                <ul class="messages">
+                    {% for message in stored_messages %}
+                        <div class="alert alert-danger">{{ message|safe }}</div>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        
+        <!-- que me muestre el siguiente codigo si y solo si no hay doctor_selected-->
+        {% if not doctor_selected %}
+
+          
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Especialidad</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Termina</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for slot in slot_list %}
                     
-                          {% if has_appointment %}
-                             <p>Usted ya tiene turnos con médicos de la especialidad: {{ specialist.name }}</p>
-                          <ul>
-                            {% for appointment in request.user.patient.appointments.all %}
-                            
-                            {% if appointment.doctor.specialist.id == specialist.id %}
-                                
-                                     <li>{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }} - {{ appointment.date }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
-                             {% endif %}  
+                <tr>
+                    <td>{{ slot.doctor }}</td>
+                    <td>{{ slot.doctor.specialist.name }}</td>
+                    <td>{{ slot.date }}</td>
+                    <td>{{ slot.start_time }}</td>
+                    <td>{{ slot.end_time }}</td>
+                    <td>{{ slot.get_status_display }}</td>
+                    <td>
+                        {% if slot.status == 'available' %}
+            
+                            <form method="post" action="{% url 'appointment' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
+                                <input type="hidden" name="date" value="{{ slot.date }}">
+                                <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
+                                <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
+                                <input type="hidden" name="notes" value="">
+                                <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                                <button type="submit" class="btn btn-primary">Reservar</button>
+                            </form>
+                        {% else %}
+                            Sin turnos disponibles
+                        {% endif %}
+                    </td>
+                </tr>
+            
+            {% empty %}
+                <tr>
+                    <td colspan="7">No available slots found.</td>
+                </tr>
+                
+            {% endfor %}
+            
+                    </tbody>
+                </table>
+
+            
+       {% else %}
+        <div class="container">
+            <h3>Horarios disponibles:</h3>
+            <table class="agenda-table table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Hora</th>
+                        {% for day in weekdays_list %}
+                            <th scope="col">
+                                {{ day|date:"l" }}
+                                <br>
+                                {{ day|date:"d-m-Y" }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hour in hours %}
+                        <tr>
+                            <td>{{ hour }}</td>
+                            {% for day in weekdays_list %}
+                                <td>
+                                    {% for slot in slot_list %}
+                                        {% if slot.date == day and slot.start_time|time:'H:i' == hour %}
+                                            {% if slot.status == 'available' %}
+                                                <form method="POST" action="{% url 'appointment' %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
+                                                    <input type="hidden" name="date" value="{{ slot.date }}">
+                                                    <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
+                                                    <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
+                                                    <input type="hidden" name="notes" value="">
+                                                    <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                                                    <button type="submit" class="btn btn-primary">Reservar</button>
+                                                </form>
+                                            {% else %}
+                                                Ocupado
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
                             {% endfor %}
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="{{ weekdays|length  }}">No hay slots disponibles.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <ul class="pagination">
+            <!-- Enlaces de página -->
+            {% for page_num in page_obj.paginator.page_range %}
+                <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ page_num }}&doctor={{ doctor_id }}"> {{ page_num }} </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+    </section>
 
-
-                               
-                              </ul>
-                         {% else %}
-                             <p>No tiene turnos programados con médicos de la especialidad: {{ specialist.name }}</p>
-                         {% endif %}
-                     {% endwith %}
-                 {% endif %}
-
-
-            {% endif %}
-
-</div>     
-
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Doctor</th>
-                <th>Especialidad</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Termina</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for slot in slot_list %}
-    <tr>
-        <td>{{ slot.doctor }}</td>
-        <td>{{ slot.doctor.specialist.name }}</td>
-        <td>{{ slot.date }}</td>
-        <td>{{ slot.start_time }}</td>
-        <td>{{ slot.end_time }}</td>
-        <td>{{ slot.get_status_display }}</td>
-        <td>
-            {% if slot.status == 'available' %}
-
-                <form method="post" action="{% url 'appointment' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
-                    <input type="hidden" name="date" value="{{ slot.date }}">
-                    <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
-                    <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
-                    <input type="hidden" name="notes" value="">
-                    <input type="hidden" name="slot_id" value="{{ slot.id }}">
-                    <button type="submit" class="btn btn-primary">Reservar</button>
-                </form>
-            {% else %}
-                Sin turnos disponibles
-            {% endif %}
-        </td>
-    </tr>
-{% empty %}
-    <tr>
-        <td colspan="7">No available slots found.</td>
-    </tr>
-{% endfor %}
-
-        </tbody>
-    </table>
-{% endif %}
+    {% endif %}
 </section>
 
 
-
-
-
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'lib/easing/easing.min.js' %" }></script>
-<script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
-<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
-<script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
-<script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
-<script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-<script src="{% static 'js/main.js' %}"></script>
 {% endblock %}

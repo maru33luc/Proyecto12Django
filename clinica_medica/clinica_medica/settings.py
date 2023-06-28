@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'clinica_medica.urls'
@@ -122,8 +123,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+LOGIN_URL = '/clinica_app/log_in'
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
-TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -146,3 +148,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'clinica_app/media/')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_FROM_EMAIL = 'tu_correo@gmail.com'
+
+# Configuración del servidor SMTP (Gmail en este ejemplo)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'maru33luc@gmail.com'
+EMAIL_HOST_PASSWORD = 'vsubfjyjsywemmgf'
+

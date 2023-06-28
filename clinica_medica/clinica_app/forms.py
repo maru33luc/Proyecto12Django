@@ -2,12 +2,14 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from datetime import datetime, date, timedelta
 import re
-from .models import User, Patient, Doctor, Specialist, DoctorAvailability, Appointment, Slot
+from .models import User, Patient, Doctor, Specialist, DoctorAvailability, Appointment, Slot , Branch_office
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 import os
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail, BadHeaderError
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(label="Nombre: ", required=True)
@@ -58,11 +60,27 @@ class LoginForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Password')
 
-
-class ContactoForm(forms.Form):
-    first_name = forms.CharField(label="Nombre: ", required=True)
-    last_name = forms.CharField(label="Apellido: ", required=True)
+class ContactForm(forms.Form):
+    sender = forms.CharField(label="Nombre: ", required=True)
     email = forms.EmailField(label="Email: ", required=True)
+    message = forms.CharField(label="Mensaje:", widget=forms.Textarea, required=True)
+
+    def send_email(self):
+        sender = self.cleaned_data['sender']
+        email = self.cleaned_data['email']
+        message = self.cleaned_data['message']
+
+        subject = 'Nuevo mensaje de contacto'
+        body = f"Remitente: {sender}\nEmail: {email}\nMensaje: {message}"
+        from_email = settings.EMAIL_HOST_USER
+        to_email = [settings.EMAIL_HOST_USER]  # Puedes configurar la dirección de correo electrónico de destino
+
+        try:
+            send_mail(subject, body, from_email, to_email, fail_silently=False)
+            return True  # El correo se envió exitosamente
+        except BadHeaderError as e:
+            print(e)  # Opcional: muestra el error en la consola para depuración
+            return False  # Hubo un error al enviar el correo
 
 class PatientForm(forms.ModelForm):
     
@@ -109,29 +127,70 @@ class SpecialistForm(forms.ModelForm):
         }
   
 class DoctorForm(forms.ModelForm):
+    branch_offices = forms.ModelMultipleChoiceField(
+        queryset=Branch_office.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+    )
+    
     class Meta:
         model = Doctor
-        fields = ['dni','phone','address','city','mr_number','specialist','image_profile']
+        fields = ['dni','phone','address','city','mr_number','specialist','image_profile','branch_offices']
         widgets = {
             'specialist': forms.Select(attrs={'class': 'form-control'}),
             'image_profile': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         }  
-
     def save(self, commit=True):
         doctor = super().save(commit=False)
         if commit:
             doctor.save()
+            self.save_m2m()  
         return doctor
+    
+class Branch_officeForm(forms.ModelForm):
+    class Meta:
+        model = Branch_office
+        fields = ['name','phone','address']
+        widgets = {
+            'branch_office': forms.Select(attrs={'class': 'form-control'}),
+        }  
+           
+    def save(self, commit=True):
+        branch_office = super().save(commit=False)
+        if commit:
+            branch_office.save()
+        return branch_office
 
 class DoctorAvailabilityForm(forms.ModelForm):
+    WEEKDAYS_CHOICES = [
+        (0, 'Seleccionar día'),
+        (1, 'Lunes'),
+        (2, 'Martes'),
+        (3, 'Miércoles'),
+        (4, 'Jueves'),
+        (5, 'Viernes'),
+        (6, 'Sábado'),
+        (7, 'Domingo'),
+    ]
+    
+    date = forms.DateField(label='Fecha', required=False,widget=forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}))
+    weekday = forms.ChoiceField(choices=WEEKDAYS_CHOICES, label='Día de la semana', required=False)
+    start_date = forms.DateField(label='Día de inicio', required=False, widget=forms.DateInput(attrs={'type': 'date', 'min': datetime.today().strftime('%Y-%m-%d') }))
+
+
+    limit_date = forms.DateField(
+        label='hasta fecha',
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+
     class Meta:
         model = Slot
-        fields = ['doctor', 'date', 'start_time', 'end_time' ]
+        fields = ['doctor', 'date','weekday',  'start_date', 'limit_date','start_time', 'end_time']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}),
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
     def clean(self):
         cleaned_data = super().clean()
         start_time = cleaned_data.get('start_time')
@@ -143,8 +202,16 @@ class DoctorAvailabilityForm(forms.ModelForm):
 
         if start_time and end_time and end_time <= start_time:
             self.add_error('end_time', 'El end_time debe ser posterior al start_time.')
+        
+       
+        weekday = int(cleaned_data.get('weekday'))
+        start_date = cleaned_data.get('start_date')
+
+        if not selected_date and weekday == 0 and not start_date:
+            self.add_error('weekday', 'Debes seleccionar un día de la semana o una fecha.')
 
         return cleaned_data
+
     
 class SlotForm(forms.ModelForm):
     class Meta:
@@ -184,9 +251,8 @@ class AppointmentCreateForm(forms.ModelForm):
         start_time = cleaned_data.get('start_time')
         end_time = cleaned_data.get('end_time')
         notes = cleaned_data.get('notes')
-        print("start_time:", start_time)
-        print("end_time:", end_time)
-        # Check if the doctor is available for the selected date and time
+
+          # Check if the doctor is available for the selected date and time
         if doctor and date and start_time and end_time:
             print("start_time:", start_time)
             print("end_time:", end_time)
@@ -221,8 +287,8 @@ class AppointmentCreateForm(forms.ModelForm):
         if commit:
             instance.save()
     
-        return instance
-    
+        return instance 
+
 class AppointmentEditForm(forms.ModelForm):
     class Meta:
         model = Appointment
