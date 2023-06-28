@@ -91,9 +91,9 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "clinica_medica",
         "USER": "postgres",
-        "PASSWORD": "Maru29luc",
+        "PASSWORD": "maru29luc",
         "HOST": "localhost",
-        "PORT": "5432",
+        "PORT": "5432", 
     }
 }
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000  # Adjust the value as per your requirements
