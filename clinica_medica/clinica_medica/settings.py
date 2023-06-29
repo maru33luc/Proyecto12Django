@@ -41,7 +41,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap5',
     'clinica_app',
+   # 'social_django',
 ]
+
+# AUTHENTICATION_BACKENDS = [
+#     'social_core.backends.google.GoogleOAuth2',
+#     'django.contrib.auth.backends.ModelBackend',
+# ]
+
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'tu_id_de_cliente_de_google'
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'tu_secreto_de_cliente_de_google'
+
 AUTH_USER_MODEL = "clinica_app.User"
 
 MIDDLEWARE = [

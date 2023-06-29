@@ -118,7 +118,7 @@ class Slot(DoctorAvailability):
         ('booked', 'Booked'),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
-
+    #con unique_together estos campos son unicos, no puede haber dos slots iguales
     class Meta:
         unique_together = ['doctor', 'date', 'start_time', 'end_time']
 
@@ -128,12 +128,26 @@ class Slot(DoctorAvailability):
     # TURNOS #
 
 class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('stand_by', 'Stand_by'),
+        ('registered', 'Registered'),
+        ('waiting', 'Waiting'),
+        ('inside', 'Inside'),
+        ('finished', 'Finished'),
+        ('missed', 'Missed')
+    ]
+    STATUS_ORIGIN = [
+        ('web', 'Web'),
+        ('phone','Phone'),
+    ]
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE,  related_name='appointments')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField(default=datetime.time(9, 0)) # Add default start time
     end_time = models.TimeField(null=True)
     notes = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='stand_by') 
+    origin = models.CharField(max_length=10, choices=STATUS_ORIGIN, default='web' )
     
     def has_appointment_with_other_doctor(self):
         conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(

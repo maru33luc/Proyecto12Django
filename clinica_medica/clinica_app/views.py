@@ -407,7 +407,8 @@ def doctor_appointments(request):
         return redirect('log_in')
 
 #---------------------------------- ADMIN ----------------------------------
-
+#poner permisos de admin
+@login_required
 def home_admin(request):
     patients = Patient.objects.all()
     doctors = Doctor.objects.all()
@@ -609,24 +610,24 @@ def patients_consults(request):
 def cancel_appointment(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)
 
-    if request.user != appointment.patient.user:
-        raise Http404()
-    slot = Slot.objects.get(doctor_id=appointment.doctor_id, date=appointment.date, start_time=appointment.start_time)
+    # if request.user != appointment.patient.user:
+    #     raise Http404()
+    # slot = Slot.objects.get(doctor_id=appointment.doctor_id, date=appointment.date, start_time=appointment.start_time)
 
     if request.method == 'POST':
         # Cambia el estado del slot a "available"
-        slot.status = 'available'
-        slot.save()
+        # slot.status = 'available'
+        # slot.save()
       
         appointment.delete()
 
         messages.success(request, 'Appointment cancelled successfully.')
-        return redirect('patient_appointments')
+        return redirect('doctors_consults')
 
     context = {
         'appointment': appointment,
     }
-    return render(request, 'clinica_app/appointments/cancel_appointment.html', context)
+    return render(request, 'clinica_app/admin/appointments/cancel_appointment.html', context)
 
 def appointment_edit(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)

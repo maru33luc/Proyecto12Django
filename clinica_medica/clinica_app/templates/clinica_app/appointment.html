@@ -140,13 +140,7 @@
                 </ul>
             {% endif %}
 
-            {% if stored_messages %}
-                <ul class="messages">
-                    {% for message in stored_messages %}
-                        <div class="alert alert-danger">{{ message|safe }}</div>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+            
         </div>
         
         <!-- que me muestre el siguiente codigo si y solo si no hay doctor_selected-->

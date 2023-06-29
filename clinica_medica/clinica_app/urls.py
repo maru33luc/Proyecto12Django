@@ -5,6 +5,7 @@ from . import views
 from django.contrib.auth import views as auth_views
 from .views import SpecialistsListView
 
+
 urlpatterns = [
     path('', views.index, name="index"),
     path('services/', views.services, name="services"),
