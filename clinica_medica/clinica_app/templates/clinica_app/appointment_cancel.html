@@ -1,0 +1,32 @@
+{% extends 'clinica_app/base1.html' %}
+{% block title %} Turnos {% endblock %}
+{% block main %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+  <div class="row py-3">
+      <div class="col-12 text-center">
+          <h1 class="display-3 text-white animated zoomIn">Cancelar</h1>
+          <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+          <i class="far fa-circle text-white px-2"></i>
+          <a href="{% url 'appointment' %}" class="h4 text-white">Turnos</a>
+      </div>
+  </div>
+</div>
+<!-- Hero End -->
+<div class="container">
+  <div class="col-12 text-center">
+  <h1>Cancelar su turno</h1>
+
+  <p>Esta seguro que quiere cancelar el turno?</p>
+  <p>con el Dr. {{ appointment.doctor.user.last_name }} {{ appointment.doctor.user.first_name }}</p>
+  <p> el día: {{appointment.date }}</p>
+  <p>de: {{ appointment.start_time|time:"g:i A" }}</p>
+  <p>hasta: {{ appointment.end_time|time:"g:i A" }}</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, Cancelar Turno</button>
+    <a href="{% url 'appointment_show' pk=appointment.pk %}" class="btn btn-secondary">No, Volver</a>
+  </form>
+</div>
+</div>
+{% endblock %}

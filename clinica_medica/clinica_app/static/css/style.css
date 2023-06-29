@@ -38,7 +38,7 @@ section {
 
 
 .container {
-    max-width: 1200px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 20px;
 }
@@ -63,9 +63,17 @@ footer {
   color: #5083E5;
 }
 .nav-item .nav-link{
-    font-size: 20px;
+    font-size: 1.3em;
 }
 
+.navbar-brand span.clinica{
+  font-size: 1.8em;
+  color: #5083E5;
+}
+.navbar-brand span.medica{
+  font-size: 1.8em;
+  color: #fff;
+}
 /* Color of the links AFTER scroll */
 .navbar-scrolled .nav-link,
 .navbar-scrolled .navbar-toggler-icon,
@@ -857,7 +865,36 @@ textarea:valid+label {
   fill: #fff;
 }
 
+@media only screen and (max-width: 1380px) {
+  .container{
+    max-width: 98%;
+  }
+  .nav-item .nav-link{
+    font-size: 1.2em;
+}
+.navbar-brand span.clinica{
+  font-size: 1.3em;
+}
+.navbar-brand span.medica{
+  font-size: 1.3em;
+}
 
+}
+@media only screen and (max-width: 1180px) {
+  .container{
+    max-width: 98%;
+  }
+  .nav-item .nav-link{
+    font-size: .95em;
+}
+.navbar-brand span.clinica{
+  font-size: 1em;
+}
+.navbar-brand span.medica{
+  font-size: 1em;
+}
+
+}
 
 @media only screen and (max-width: 768px) {
     /* Estilos para el contenedor principal de secciones sobre nosotros y servicios Estilos para hacerlo responsive */

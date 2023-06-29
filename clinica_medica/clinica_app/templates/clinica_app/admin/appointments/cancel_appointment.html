@@ -1,18 +1,7 @@
-{% extends 'clinica_app/base1.html' %}
+{% extends 'clinica_app/admin/base.html' %}
 {% block title %} Turnos {% endblock %}
-{% block main %}
-<!-- Hero Start -->
-<div class="container-fluid bg-primary py-5 hero-header mb-1">
-  <div class="row py-3">
-      <div class="col-12 text-center">
-          <h1 class="display-3 text-white animated zoomIn">Cancelar</h1>
-          <a href="{% url 'index' %}" class="h4 text-white">Home</a>
-          <i class="far fa-circle text-white px-2"></i>
-          <a href="{% url 'appointment' %}" class="h4 text-white">Turnos</a>
-      </div>
-  </div>
-</div>
-<!-- Hero End -->
+{% block content %}
+
 <div class="container">
   <div class="col-12 text-center">
   <h1>Cancelar su turno</h1>

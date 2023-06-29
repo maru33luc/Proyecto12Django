@@ -39,9 +39,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_bootstrap5',
+    'bootstrap5',
     'clinica_app',
+   # 'social_django',
 ]
+
+# AUTHENTICATION_BACKENDS = [
+#     'social_core.backends.google.GoogleOAuth2',
+#     'django.contrib.auth.backends.ModelBackend',
+# ]
+
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'tu_id_de_cliente_de_google'
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'tu_secreto_de_cliente_de_google'
+
 AUTH_USER_MODEL = "clinica_app.User"
 
 MIDDLEWARE = [
@@ -90,9 +100,9 @@ WSGI_APPLICATION = 'clinica_medica.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "clinica_medica",
+        "NAME": "Clinica_medica",
         "USER": "postgres",
-        "PASSWORD": "Maru29luc",
+        "PASSWORD": "1234",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -155,6 +165,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'maru33luc@gmail.com'
-EMAIL_HOST_PASSWORD = 'vsubfjyjsywemmgf'
+EMAIL_HOST_USER = 'atorresgolf@gmail.com'
+EMAIL_HOST_PASSWORD = 'btevzwmrahasopfu'
+
+
 
