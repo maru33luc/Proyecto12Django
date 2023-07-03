@@ -74,6 +74,12 @@
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">Filtrar</button>
                                 </div>
+                                <div class="col-12">
+                                    <a href="?">
+                                        <button class="btn btn-outline-primary w-100 py-3" type="button">Limpiar filtros</button>
+
+                                    </a>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -85,8 +91,8 @@
     
 </section>
 
-<section>
-    <div class="container">
+<section id="container">
+    <div class="container" >
  
         {% if specialist_selected or selected_doctor or date_selected  %}
 
@@ -142,8 +148,7 @@
         
         <!-- que me muestre el siguiente codigo si y solo si no hay doctor_selected-->
         {% if not doctor_selected %}
-
-          
+ 
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -157,7 +162,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for slot in slot_list %}
+                        <!-- Contenido de los slots -->
+            {% for slot in slot_list %}
                     
                 <tr>
                     <td>{{ slot.doctor }}</td>
@@ -187,7 +193,7 @@
             
             {% empty %}
                 <tr>
-                    <td colspan="7">No available slots found.</td>
+                    <td colspan="7">Sin turnos disponibles.</td>
                 </tr>
                 
             {% endfor %}
@@ -195,8 +201,14 @@
                     </tbody>
                 </table>
 
-            
-       {% else %}
+       
+       {% endif %}  <!--cierra el if not doctor_selected-->         
+       
+       {% if doctor_selected %}<!--entra aqui si selecciono solo doctor --> 
+               {% if date_selected %}
+                    jghjghjhgjhj
+               {% else %}
+                
        <div class="container">
         <h3>Horarios disponibles:</h3>
         <div class="table-responsive">
@@ -214,7 +226,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Contenido de los slots -->
+                    {% if not slot_list %}
+                    
+                                    <tr >
+                                        <td colspan="{{ weekdays|length }}" style="height: 50px;">Sin turnos disponibles.</td>
+                                    </tr>
+                     {% else %}               
                     {% for hour in hours %}
+                    
                         <tr>
                             <td class="sticky-column">{{ hour }}</td>
                             {% for day in weekdays_list %}
@@ -236,23 +256,17 @@
                                                 Ocupado
                                             {% endif %}
                                         {% endif %}
+                                    
                                     {% endfor %}
                                 </td>
                             {% endfor %}
                         </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="{{ weekdays|length }}">No hay slots disponibles.</td>
-                        </tr>
+                    
                     {% endfor %}
+                    
                 </tbody>
             </table>
         </div>
-    </div>
-  
-    
-    
-    
         <ul class="pagination">
             <!-- Enlaces de página -->
             {% for page_num in page_obj.paginator.page_range %}
@@ -261,10 +275,16 @@
                 </li>
             {% endfor %}
         </ul>
-        {% endif %}
+    </div>
+   
+       
+        {% endif %} <!--if not slot_list-->
         
-    </section>
-
+        {% endif %}<!--cierra si tiene doctor y date_selected -->
+        {% endif %}<!--cierra el if doctor_selected -->
+        
+    
+<!--cierra el ingreso ocn filtros -->
     {% endif %}
 </section>
 
@@ -284,6 +304,13 @@
 
 </style>
 <script>
+     function limpiarFiltros() {
+        // Eliminar todos los elementos hijos del contenedor de la tabla de slots
+        var slotTableBody = document.getElementById('container');
+        while (slotTableBody.firstChild) {
+            slotTableBody.removeChild(slotTableBody.firstChild);
+        }
+    }
     window.addEventListener('scroll', () => {
         const tableOffset = document.querySelector('.agenda-table').offsetTop;
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
