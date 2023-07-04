@@ -148,7 +148,7 @@
         
         <!-- que me muestre el siguiente codigo si y solo si no hay doctor_selected-->
         {% if not selected_doctor %}
- 
+ <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -200,13 +200,13 @@
             
                     </tbody>
                 </table>
-
+            </div>
        
        {% endif %}  <!--cierra el if not doctor_selected-->         
        
        {% if selected_doctor %}<!--entra aqui si selecciono solo doctor --> 
                {% if date_selected %}
-              
+              <div class="table-responsive">
                <table class="table table-hover">
                 <thead>
                     <tr>
@@ -254,7 +254,7 @@
         
                 </tbody>
             </table>
-
+        </div>
    
                {% else %}
                 
