@@ -29,13 +29,11 @@
                         <h1 class="display-4">Consulte sus turnos</h1>
                     </div>
                     {% if user.is_patient == True %}
-                    <p class="mb-5">Ahora si, usted puede reservar un turno. </p>
+                    <p class="mb-5">Ahora sí, usted puede reservar un turno.</p>
                     <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_appointments' %}">Tus turnos</a>
                     {% else %}
-                    <p class="mb-5">Si usted aún no completo sus datos luego de registrarse en el sistema, debe hacerlo,
-                        de lo contrario no podrá acceder al sistema de turnos. </p>
-                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar
-                        Datos</a>
+                    <p class="mb-5">Si usted aún no ha completado sus datos luego de registrarse en el sistema, debe hacerlo, de lo contrario no podrá acceder al sistema de turnos.</p>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar Datos</a>
                     {% endif %}
                     <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="{% url 'staff' %}">Staff</a>
                 </div>
@@ -45,13 +43,11 @@
                         <form method="get">
                             <div class="row g-3">
                                 <div class="col-12 col-sm-6">
-                                    <select name="specialist" id="specialist" class="form-select bg-white border-0"
-                                        style="height: 55px;">
+                                    <select name="specialist" id="specialist" class="form-select bg-white border-0" style="height: 55px;">
                                         <option value="">Especialidad</option>
                                         {% for specialist in specialist_list %}
                                         <option value="{{ specialist.id }}">{{ specialist.name }}</option>
                                         {% endfor %}
-                                
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
@@ -60,19 +56,21 @@
                                         {% for doctor in doctor_list %}
                                         <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
                                         {% endfor %}
-                                        
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="date" id="date" data-target-input="nearest">
-                                        <input type="date" id='date' name='date' class="form-control bg-white border-0 "
-                                            placeholder="Día" 
-                                            style="height: 55px;" min="{{ current_date|date:'Y-m-d' }}">
+                                        <input type="date" id='date' name='date' class="form-control bg-white border-0 " placeholder="Día" style="height: 55px;" min="{{ current_date|date:'Y-m-d' }}">
                                     </div>
                                 </div>
-
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">Filtrar</button>
+                                </div>
+                                <div class="col-12">
+                                    <a href="?">
+                                        <button class="btn btn-outline-primary w-100 py-3" type="button" >Limpiar filtros</button>
+
+                                    </a>
                                 </div>
                             </div>
                         </form>
@@ -82,6 +80,8 @@
         </div>
     </div>
     <!-- Appointment End -->
+</section>
+
     
 </section>
 
@@ -89,7 +89,6 @@
     <div class="container">
         
        
-
         {% if specialist_selected or selected_doctor or date_selected  %}
 
             {% if selected_doctor %}
@@ -262,11 +261,14 @@
             {% endfor %}
         </ul>
         {% endif %}
-        
-    </section>
+       
+  
 
     {% endif %}
 </section>
 
 
+
 {% endblock %}
+
+
