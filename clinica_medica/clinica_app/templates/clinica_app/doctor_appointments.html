@@ -49,12 +49,14 @@
             </thead>
             <tbody>
                 {% for appointment in appointments %}
+                
                     <tr>
                         <td>{{ appointment.patient.user.get_full_name }}</td>
                         <td>{{ appointment.date }}</td>
                         <td>{{ appointment.start_time }}</td>
                         <td>{{ appointment.notes }}</td>
                     </tr>
+                    
                 {% empty %}
                     <tr>
                         <td colspan="4">No se encontraron turnos.</td>

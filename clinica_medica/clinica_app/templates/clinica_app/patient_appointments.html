@@ -41,12 +41,13 @@
                     {% for appointment in patient_appointments %}
                         {% if appointment.date >= current_date %}
                             <tr>
-                                <td>{{ appointment.date }}</td>
+                                <td>{{ appointment.date|date:"d/m/Y" }}</td>
                                 <td>{{ appointment.start_time }}</td>
                                 <td>{{ appointment.doctor }}</td>
-                                <td><a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-sm btn-outline-danger">Cancelar</a></td>
+                                <td><a href="{% url 'appointment_cancel' appointment.id %}" class="btn btn-sm btn-outline-danger">Cancelar</a></td>
                             </tr>
                         {% endif %}
+                        
                     {% endfor %}
                 </tbody>
             </table>

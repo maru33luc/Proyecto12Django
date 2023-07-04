@@ -23,6 +23,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 
 
 
+
 urlpatterns = [
     path('clinica_app/', include('clinica_app.urls')),
     path('admin/', admin.site.urls),
