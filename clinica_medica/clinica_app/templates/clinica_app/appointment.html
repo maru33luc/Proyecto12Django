@@ -147,7 +147,7 @@
         </div>
         
         <!-- que me muestre el siguiente codigo si y solo si no hay doctor_selected-->
-        {% if not doctor_selected %}
+        {% if not selected_doctor %}
  
                 <table class="table table-hover">
                     <thead>
@@ -204,9 +204,58 @@
        
        {% endif %}  <!--cierra el if not doctor_selected-->         
        
-       {% if doctor_selected %}<!--entra aqui si selecciono solo doctor --> 
+       {% if selected_doctor %}<!--entra aqui si selecciono solo doctor --> 
                {% if date_selected %}
-                    jghjghjhgjhj
+              
+               <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Termina</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Contenido de los slots -->
+        {% for slot in slot_list %}
+                {% if date == slot.date %}
+            <tr>
+                <td>{{ slot.date|date:"d/m/Y" }}</td>
+                <td>{{ slot.start_time }}</td>
+                <td>{{ slot.end_time }}</td>
+                <td>{{ slot.get_status_display }}</td>
+                <td>
+                    {% if slot.status == 'available' %}
+        
+                        <form method="post" action="{% url 'appointment' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
+                            <input type="hidden" name="date" value="{{ slot.date }}">
+                            <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
+                            <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
+                            <input type="hidden" name="notes" value="">
+                            <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                            <button type="submit" class="btn btn-primary">Reservar</button>
+                        </form>
+                    {% else %}
+                        Sin turnos disponibles
+                    {% endif %}
+                </td>
+            </tr>
+        {% endif %}
+        {% empty %}
+            <tr>
+                <td colspan="7">Sin turnos disponibles.</td>
+            </tr>
+            
+        {% endfor %}
+        
+                </tbody>
+            </table>
+
+   
                {% else %}
                 
        <div class="container">

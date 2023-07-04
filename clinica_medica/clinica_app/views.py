@@ -324,7 +324,7 @@ def appointment(request):
         'show_error': show_error,
         'has_appointment': has_appointment,
         'weekdays': weekdays,
-
+        'date': date,
         'weekdays_list': weekdays_list,
         'hours': hours,
         'weekdays_length': weekdays_length,
