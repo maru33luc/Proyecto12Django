@@ -156,20 +156,12 @@ def appointment(request):
     specialist_id = request.GET.get('specialist')
     date = request.GET.get('date')
 
-<<<<<<< HEAD
-    # Filtra los slots con fecha igual o posterior a la fecha actual y hora igual o posterior a la hora actual
-    slots = Slot.objects.all()
-=======
->>>>>>> 76319fef19d5341f608c8da0987a538d5f26bc5f
     current_datetime = timezone.localtime().now()
     current_date = current_datetime.date()
     current_time = current_datetime.time()
      
     slots = Slot.objects.filter(Q(date__gt=current_date) | Q(date=current_date, start_time__gte=current_time))
-<<<<<<< HEAD
-=======
    
->>>>>>> 76319fef19d5341f608c8da0987a538d5f26bc5f
 
     selected_doctor = None
     show_error = False

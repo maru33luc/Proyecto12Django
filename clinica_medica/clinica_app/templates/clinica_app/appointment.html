@@ -29,11 +29,13 @@
                         <h1 class="display-4">Consulte sus turnos</h1>
                     </div>
                     {% if user.is_patient == True %}
-                    <p class="mb-5">Ahora sí, usted puede reservar un turno.</p>
+                    <p class="mb-5">Ahora si, usted puede reservar un turno. </p>
                     <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_appointments' %}">Tus turnos</a>
                     {% else %}
-                    <p class="mb-5">Si usted aún no ha completado sus datos luego de registrarse en el sistema, debe hacerlo, de lo contrario no podrá acceder al sistema de turnos.</p>
-                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar Datos</a>
+                    <p class="mb-5">Si usted aún no completo sus datos luego de registrarse en el sistema, debe hacerlo,
+                        de lo contrario no podrá acceder al sistema de turnos. </p>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_create' %}">Completar
+                        Datos</a>
                     {% endif %}
                     <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="{% url 'staff' %}">Staff</a>
                 </div>
@@ -43,11 +45,13 @@
                         <form method="get">
                             <div class="row g-3">
                                 <div class="col-12 col-sm-6">
-                                    <select name="specialist" id="specialist" class="form-select bg-white border-0" style="height: 55px;">
+                                    <select name="specialist" id="specialist" class="form-select bg-white border-0"
+                                        style="height: 55px;">
                                         <option value="">Especialidad</option>
                                         {% for specialist in specialist_list %}
                                         <option value="{{ specialist.id }}">{{ specialist.name }}</option>
                                         {% endfor %}
+                                
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
@@ -56,15 +60,25 @@
                                         {% for doctor in doctor_list %}
                                         <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
                                         {% endfor %}
+                                        
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="date" id="date" data-target-input="nearest">
-                                        <input type="date" id='date' name='date' class="form-control bg-white border-0 " placeholder="Día" style="height: 55px;" min="{{ current_date|date:'Y-m-d' }}">
+                                        <input type="date" id='date' name='date' class="form-control bg-white border-0 "
+                                            placeholder="Día" 
+                                            style="height: 55px;" min="{{ current_date|date:'Y-m-d' }}">
                                     </div>
                                 </div>
+
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">Filtrar</button>
+                                </div>
+                                <div class="col-12">
+                                    <a href="?">
+                                        <button class="btn btn-outline-primary w-100 py-3" type="button">Limpiar filtros</button>
+
+                                    </a>
                                 </div>
                             </div>
                         </form>
@@ -74,16 +88,12 @@
         </div>
     </div>
     <!-- Appointment End -->
-</section>
-
     
 </section>
 
-<section>
-    <div class="container">
-        
-       
-
+<section id="container">
+    <div class="container" >
+ 
         {% if specialist_selected or selected_doctor or date_selected  %}
 
             {% if selected_doctor %}
@@ -314,14 +324,60 @@
                 </li>
             {% endfor %}
         </ul>
-        {% endif %}
+    </div>
+   
+       
+        {% endif %} <!--if not slot_list-->
         
-    </section>
-
+        {% endif %}<!--cierra si tiene doctor y date_selected -->
+        {% endif %}<!--cierra el if doctor_selected -->
+        
+    
+<!--cierra el ingreso ocn filtros -->
     {% endif %}
 </section>
 
+  
+<style>
+    .sticky-column {
+        position: sticky;
+        left: 0;
+        background-color: #fff;
+        z-index: 1;
+    }
+    .sticky-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
 
+</style>
+<script>
+     function limpiarFiltros() {
+        // Eliminar todos los elementos hijos del contenedor de la tabla de slots
+        var slotTableBody = document.getElementById('container');
+        while (slotTableBody.firstChild) {
+            slotTableBody.removeChild(slotTableBody.firstChild);
+        }
+    }
+    window.addEventListener('scroll', () => {
+        const tableOffset = document.querySelector('.agenda-table').offsetTop;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollTop > tableOffset) {
+            document.querySelector('.thead-dark').classList.add('sticky');
+        } else {
+            document.querySelector('.thead-dark').classList.remove('sticky');
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const stickyColumn = document.querySelector('.sticky-column');
+        const table = document.querySelector('.agenda-table');
+
+        table.addEventListener('scroll', () => {
+            stickyColumn.style.transform = `translateX(${table.scrollLeft}px)`;
+        });
+    });
+</script>
 {% endblock %}
-
-
