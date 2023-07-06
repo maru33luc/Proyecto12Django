@@ -218,6 +218,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    
                     <!-- Contenido de los slots -->
         {% for slot in slot_list %}
                 {% if date == slot.date %}
@@ -245,6 +246,7 @@
                 </td>
             </tr>
         {% endif %}
+
         {% empty %}
             <tr>
                 <td colspan="7">Sin turnos disponibles.</td>
@@ -255,81 +257,91 @@
                 </tbody>
             </table>
         </div>
-   
+        
                {% else %}
                 
        <div class="container">
         <h3>Horarios disponibles:</h3>
-        <div class="table-responsive">
-            <table class="agenda-table table table-bordered table-striped">
-                <thead class="thead-dark sticky-row">
-                    <tr class="sticky-row">
-                        <th scope="col" class="sticky-column">Hora</th>
-                        {% for day in weekdays_list %}
-                            <th scope="col" class="">
-                                {{ day|date:"l" }}
-                                <br>
-                                {{ day|date:"d-m-Y" }}
-                            </th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Contenido de los slots -->
-                    {% if not slot_list %}
+        <div>
+            {% if not slot_list %}
                     
-                                    <tr >
-                                        <td colspan="{{ weekdays|length }}" style="height: 50px;">Sin turnos disponibles.</td>
-                                    </tr>
-                     {% else %}               
-                    {% for hour in hours %}
-                    
-                        <tr>
-                            <td class="sticky-column">{{ hour }}</td>
+            <p >
+                <p >Sin turnos disponibles.</p>
+            </p>
+
+        </div>
+        {% else %}
+
+            <div class="table-responsive">
+                <table class="agenda-table table table-bordered table-striped">
+                    <thead class="thead-dark sticky-row">
+                        <tr class="sticky-row">
+                            <th scope="col" class="sticky-column">Hora</th>
                             {% for day in weekdays_list %}
-                                <td>
-                                    {% for slot in slot_list %}
-                                        {% if slot.date == day and slot.start_time|time:'H:i' == hour %}
-                                            {% if slot.status == 'available' %}
-                                                <form method="POST" action="{% url 'appointment' %}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
-                                                    <input type="hidden" name="date" value="{{ slot.date }}">
-                                                    <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
-                                                    <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
-                                                    <input type="hidden" name="notes" value="">
-                                                    <input type="hidden" name="slot_id" value="{{ slot.id }}">
-                                                    <button type="submit" class="btn btn-primary">Reservar</button>
-                                                </form>
-                                            {% else %}
-                                                Ocupado
-                                            {% endif %}
-                                        {% endif %}
-                                    
-                                    {% endfor %}
-                                </td>
+                                <th scope="col" class="">
+                                    {{ day|date:"l" }}
+                                    <br>
+                                    {{ day|date:"d-m-Y" }}
+                                </th>
                             {% endfor %}
                         </tr>
-                    
-                    {% endfor %}
-                    
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <!-- Contenido de los slots -->
+                        <!-- {% if not slot_list %}
+                        
+                                        <tr >
+                                            <td colspan="{{ weekdays|length }}" style="height: 50px;">Sin turnos disponibles.</td>
+                                        </tr>
+                        {% else %}                -->
+                        {% for hour in hours %}
+                        
+                            <tr>
+                                <td class="sticky-column">{{ hour }}</td>
+                                {% for day in weekdays_list %}
+                                    <td>
+                                        {% for slot in slot_list %}
+                                            {% if slot.date == day and slot.start_time|time:'H:i' == hour %}
+                                                {% if slot.status == 'available' %}
+                                                    <form method="POST" action="{% url 'appointment' %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
+                                                        <input type="hidden" name="date" value="{{ slot.date }}">
+                                                        <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
+                                                        <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
+                                                        <input type="hidden" name="notes" value="">
+                                                        <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                                                        <button type="submit" class="btn btn-primary">Reservar</button>
+                                                    </form>
+                                                {% else %}
+                                                    Ocupado
+                                                {% endif %}
+                                            {% endif %}
+                                        
+                                        {% endfor %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            </div>
+            <ul class="pagination">
+                <!-- Enlaces de página -->
+                {% for page_num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ page_num }}&doctor={{ doctor_id }}"> {{ page_num }} </a>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
-        <ul class="pagination">
-            <!-- Enlaces de página -->
-            {% for page_num in page_obj.paginator.page_range %}
-                <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
-                    <a class="page-link" href="?page={{ page_num }}&doctor={{ doctor_id }}"> {{ page_num }} </a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
    
        
         {% endif %} <!--if not slot_list-->
-        
-        {% endif %}<!--cierra si tiene doctor y date_selected -->
+        {% endif %}
+        {% endif %} <!--cierra si tiene doctor y date_selected -->
         {% endif %}<!--cierra el if doctor_selected -->
         
     
@@ -348,7 +360,7 @@
     .sticky-row {
         position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: 10;
     }
 
 </style>
@@ -360,7 +372,7 @@
             slotTableBody.removeChild(slotTableBody.firstChild);
         }
     }
-    window.addEventListener('scroll', () => {
+    {% comment %} window.addEventListener('scroll', () => {
         const tableOffset = document.querySelector('.agenda-table').offsetTop;
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
@@ -378,6 +390,6 @@
         table.addEventListener('scroll', () => {
             stickyColumn.style.transform = `translateX(${table.scrollLeft}px)`;
         });
-    });
+    }); {% endcomment %}
 </script>
 {% endblock %}
