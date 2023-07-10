@@ -18,7 +18,7 @@
 </div>
 <!-- Hero End -->
 
-<section class="appointment">
+<section class="appointment content">
     <!-- Appointment Start -->
     <div class="container-fluid py-5">
         <div class="container">
@@ -318,15 +318,19 @@
                     
                 </tbody>
             </table>
+            <div>
+                <ul class="pagination">
+                    <!-- Enlaces de página -->
+                    {% for page_num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ page_num }}&doctor={{ doctor_id }}"> {{ page_num }} </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
         </div>
-        <ul class="pagination">
-            <!-- Enlaces de página -->
-            {% for page_num in page_obj.paginator.page_range %}
-                <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
-                    <a class="page-link" href="?page={{ page_num }}&doctor={{ doctor_id }}"> {{ page_num }} </a>
-                </li>
-            {% endfor %}
-        </ul>
+        
     </div>
    
        
@@ -342,14 +346,16 @@
 
   
 <style>
+
+
  .container_table {
   /* max-width: 426px; */
   width: 100%;
   height: 600px;
   overflow-x: auto;
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
 }
 
 .centered-table {
@@ -382,7 +388,7 @@ th {
 }
 
 .table_header {
-  top: 0;
+  top: 0px;
   position: sticky;
   z-index: 10000;
 }
@@ -394,7 +400,7 @@ th {
 }
 
 .common_header {
-  top: 0;
+  top: 0px;
   left: 0;
   position: sticky;
   z-index: 30000;
