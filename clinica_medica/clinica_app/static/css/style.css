@@ -45,14 +45,52 @@ section {
 
 
 /* Estilos para el footer */
-footer {
+.footer {
+  background-color: var(--light);
+  color: var(--dark);
+  padding: 40px 0;
+}
+.footer h4 {
+  color: var(--dark);
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.footer p {
+  color: var(--dark);
+}
+.footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.footer ul li {
+  margin-bottom: 10px;
+}
+.footer ul li a {
+  color: var(--dark);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.footer ul li a:hover {
+  color: var(--primary);
+}
+.social-icons li {
+  display: inline-block;
+  margin-right: 10px;
+}
+.social-icons li a {
+  color: var(--primary);
+  font-size: 18px;
+}
+/* footer {
   display: flex;
   justify-content: center;
     background-color: var(--light);
     color: #5083E5;
     padding: 20px;
     text-align: center;
-}
+} */
 
 /*header con blur   https://mdbootstrap.com/snippets/standard/mdbootstrap/4686783#css-tab-view*/
 /* Color of the links BEFORE scroll */

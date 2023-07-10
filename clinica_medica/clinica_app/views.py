@@ -172,7 +172,7 @@ def appointment(request):
         date = None
 
     if specialist_id:
-        slots = slots.filter(doctor__specialist_id=specialist_id)
+        slots = slots.filter(doctor__specialist_id=specialist_id).order_by('date')
 
     specialist_selected = bool(specialist_id)
 
@@ -307,7 +307,7 @@ def appointment(request):
 
     # Get the list of weekdays for the current page
     weekdays_list = page_obj.object_list
-
+    
     context = {
         'form': form,
         'doctor_list': doctor_list,
@@ -324,6 +324,7 @@ def appointment(request):
         'show_error': show_error,
         'has_appointment': has_appointment,
         'weekdays': weekdays,
+        'date': date,
         'weekdays_list': weekdays_list,
         'hours': hours,
         'weekdays_length': weekdays_length,
