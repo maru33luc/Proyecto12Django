@@ -30,7 +30,8 @@
                     </div>
                     {% if user.is_patient == True %}
                     <p class="mb-5">Ahora si, usted puede reservar un turno. </p>
-                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_appointments' %}">Tus turnos</a>
+                    <a class="btn btn-primary rounded-pill py-3 px-5 me-3" href="{% url 'patient_appointments' %}">Tus
+                        turnos</a>
                     {% else %}
                     <p class="mb-5">Si usted aún no completo sus datos luego de registrarse en el sistema, debe hacerlo,
                         de lo contrario no podrá acceder al sistema de turnos. </p>
@@ -51,23 +52,24 @@
                                         {% for specialist in specialist_list %}
                                         <option value="{{ specialist.id }}">{{ specialist.name }}</option>
                                         {% endfor %}
-                                
+
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
-                                    <select name="doctor" id="doctor" class="form-select bg-white border-0" style="height: 55px;">
+                                    <select name="doctor" id="doctor" class="form-select bg-white border-0"
+                                        style="height: 55px;">
                                         <option value="">Doctor</option>
                                         {% for doctor in doctor_list %}
                                         <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
                                         {% endfor %}
-                                        
+
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <div class="date" id="date" data-target-input="nearest">
                                         <input type="date" id='date' name='date' class="form-control bg-white border-0 "
-                                            placeholder="Día" 
-                                            style="height: 55px;" min="{{ current_date|date:'Y-m-d' }}">
+                                            placeholder="Día" style="height: 55px;"
+                                            min="{{ current_date|date:'Y-m-d' }}">
                                     </div>
                                 </div>
 
@@ -76,7 +78,8 @@
                                 </div>
                                 <div class="col-12">
                                     <a href="?">
-                                        <button class="btn btn-outline-primary w-100 py-3" type="button">Limpiar filtros</button>
+                                        <button class="btn btn-outline-primary w-100 py-3" type="button">Limpiar
+                                            filtros</button>
 
                                     </a>
                                 </div>
@@ -88,83 +91,88 @@
         </div>
     </div>
     <!-- Appointment End -->
-    
+
 </section>
 
 <section id="container">
-    <div class="container" >
- 
-        {% if specialist_selected or selected_doctor or date_selected  %}
+    <div class="container">
 
-            {% if selected_doctor %}
-                <h2>Doctor seleccionado: {{ selected_doctor }}</h2>
-                <p>Especialidad: {{ selected_doctor.specialist.name }}</p>
-                {% with has_appointment=request.user.patient|has_appointment_with_doctor:doctor_selected %}
-                    {% if has_appointment %}
-                        <p>Turnos con el Dr.: {{ selected_doctor }}{{ doctor.user.first_name }} {{ doctor.user.last_name }}</p>
-                        <ul>
-                            {% for appointment in request.user.patient.appointments.all %}
-                                {% if appointment.doctor == selected_doctor %}
-                                    {% if appointment.date >= current_date %}
-                                         <li>{{ appointment.date|date:"d/m/Y" }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
-                                     {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    
-                    {% endif %}
-                {% endwith %}
-            {% else %}
-                {% if specialist_selected %}
-                    <h2>Especialidad seleccionada: {{ specialist.name }}</h2>
-                    {% with has_appointment=request.user.patient|has_appointment_with_specialist:specialist_selected %}
-                        {% if has_appointment %}
-                            <p>Turnos con médicos de la especialidad: {{ specialist.name }}</p>
-                            <ul>
-                                {% for appointment in request.user.patient.appointments.all %}
-                                    {% if appointment.doctor.specialist.id == specialist.id %}
-                                        {% if appointment.date >= current_date %}
-                                            <li>{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }} - {{ appointment.date|date:"d/m/Y" }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                       
-                        {% endif %}
-                    {% endwith %}
-                {% endif %}
+        {% if specialist_selected or selected_doctor or date_selected %}
+
+        {% if selected_doctor %}
+        <h2>Doctor seleccionado: {{ selected_doctor }}</h2>
+        <p>Especialidad: {{ selected_doctor.specialist.name }}</p>
+        {% with has_appointment=request.user.patient|has_appointment_with_doctor:doctor_selected %}
+        {% if has_appointment %}
+        <p>Turnos con el Dr.: {{ selected_doctor }}{{ doctor.user.first_name }} {{ doctor.user.last_name }}</p>
+        <ul>
+            {% for appointment in request.user.patient.appointments.all %}
+            {% if appointment.doctor == selected_doctor %}
+            {% if appointment.date >= current_date %}
+            <li>{{ appointment.date|date:"d/m/Y" }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
             {% endif %}
-
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                    {% endfor %}
-                </ul>
             {% endif %}
+            {% endfor %}
+        </ul>
 
-            
-        </div>
+        {% endif %}
+        {% endwith %}
+        {% else %}
+        {% if specialist_selected %}
+        <h2>Especialidad seleccionada: {{ specialist.name }}</h2>
+        {% with has_appointment=request.user.patient|has_appointment_with_specialist:specialist_selected %}
+        {% if has_appointment %}
+        <p>Turnos con médicos de la especialidad: {{ specialist.name }}</p>
+        <ul>
+            {% for appointment in request.user.patient.appointments.all %}
+            {% if appointment.doctor.specialist.id == specialist.id %}
+            {% if appointment.date >= current_date %}
+            <li>{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }} - {{
+                appointment.date|date:"d/m/Y" }} - {{ appointment.start_time }} to {{ appointment.end_time }}</li>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </ul>
+
+        {% endif %}
+        {% endwith %}
+        {% endif %}
+        {% endif %}
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %}
+        </ul>
+        {% endif %}
+
+
+    </div>
+
+    <!-- que me muestre el siguiente codigo si y solo si no hay doctor_selected-->
+    {% if not selected_doctor %}
+    <div class="table-responsive">
+
         
-        <!-- que me muestre el siguiente codigo si y solo si no hay doctor_selected-->
-        {% if not selected_doctor %}
- <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Doctor</th>
-                            <th>Especialidad</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Termina</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Contenido de los slots -->
-            {% for slot in slot_list %}
-                    
+        <table class="table table-hover">
+            {% if slot_list %}
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Especialidad</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Termina</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            {% endif %}
+            <tbody>
+                <!-- Contenido de los slots -->
+                {% for slot in slot_list %}
+
                 <tr>
                     <td>{{ slot.doctor }}</td>
                     <td>{{ slot.doctor.specialist.name }}</td>
@@ -174,61 +182,7 @@
                     <td>{{ slot.get_status_display }}</td>
                     <td>
                         {% if slot.status == 'available' %}
-            
-                            <form method="post" action="{% url 'appointment' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
-                                <input type="hidden" name="date" value="{{ slot.date }}">
-                                <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
-                                <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
-                                <input type="hidden" name="notes" value="">
-                                <input type="hidden" name="slot_id" value="{{ slot.id }}">
-                                <button type="submit" class="btn btn-primary">Reservar</button>
-                            </form>
-                        {% else %}
-                            Sin turnos disponibles
-                        {% endif %}
-                    </td>
-                </tr>
-            
-            {% empty %}
-                <tr>
-                    <td colspan="7">Sin turnos disponibles.</td>
-                </tr>
-                
-            {% endfor %}
-            
-                    </tbody>
-                </table>
-            </div>
-       
-       {% endif %}  <!--cierra el if not doctor_selected-->         
-       
-       {% if selected_doctor %}<!--entra aqui si selecciono solo doctor --> 
-               {% if date_selected %}
-              <div class="table-responsive">
-               <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Hora</th>
-                        <th>Termina</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Contenido de los slots -->
-        {% for slot in slot_list %}
-                {% if date == slot.date %}
-            <tr>
-                <td>{{ slot.date|date:"d/m/Y" }}</td>
-                <td>{{ slot.start_time }}</td>
-                <td>{{ slot.end_time }}</td>
-                <td>{{ slot.get_status_display }}</td>
-                <td>
-                    {% if slot.status == 'available' %}
-        
+
                         <form method="post" action="{% url 'appointment' %}">
                             {% csrf_token %}
                             <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
@@ -239,176 +193,232 @@
                             <input type="hidden" name="slot_id" value="{{ slot.id }}">
                             <button type="submit" class="btn btn-primary">Reservar</button>
                         </form>
-                    {% else %}
+                        {% else %}
                         Sin turnos disponibles
+                        {% endif %}
+                    </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="7">Sin turnos disponibles.</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+    {% endif %} <!--cierra el if not doctor_selected-->
+
+    {% if selected_doctor %}<!--entra aqui si selecciono solo doctor -->
+        {% if date_selected %}
+        <div class="table-responsive">
+            {% if slot_list %}
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Termina</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            {% endif %}    
+                <tbody>
+                    <!-- Contenido de los slots -->
+                    {% for slot in slot_list %}
+                    {% if date == slot.date %}
+                    <tr>
+                        <td>{{ slot.date|date:"d/m/Y" }}</td>
+                        <td>{{ slot.start_time }}</td>
+                        <td>{{ slot.end_time }}</td>
+                        <td>{{ slot.get_status_display }}</td>
+                        <td>
+                            {% if slot.status == 'available' %}
+
+                            <form method="post" action="{% url 'appointment' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
+                                <input type="hidden" name="date" value="{{ slot.date }}">
+                                <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
+                                <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
+                                <input type="hidden" name="notes" value="">
+                                <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                                <button type="submit" class="btn btn-primary">Reservar</button>
+                            </form>
+                            {% else %}
+                            Sin turnos disponibles
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endif %}
-                </td>
-            </tr>
-        {% endif %}
-        {% empty %}
-            <tr>
-                <td colspan="7">Sin turnos disponibles.</td>
-            </tr>
-            
-        {% endfor %}
-        
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">Sin turnos disponibles.</td>
+                    </tr>
+
+                    {% endfor %}
+
                 </tbody>
             </table>
         </div>
-   
-               {% else %}
-                
-       <div class="container ">
-        <h3>Horarios disponibles:</h3>
 
-        <div class="container_table">
-           
-            
-            <table cellspacing="0" class="centered-table">
-                <thead class="">
-                    <tr>
-                        <th scope="col" class="common_header">Hora</th>
-                        {% for day in weekdays_list %}
+    {% else %}
+    <div class="content">
+
+        {% if not slot_list %}
+
+            <tr>
+                <td colspan="{{ weekdays|length }}" style="height: 50px;">Sin turnos disponibles.</td>
+            </tr>
+
+        {% else %}
+            <h3>Horarios disponibles:</h3>
+            <div class="container_table">
+
+
+                <table cellspacing="0" class="centered-table">
+                    <thead class="">
+                        <tr>
+                            <th scope="col" class="common_header">Hora</th>
+                            {% for day in weekdays_list %}
                             <th scope="col" class="table_header">
                                 {{ day|date:"l" }}
                                 <br>
                                 {{ day|date:"d-m-Y" }}
                             </th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Contenido de los slots -->
-                    {% if not slot_list %}
-                    
-                                    <tr >
-                                        <td colspan="{{ weekdays|length }}" style="height: 50px;">Sin turnos disponibles.</td>
-                                    </tr>
-                     {% else %}               
-                    {% for hour in hours %}
-                    
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Contenido de los slots -->
+
+                        {% for hour in hours %}
+
                         <tr>
                             <td class="side_header">{{ hour }}</td>
                             {% for day in weekdays_list %}
-                                <td>
-                                    {% for slot in slot_list %}
-                                        {% if slot.date == day and slot.start_time|time:'H:i' == hour %}
-                                            {% if slot.status == 'available' %}
-                                                <form method="POST" action="{% url 'appointment' %}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
-                                                    <input type="hidden" name="date" value="{{ slot.date }}">
-                                                    <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
-                                                    <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
-                                                    <input type="hidden" name="notes" value="">
-                                                    <input type="hidden" name="slot_id" value="{{ slot.id }}">
-                                                    <button type="submit" class="btn btn-primary">Reservar</button>
-                                                </form>
-                                            {% else %}
-                                                Ocupado
-                                            {% endif %}
-                                        {% endif %}
-                                    
-                                    {% endfor %}
-                                </td>
+                            <td>
+                                {% for slot in slot_list %}
+                                {% if slot.date == day and slot.start_time|time:'H:i' == hour %}
+                                {% if slot.status == 'available' %}
+                                <form method="POST" action="{% url 'appointment' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="doctor" value="{{ slot.doctor.id }}">
+                                    <input type="hidden" name="date" value="{{ slot.date }}">
+                                    <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}">
+                                    <input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}">
+                                    <input type="hidden" name="notes" value="">
+                                    <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                                    <button type="submit" class="btn btn-primary">Reservar</button>
+                                </form>
+                                {% else %}
+                                Ocupado
+                                {% endif %}
+                                {% endif %}
+
+                                {% endfor %}
+                            </td>
                             {% endfor %}
                         </tr>
-                    
-                    {% endfor %}
-                    
-                </tbody>
-            </table>
-            <div>
-                <ul class="pagination">
-                    <!-- Enlaces de página -->
-                    {% for page_num in page_obj.paginator.page_range %}
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+                <div>
+                    <ul class="pagination">
+                        <!-- Enlaces de página -->
+                        {% for page_num in page_obj.paginator.page_range %}
                         <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
                             <a class="page-link" href="?page={{ page_num }}&doctor={{ doctor_id }}"> {{ page_num }} </a>
                         </li>
-                    {% endfor %}
-                </ul>
+                        {% endfor %}
+                    </ul>
+                </div>
+
             </div>
-            
         </div>
-        
-    </div>
-   
-       
-        {% endif %} <!--if not slot_list-->
-        
-        {% endif %}<!--cierra si tiene doctor y date_selected -->
-        {% endif %}<!--cierra el if doctor_selected -->
-        
-    
-<!--cierra el ingreso ocn filtros -->
+
+
+
+    {% endif %} <!--if not slot_list-->
+
+    {% endif %}<!--cierra si tiene doctor y date_selected -->
+    {% endif %}<!--cierra el if doctor_selected -->
+
+
+    <!--cierra el ingreso ocn filtros -->
     {% endif %}
 </section>
 
-  
+
 <style>
-
-
- .container_table {
-  /* max-width: 426px; */
-  width: 100%;
-  height: 600px;
-  overflow-x: auto;
-  /* display: flex;
+    .container_table {
+        /* max-width: 426px; */
+        width: 100%;
+        height: 600px;
+        overflow-x: auto;
+        /* display: flex;
   justify-content: center;
   align-items: center; */
-}
+    }
 
-.centered-table {
-  max-width: 100%;
-  margin: 0 auto;
-}
-.navbar {
-  z-index: 30001; /* Establece un valor mayor que el z-index de la tabla */
-}
+    .centered-table {
+        max-width: 100%;
+        margin: 0 auto;
+    }
 
-table {
-  border-collapse: collapse;
-  width: 626px;
-}
+    .navbar {
+        z-index: 30001;
+        /* Establece un valor mayor que el z-index de la tabla */
+    }
 
-tr td,
-tr th {
-  box-shadow: 0px 0px 0px 1px white inset;
-  padding: 20px 50px;
-}
+    table {
+        border-collapse: collapse;
+        width: 626px;
+    }
 
-td {
-  background: #e1edf9;
-}
+    tr td,
+    tr th {
+        box-shadow: 0px 0px 0px 1px white inset;
+        padding: 20px 50px;
+    }
 
-th {
-  background: #003a6a;
-  color: white;
-  white-space: nowrap;
-}
+    td {
+        background: #e1edf9;
+    }
 
-.table_header {
-  top: 0px;
-  position: sticky;
-  z-index: 10000;
-}
+    th {
+        background: #003a6a;
+        color: white;
+        white-space: nowrap;
+    }
 
-.side_header {
-  position: sticky;
-  left: 0;
-  z-index: 20000;
-}
+    .table_header {
+        top: 0px;
+        position: sticky;
+        z-index: 10000;
+    }
 
-.common_header {
-  top: 0px;
-  left: 0;
-  position: sticky;
-  z-index: 30000;
-}
+    .side_header {
+        position: sticky;
+        left: 0;
+        z-index: 20000;
+    }
 
+    .common_header {
+        top: 0px;
+        left: 0;
+        position: sticky;
+        z-index: 30000;
+    }
 </style>
 <script>
-     function limpiarFiltros() {
+    function limpiarFiltros() {
         // Eliminar todos los elementos hijos del contenedor de la tabla de slots
         var slotTableBody = document.getElementById('container');
         while (slotTableBody.firstChild) {
