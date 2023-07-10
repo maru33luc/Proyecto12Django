@@ -372,24 +372,6 @@
             slotTableBody.removeChild(slotTableBody.firstChild);
         }
     }
-    {% comment %} window.addEventListener('scroll', () => {
-        const tableOffset = document.querySelector('.agenda-table').offsetTop;
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-        if (scrollTop > tableOffset) {
-            document.querySelector('.thead-dark').classList.add('sticky');
-        } else {
-            document.querySelector('.thead-dark').classList.remove('sticky');
-        }
-    });
-
-    window.addEventListener('DOMContentLoaded', (event) => {
-        const stickyColumn = document.querySelector('.sticky-column');
-        const table = document.querySelector('.agenda-table');
-
-        table.addEventListener('scroll', () => {
-            stickyColumn.style.transform = `translateX(${table.scrollLeft}px)`;
-        });
-    }); {% endcomment %}
+  
 </script>
 {% endblock %}
