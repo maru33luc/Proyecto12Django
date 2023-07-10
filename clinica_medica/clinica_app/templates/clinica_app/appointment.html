@@ -258,15 +258,18 @@
    
                {% else %}
                 
-       <div class="container">
+       <div class="container ">
         <h3>Horarios disponibles:</h3>
-        <div class="table-responsive">
-            <table class="agenda-table table table-bordered table-striped">
-                <thead class="thead-dark sticky-row">
-                    <tr class="sticky-row">
-                        <th scope="col" class="sticky-column">Hora</th>
+
+        <div class="container_table">
+           
+            
+            <table cellspacing="0" class="centered-table">
+                <thead class="">
+                    <tr>
+                        <th scope="col" class="common_header">Hora</th>
                         {% for day in weekdays_list %}
-                            <th scope="col" class="">
+                            <th scope="col" class="table_header">
                                 {{ day|date:"l" }}
                                 <br>
                                 {{ day|date:"d-m-Y" }}
@@ -285,7 +288,7 @@
                     {% for hour in hours %}
                     
                         <tr>
-                            <td class="sticky-column">{{ hour }}</td>
+                            <td class="side_header">{{ hour }}</td>
                             {% for day in weekdays_list %}
                                 <td>
                                     {% for slot in slot_list %}
@@ -339,17 +342,63 @@
 
   
 <style>
-    .sticky-column {
-        position: sticky;
-        left: 0;
-        background-color: #fff;
-        z-index: 1;
-    }
-    .sticky-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
+ .container_table {
+  /* max-width: 426px; */
+  width: 100%;
+  height: 600px;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.centered-table {
+  max-width: 100%;
+  margin: 0 auto;
+}
+.navbar {
+  z-index: 30001; /* Establece un valor mayor que el z-index de la tabla */
+}
+
+table {
+  border-collapse: collapse;
+  width: 626px;
+}
+
+tr td,
+tr th {
+  box-shadow: 0px 0px 0px 1px white inset;
+  padding: 20px 50px;
+}
+
+td {
+  background: #e1edf9;
+}
+
+th {
+  background: #003a6a;
+  color: white;
+  white-space: nowrap;
+}
+
+.table_header {
+  top: 0;
+  position: sticky;
+  z-index: 10000;
+}
+
+.side_header {
+  position: sticky;
+  left: 0;
+  z-index: 20000;
+}
+
+.common_header {
+  top: 0;
+  left: 0;
+  position: sticky;
+  z-index: 30000;
+}
 
 </style>
 <script>
