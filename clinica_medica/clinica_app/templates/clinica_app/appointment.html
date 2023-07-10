@@ -218,7 +218,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
                     <!-- Contenido de los slots -->
         {% for slot in slot_list %}
                 {% if date == slot.date %}
@@ -246,7 +245,6 @@
                 </td>
             </tr>
         {% endif %}
-
         {% empty %}
             <tr>
                 <td colspan="7">Sin turnos disponibles.</td>
@@ -257,7 +255,7 @@
                 </tbody>
             </table>
         </div>
-        
+   
                {% else %}
                 
        <div class="container ">
@@ -333,8 +331,8 @@
    
        
         {% endif %} <!--if not slot_list-->
-        {% endif %}
-        {% endif %} <!--cierra si tiene doctor y date_selected -->
+        
+        {% endif %}<!--cierra si tiene doctor y date_selected -->
         {% endif %}<!--cierra el if doctor_selected -->
         
     
@@ -411,6 +409,24 @@ th {
             slotTableBody.removeChild(slotTableBody.firstChild);
         }
     }
-  
+    window.addEventListener('scroll', () => {
+        const tableOffset = document.querySelector('.agenda-table').offsetTop;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollTop > tableOffset) {
+            document.querySelector('.thead-dark').classList.add('sticky');
+        } else {
+            document.querySelector('.thead-dark').classList.remove('sticky');
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const stickyColumn = document.querySelector('.sticky-column');
+        const table = document.querySelector('.agenda-table');
+
+        table.addEventListener('scroll', () => {
+            stickyColumn.style.transform = `translateX(${table.scrollLeft}px)`;
+        });
+    });
 </script>
 {% endblock %}
