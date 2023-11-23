@@ -1,0 +1,67 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+input {
+  font-family: "Poppins", sans-serif;
+  background: #efefef;
+
+}
+
+/*header con blur   https://mdbootstrap.com/snippets/standard/mdbootstrap/4686783#css-tab-view*/
+/* Color of the links BEFORE scroll */
+.navbar-scroll .nav-link,
+.navbar-scroll .navbar-toggler-icon,
+.navbar-scroll .navbar-brand {
+  /*color: #fff;*/
+  color: #5083E5;
+}
+
+.nav-item .nav-link {
+  font-size: 20px;
+}
+
+/* Color of the links AFTER scroll */
+.navbar-scrolled .nav-link,
+.navbar-scrolled .navbar-toggler-icon,
+.navbar-scrolled .navbar-brand {
+  /*color: #fff;*/
+  color: #5083E5;
+}
+
+/* Color of the navbar AFTER scroll */
+.navbar-scroll,
+.navbar-scrolled {
+  background-color: #cbbcb1;
+}
+
+.mask {
+  background-color: rgb(80, 131, 229);
+}
+
+.mask-custom {
+  backdrop-filter: blur(5px);
+  /* background-color: rgba(255, 255, 255, .15);*/
+  background-color: rgba(80, 131, 229, .15);
+}
+
+.navbar-brand {
+  font-size: 1.75rem;
+  letter-spacing: 3px;
+}
+
+.hero-header {
+  background: linear-gradient(rgba(9, 30, 62, .85), rgba(9, 30, 62, .85)), url('../assets/img/hero.jpeg') center center no-repeat;
+  background-size: cover;
+  margin-top: 130px;
+}
+
+
+
+
+

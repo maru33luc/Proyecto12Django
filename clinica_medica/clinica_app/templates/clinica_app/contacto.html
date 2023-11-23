@@ -1,0 +1,46 @@
+{% extends 'clinica_app/base1.html' %}
+{% block title %} {% endblock %}
+{% block main %}
+{% load static %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-0">
+  <div class="row py-3">
+      <div class="col-12 text-center">
+          <h1 class="display-3 text-white animated zoomIn">Contacto</h1>
+          <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+          <i class="far fa-circle text-white px-2"></i>
+          <a href="{% url 'contact' %}" class="h4 text-white">Contacto</a>
+      </div>
+  </div>
+</div>
+<!-- Hero End -->
+
+<section id="contact">
+    <div class="contact-box">
+      <div class="contact-links">
+        <h2>CONTACTO</h2>
+        <div class="links">
+          <div class="link">
+            <a><img src="https://i.postimg.cc/m2mg2Hjm/linkedin.png" alt="linkedin"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/YCV2QBJg/github.png" alt="github"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/W4Znvrry/codepen.png" alt="codepen"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/NjLfyjPB/email.png" alt="email"></a>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form-wrapper">
+        <form action="{% url 'contact' %}" method="post">
+          {% csrf_token %}
+          {{ contacto_form }}
+          <input type="submit" value="Contact">
+        </form>
+      </div>
+    </div>
+  </section>
+  {% endblock %}

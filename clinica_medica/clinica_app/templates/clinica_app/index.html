@@ -1,0 +1,238 @@
+
+{% extends 'clinica_app/base.html' %}
+{% block title %}Clínica Médica {% endblock %}
+{% block main %}
+{% load static %}
+<section id="inicio" class="hero">
+    <h2>Bienvenidos a nuestra clínica médica</h2>
+    <p class="hero-description">Breve descripción de los servicios médicos ofrecidos, exámenes disponibles, y programas de prevención y promoción de la salud.</p>
+    <a href="{% url 'appointment' %}" class="cta-button">Solicitar Cita</a>
+</section>
+   
+<section class="section-1">
+
+
+<div id="hero-carousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#hero-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-bs-target="#hero-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-bs-target="#hero-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+
+    <div class="carousel-inner">
+      <div class="carousel-item active c-item">
+        <img src="{% static 'assets/img/atencion.jpg' %}" class="d-block w-100 c-img" alt="Slide 1">
+        <div class="carousel-caption top-0 mt-4">
+          <p class="mt-5 fs-3 text-uppercase">Diagnóstico</p>
+          <h1 class="display-1 fw-bolder text-capitalize">CLINICA MEDICA</h1>
+          <button class="btn btn-primary px-4 py-2 fs-5 mt-5">Reservar un turno</button>
+        </div>
+      </div>
+      <div class="carousel-item c-item">
+        <img src="{% static 'assets/img/manos.jpeg' %}" class="d-block w-100 c-img" alt="Slide 2">
+        <div class="carousel-caption top-0 mt-4">
+          <p class="text-uppercase fs-3 mt-5">Trato humano</p>
+          <p class="display-1 fw-bolder text-capitalize">CLINICA MEDICA</p>
+          <button class="btn btn-primary px-4 py-2 fs-5 mt-5" data-bs-toggle="modal"
+            data-bs-target="#booking-modal">Reservar un turno</button>
+        </div>
+      </div>
+      <div class="carousel-item c-item">
+        <img src="{% static 'assets/img/estetoscopio.jpg' %}" class="d-block w-100 c-img" alt="Slide 3">
+        <div class="carousel-caption top-0 mt-4">
+          <p class="text-uppercase fs-3 mt-5">Clínica</p>
+          <p class="display-1 fw-bolder text-capitalize">CLINICA MEDICA</p>
+          <button class="btn btn-primary px-4 py-2 fs-5 mt-5" data-bs-toggle="modal"
+            data-bs-target="#booking-modal">Reservar un turno</button>
+        </div>
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#hero-carousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#hero-carousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</section>
+
+
+ <section class="section-2">
+    <!-- Sección 1 -->
+    <div class="seccion">
+      <div class="imagen">
+        <img src="{% static 'assets/img/doctores.jpg' %}" alt="Imagen 1">
+      </div>
+      <div class="texto">
+        <h2>Sobre nosotros</h2>
+        <p>En [nombre de la clínica médica], nos dedicamos a ser líderes en el cuidado de la salud, brindando servicios médicos integrales y de alta calidad a nuestra comunidad. Con un equipo de profesionales médicos altamente capacitados y experimentados, estamos comprometidos en proporcionar una atención médica completa y compasiva a nuestros pacientes.
+
+            Nuestra clínica cuenta con instalaciones modernas y equipamiento médico de vanguardia para ofrecer un diagnóstico y tratamiento precisos. Nuestros servicios incluyen medicina general, pediatría, ginecología, cardiología, dermatología, y una amplia gama de especialidades médicas. Además, contamos con servicios de laboratorio, estudios de diagnóstico por imágenes y otras pruebas médicas para un enfoque integral en el cuidado de nuestros pacientes.
+            
+            Nos enorgullecemos de nuestro enfoque centrado en el paciente, escuchando atentamente las necesidades y preocupaciones de cada paciente. Trabajamos en estrecha colaboración con ellos para desarrollar planes de tratamiento individualizados, brindando un cuidado compasivo y personalizado en cada visita.
+            
+            Nuestro equipo médico está comprometido con la educación continua y la actualización constante de nuestros conocimientos y habilidades para garantizar la mejor atención posible. Además, nos preocupamos por la prevención y promoción de la salud, brindando a nuestros pacientes información y recursos para llevar un estilo de vida saludable.
+            
+            En [nombre de la clínica médica], nos esforzamos por mantener altos estándares de atención médica en un ambiente cálido y acogedor. Valoramos la confianza que nuestros pacientes depositan en nosotros y estamos comprometidos en mejorar su salud y bienestar en cada paso del camino. Esperamos ser su socio de confianza en su viaje hacia una vida saludable."
+            
+            
+            
+            
+            </p>
+      </div>
+    </div>
+</section>
+<section class="section-3">
+    <!-- Sección 2 -->
+    <div class="seccion">
+      <div class="texto">
+        <h2>Nuestros Servicios</h2>
+        <p>En [nombre de la clínica médica], nos enorgullecemos de ofrecer una amplia gama de servicios médicos integrales para cuidar de la salud de nuestra comunidad. Nuestro equipo de médicos altamente capacitados y experimentados brinda atención en diversas especialidades médicas, incluyendo medicina general para el manejo de enfermedades agudas y crónicas, exámenes de rutina, cuidado preventivo y asesoramiento sobre estilos de vida saludables.
+
+            Además, contamos con especialistas en pediatría que ofrecen una atención compasiva y completa para bebés, niños y adolescentes, incluyendo evaluación del desarrollo, inmunizaciones, seguimiento del crecimiento y desarrollo, y manejo de enfermedades pediátricas comunes.
+            
+            Nuestros servicios de ginecología incluyen exámenes ginecológicos, asesoramiento sobre salud reproductiva, manejo de problemas ginecológicos comunes, pruebas de detección de enfermedades y atención prenatal, brindando un enfoque integral de atención para las necesidades de salud de las mujeres.
+            
+            Además, nuestra clínica cuenta con especialistas en cardiología que ofrecen evaluación, diagnóstico y manejo de enfermedades cardiovasculares, con enfoque en el control de factores de riesgo, pruebas de diagnóstico cardíaco y asesoramiento sobre estilo de vida saludable para mantener un corazón sano.
+            
+            También ofrecemos servicios de dermatología para el diagnóstico y tratamiento de problemas de la piel, incluyendo acné, dermatitis, infecciones cutáneas y cáncer de piel, así como procedimientos dermatológicos especializados.
+            Nuestra clínica también cuenta con otros especialistas médicos en diversas áreas como gastroenterología, endocrinología, neurología y más, para abordar una amplia variedad de condiciones médicas y proporcionar una atención integral a nuestros pacientes.
+
+Además de los servicios médicos especializados, también ofrecemos servicios de laboratorio para pruebas diagnósticas, estudios de diagnóstico por imágenes, atención de urgencias para situaciones médicas urgentes y cuidado preventivo para promover la salud y prevenir enfermedades.
+            </p>
+      </div>
+      <div class="imagen">
+        <img src="{% static 'assets/img/servicios_medicos.jpg' %}" alt="Imagen 2">
+      </div>
+    </div>
+  
+</section> 
+
+
+<section class="section-4">
+    <div class="heading">
+      <h4></h4>
+    </div>
+    <div class="row">
+      <figure class="figure">
+        <img src="{% static 'assets/img/medico_guantes.jpg' %}" alt="">
+        <div>
+          <h3>Atención <span>Primaria</span></h3>
+          <a href="#"></a>
+        </div>
+      </figure>
+      <figure class="figure">
+        <img src="{% static 'assets/img/tomografo.jpeg' %}" alt="">
+        <div>
+          <h3>Exámenes <span>Médicos</span></h3>
+          <a href="#"></a>
+        </div>
+      </figure>
+      <figure class="figure">
+        <img src="{% static 'assets/img/ciencia.jpg' %}" alt="">
+        <div>
+          <h3>Prevención <span>Salud</span></h3>
+          <a href="#"></a>
+        </div>
+      </figure>
+    </div>
+  </section>
+  
+<section class="section-5">
+    <div class="box-wrapper">
+        <figure class="shape-box shape-box_half">
+            <img src="{% static 'assets/img/doctor_1.jpg' %}" alt="">
+            <div class="brk-abs-overlay z-index-0 bg-black opacity-60"></div>
+            <figcaption>
+                <div class="show-cont">
+                    <h3 class="card-no">01</h3>
+                    <h4 class="card-main-title">Cardiología</h4>
+                </div>
+                <p class="card-content">Nuestro servicio de cardiología en la clínica médica está dedicado a la prevención, diagnóstico, tratamiento y seguimiento de las enfermedades del corazón y del sistema cardiovascular. Contamos con un equipo de cardiólogos altamente calificados y con amplia experiencia en el manejo de diversas afecciones cardíacas, brindando una atención integral y especializada a nuestros pacientes.</p>
+                <a href="#" class="read-more-btn">Read More</a>
+            </figcaption>
+            <span class="after"></span>
+        </figure>
+        <figure class="shape-box shape-box_half">
+            <img src="{% static 'assets/img/doctor_2.jpg' %}">
+            <div class="brk-abs-overlay z-index-0 bg-black opacity-60"></div>
+            <figcaption>
+                <div class="show-cont">
+                    <h3 class="card-no">02</h3>
+                    <h4 class="card-main-title">Dermatología</h4>
+                </div>
+                <p class="card-content">Nuestro servicio de dermatología en la clínica médica está dedicado a brindar atención especializada en el diagnóstico, tratamiento y prevención de enfermedades de la piel, cabello y uñas. Nuestro equipo de dermatólogos altamente capacitados y con amplia experiencia ofrece una amplia gama de servicios dermatológicos para abordar las necesidades de salud cutánea de nuestros pacientes.</p>
+                <a href="#" class="read-more-btn">Read More</a>
+            </figcaption>
+            <span class="after"></span>
+        </figure>
+        <figure class="shape-box shape-box_half">
+            <img src="{% static 'assets/img/doctor_3.jpg' %}">
+            <div class="brk-abs-overlay z-index-0 bg-black opacity-60"></div>
+            <figcaption>
+                <div class="show-cont">
+                    <h3 class="card-no">03</h3>
+                    <h4 class="card-main-title">Traumatología</h4>
+                </div>
+                <p class="card-content">Nuestro servicio de traumatología en la clínica médica se dedica al diagnóstico, tratamiento y rehabilitación de lesiones musculoesqueléticas y traumatismos, tanto agudos como crónicos. Nuestro equipo de traumatólogos altamente capacitados y con amplia experiencia ofrece una atención integral y especializada para abordar una amplia variedad de condiciones traumatológicas.</p>
+                <a href="#" class="read-more-btn">Read More</a>
+            </figcaption>
+            <span class="after"></span>
+        </figure>
+        <figure class="shape-box shape-box_half">
+            <img src="{% static 'assets/img/doctor_4.jpg' %}">
+            <div class="brk-abs-overlay z-index-0 bg-black opacity-60"></div>
+            <figcaption>
+                <div class="show-cont">
+                    <h3 class="card-no">04</h3>
+                    <h4 class="card-main-title">Nefrología</h4>
+                </div>
+                <p class="card-content">Nuestro servicio de nefrología en la clínica médica se especializa en el diagnóstico, tratamiento y seguimiento de las enfermedades del sistema renal. Nuestro equipo de nefrólogos altamente capacitados y con amplia experiencia se dedica a brindar una atención integral y especializada a pacientes con afecciones renales, tanto agudas como crónicas.</p>
+                <a href="#" class="read-more-btn">Read More</a>
+            </figcaption>
+            <span class="after"></span>
+        </figure>
+    </div>
+</section>
+<section id="contact">
+    <div class="contact-box">
+      <div class="contact-links">
+        <h2>CONTACTO</h2>
+        <div class="links">
+          <div class="link">
+            <a><img src="https://i.postimg.cc/m2mg2Hjm/linkedin.png" alt="linkedin"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/YCV2QBJg/github.png" alt="github"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/W4Znvrry/codepen.png" alt="codepen"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/NjLfyjPB/email.png" alt="email"></a>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form-wrapper">
+        <form>
+          <div class="form-item">
+            <input type="text" name="sender" required>
+            <label class="label">Nombre:</label>
+          </div>
+          <div class="form-item">
+            <input type="text" name="email" required>
+            <label class="label">Email:</label>
+          </div>
+          <div class="form-item">
+            <textarea class="" name="message" required></textarea>
+            <label class="label">Mensaje:</label>
+          </div>
+          <button class="submit-btn">Send</button>  
+        </form>
+      </div>
+    </div>
+  </section>
+             
+{% endblock %}

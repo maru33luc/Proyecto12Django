@@ -1,0 +1,17 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+
+{% block content %}
+  <h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Specialist</h1>
+  <form method="post" class="form-horizontal">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+    <button type="submit">{% if form.instance.pk %}Update{% else %}Create{% endif %} Specialist</button>
+  </div>
+</div>
+  </form>
+  <a href="{% url 'specialist_list' %}">Back to list</a>
+{% endblock %}
+

@@ -1,0 +1,75 @@
+{% extends 'clinica_app/base1.html' %}
+{% block title %}Servicios {% endblock %}
+{% block main %}
+{% load static %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+  <div class="row py-3">
+      <div class="col-12 text-center">
+          <h1 class="display-3 text-white animated zoomIn">Nuestros servicios</h1>
+          <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+          <i class="far fa-circle text-white px-2"></i>
+          <a href="{% url 'services' %}" class="h4 text-white">Servicios</a>
+      </div>
+  </div>
+</div>
+<!-- Hero End -->
+   
+
+<section class="seccion">
+    <!-- Sección 2 -->
+      <div class="texto">
+        <h2>Nuestros Servicios</h2>
+        <p>En [nombre de la clínica médica], nos enorgullecemos de ofrecer una amplia gama de servicios médicos integrales para cuidar de la salud de nuestra comunidad. Nuestro equipo de médicos altamente capacitados y experimentados brinda atención en diversas especialidades médicas, incluyendo medicina general para el manejo de enfermedades agudas y crónicas, exámenes de rutina, cuidado preventivo y asesoramiento sobre estilos de vida saludables.
+
+            Además, contamos con especialistas en pediatría que ofrecen una atención compasiva y completa para bebés, niños y adolescentes, incluyendo evaluación del desarrollo, inmunizaciones, seguimiento del crecimiento y desarrollo, y manejo de enfermedades pediátricas comunes.
+            
+            Nuestros servicios de ginecología incluyen exámenes ginecológicos, asesoramiento sobre salud reproductiva, manejo de problemas ginecológicos comunes, pruebas de detección de enfermedades y atención prenatal, brindando un enfoque integral de atención para las necesidades de salud de las mujeres.
+            
+            Además, nuestra clínica cuenta con especialistas en cardiología que ofrecen evaluación, diagnóstico y manejo de enfermedades cardiovasculares, con enfoque en el control de factores de riesgo, pruebas de diagnóstico cardíaco y asesoramiento sobre estilo de vida saludable para mantener un corazón sano.
+            
+            También ofrecemos servicios de dermatología para el diagnóstico y tratamiento de problemas de la piel, incluyendo acné, dermatitis, infecciones cutáneas y cáncer de piel, así como procedimientos dermatológicos especializados.
+            Nuestra clínica también cuenta con otros especialistas médicos en diversas áreas como gastroenterología, endocrinología, neurología y más, para abordar una amplia variedad de condiciones médicas y proporcionar una atención integral a nuestros pacientes.
+
+Además de los servicios médicos especializados, también ofrecemos servicios de laboratorio para pruebas diagnósticas, estudios de diagnóstico por imágenes, atención de urgencias para situaciones médicas urgentes y cuidado preventivo para promover la salud y prevenir enfermedades.
+            </p>
+      </div>
+      <div class="imagen">
+        <img src="{% static 'assets/img/servicios_medicos.jpg' %}" alt="Imagen 2">
+      </div>
+  
+  
+</section> 
+
+
+<section class="section-4">
+    <div class="heading">
+      <h4></h4>
+    </div>
+    <div class="row">
+      <figure class="figure">
+        <img src="{% static 'assets/img/medico_guantes.jpg' %}" alt="">
+        <div>
+          <h3>Atención <span>Primaria</span></h3>
+          <a href="#"></a>
+        </div>
+      </figure>
+      <figure class="figure">
+        <img src="{% static 'assets/img/tomografo.jpeg' %}" alt="">
+        <div>
+          <h3>Exámenes <span>Médicos</span></h3>
+          <a href="#"></a>
+        </div>
+      </figure>
+      <figure class="figure">
+        <img src="{% static 'assets/img/ciencia.jpg' %}" alt="">
+        <div>
+          <h3>Prevención <span>Salud</span></h3>
+          <a href="#"></a>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+             
+{% endblock %}

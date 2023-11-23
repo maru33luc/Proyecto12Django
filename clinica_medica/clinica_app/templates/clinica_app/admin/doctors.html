@@ -1,0 +1,82 @@
+{% extends 'clinica_app/admin/base.html' %}
+{% block title %}
+	<title>Listado de Médicos</title>
+{% endblock title %}
+{% block content %}
+  <h1 class="mb-3">Médicos</h1>
+  <table class="table table-striped">
+
+    <thead>
+    
+    <tr>
+    
+    <th scope="col">Nombre</th>
+    <th scope="col">Apellido</th>
+    <th scope="col">Email</th>
+    <th scope="col">DNI</th>
+    <th scope="col">Teléfono</th>
+     <th scope="col">Dirección</th>
+     <th scope="col">Localidad</th>
+    <th scope="col">N° Matrícula</th>
+    <th scope="col">Especialidad</th>
+    <th scope="col">Imagen</th>
+    <th scope="col">Action</th>
+    
+    </tr>
+    
+    </thead>
+    
+    <tbody>
+    
+    {% for doctor in doctors %}
+    
+    <tr>
+    
+    <th scope="row">{{ doctor.user.first_name }}</th>
+    <td>{{ doctor.user.last_name }}</td>
+    <td>{{ doctor.user.email }}</td>   
+    <td>{{ doctor.dni }}</td>
+    <td>{{ doctor.phone }}</td>
+    <td>{{ doctor.address }}</td>
+    <td>{{ doctor.city }}</td>
+    <td>{{ doctor.mr_number }}</td>
+    <td>{{ doctor.specialist.name }}</td>
+      <td>{% if doctor.image_profile %}
+    <img width="50px" src=" {{settings.MEDIA_URL}}{{ doctor.image_profile.url }}" alt="{{ doctor.mr_number }}">
+    {% else %}
+        Sin imagen
+    {% endif %}</td>
+    
+
+
+
+   
+      <td>
+    <a style="margin-right: 30px;" href="{% url 'doctor_update' doctor.id %}">Edit</a>
+    
+    <a href="{% url 'doctor_delete' doctor.id %}">Remove</a>
+    
+    </td>
+    
+    </tr>
+    
+    
+    {% empty %}
+      <p>No doctors found.</p>
+    {% endfor %}
+    </tbody>
+    
+    </table>
+    
+    <div class="text-center">
+    
+    <a href="{% url 'doctor_create' %}"><button type="button" class="btn btn-primary mb_3">Agregar Doctor</button></a>
+    
+    </div>
+    
+
+
+
+
+
+{% endblock %}

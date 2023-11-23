@@ -1,0 +1,69 @@
+{% extends 'clinica_app/patient/base_patient.html' %}
+{% load static %}
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static 'css/style_signin.css' %}" />
+{% endblock %}
+{% block title %}Pacientes {% endblock %}
+{% block main %}
+
+
+
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Registrarse</h1>
+            <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="{% url 'log_in' %}" class="h4 text-white">Log in</a>
+        </div>
+    </div>
+  </div>
+  <!-- Hero End -->
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Agregar paciente</h1>
+        <hr>
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="first_name">Nombre:</label>
+            <input type="text" class="form-control" id="first_name" name="first_name">
+          </div>
+          <div class="form-group">
+            <label for="last_name">Apellido:</label>
+            <input type="text" class="form-control" id="last_name" name="last_name">
+          </div>
+          <div class="form-group">
+            <label for="birthday">Fecha de nacimiento:</label>
+            <input type="date" class="form-control" id="birthday" name="birthday" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Teléfono:</label>
+            <input type="text" class="form-control" id="phone" name="phone" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email">
+          </div>
+          <div class="form-group">
+            <label for="address">Dirección:</label>
+            <textarea class="form-control" id="address" name="address"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="social_work">Obra Social:</label>
+            <textarea class="form-control" id="social_work" name="social_work"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="sw_number">N° Obra Social:</label>
+            <textarea class="form-control" id="sw_number" name="sw_number"></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Agregar paciente</button>
+          <a href="{% url 'patients' %}" class="btn btn-primary">Volver a la lista de pacientes</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

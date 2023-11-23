@@ -1,0 +1,30 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+{% block content %}
+<main class="container py-5">
+    <section class="card card-body">
+        <h1 class="display-1 text-center">ADMIN APP</h1>
+        
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, alias neque, obcaecati ad sed saepe aperiam provident illum odit et ipsa aliquam pariatur delectus rem officia soluta ipsum voluptatem hic inventore molestiae nemo? In officia minima dolorum! Neque ipsam accusantium beatae optio veritatis fugiat eum, iure similique quisquam, et nostrum eveniet asperiores, at modi quo maxime. Doloremque incidunt doloribus quas vero sed. Earum obcaecati perferendis minus commodi nostrum sunt in voluptates, quod natus veniam, provident nisi! Eaque nesciunt neque qui, fuga dolores reiciendis vitae. Cupiditate eius quis ex iusto eligendi earum placeat, doloremque reprehenderit repellat, rem tenetur autem nostrum porro.</p>
+    </section>
+
+   <div class="text-center">
+    {% if user.is_authenticated %}
+               
+                    <a class="btn btn-dark" href="{% url 'logout' %}">Log Out</a>
+               
+    {% else %}
+    <a class="btn btn-secondary" href="{% url 'login_admin' %}?admin=True">
+        Sign In
+    </a>
+  
+    {% endif %}
+    
+   
+   
+    <a class="btn btn-dark" href="{% url 'register' %}">Sign Up</a>
+    
+</div>
+</main>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+{% block content %}
+  <h1>{{ specialist.name }}</h1>
+  <a href="{% url 'specialist_update' specialist.pk %}" class="btn btn-primary mb-3">Edit Specialist</a>
+  <form action="{% url 'specialist_delete' pk=specialist.pk %}" method="POST" class="d-inline">
+    {% csrf_token %}
+    <input type="submit" value="Delete" class="btn btn-danger mb-3">
+  </form>
+{% endblock %}
