@@ -1,0 +1,67 @@
+{% extends 'clinica_app/base1.html' %}
+{% block title %}Sucursales{% endblock %}
+{% block main %}
+{% load static %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+  <div class="row py-3">
+      <div class="col-12 text-center">
+          <h1 class="display-3 text-white animated zoomIn">Nuestras sucursales</h1>
+          <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+          <i class="far fa-circle text-white px-2"></i>
+          <a href="{% url 'branch' %}" class="h4 text-white">Sucursales</a>
+      </div>
+  </div>
+</div>
+<!-- Hero End -->
+
+<section class="seccion">
+    <!-- Sección 2 -->
+    <div class="texto">
+        <h2>Nuestras sucursales</h2>
+        <p>Nos complace informarles que nuestra clínica ha expandido sus servicios a través de la apertura de nuevas sucursales en diferentes áreas geográficas. Esta expansión tiene como objetivo brindarles una atención médica de calidad y acercar nuestros servicios a ustedes, nuestros valiosos pacientes.
+
+          Cada una de nuestras sucursales cuenta con un equipo médico altamente capacitado y comprometido con su bienestar. 
+          
+          Entendemos lo importante que es tener acceso a la atención médica cerca de sus hogares, por eso nos hemos esforzado en seleccionar ubicaciones estratégicas para nuestras sucursales. 
+          
+          Nuestra clínica se enorgullece de mantener altos estándares de calidad en todos nuestros servicios y eso se extiende a nuestras nuevas sucursales. 
+          
+          Además de brindar servicios médicos, nuestras sucursales también tienen el compromiso de educar y concientizar a la comunidad sobre la importancia de la salud. 
+          
+          Estamos emocionados de poder atenderles en nuestras nuevas sucursales y esperamos que esta expansión nos permita brindarles una experiencia de atención médica aún más conveniente y cercana.
+          
+          No dudes en comunicarte con nosotros para obtener más información sobre nuestras sucursales, servicios y horarios de atención.
+          
+          Estamos aquí para cuidar de su salud y bienestar.
+    </div>
+    <div class="imagen">
+        <img src="{% static 'assets/img/sucursales_inicio.jpeg' %}" alt="Imagen 2">
+    </div>
+</section> 
+
+<section class="section-4">
+    <div class="heading">
+        <h4>Sucursales</h4>
+    </div>
+    <div class="row">
+        {% for branch in branches %}
+        <figure class="figure">
+            {% if branch.id == 1 %}
+            <img src="{% static 'assets/img/sucursal1.jpeg' %}" alt="emergency">
+            {% elif branch.id == 2 %}
+            <img src="{% static 'assets/img/sucursal2.jpeg' %}" alt="hospital">
+            {% elif branch.id == 3 %}
+            <img src="{% static 'assets/img/sucursal3.jpeg' %}" alt="arboles y hospital">
+            {% elif branch.id == 4 %}
+            <img src="{% static 'assets/img/sucursal4.jpeg' %}" alt="edificio vidriado">
+            {% endif %}
+            
+            <div>
+                <h2>{{ branch.name }}</h2>
+            </div>
+        </figure>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

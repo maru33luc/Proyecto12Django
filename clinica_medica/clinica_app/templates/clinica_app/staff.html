@@ -9,7 +9,7 @@
             <h1 class="display-3 text-white animated zoomIn">Staff Médico</h1>
             <a href="{% url 'index' %}" class="h4 text-white">Home</a>
             <i class="far fa-circle text-white px-2"></i>
-            <a href="{% url 'staff' %}" class="h4 text-white">Staff</a>
+            <a href="{% url 'appointment' %}" class="h4 text-white">Turnos</a>
         </div>
     </div>
 </div>
@@ -33,28 +33,12 @@
             <div class="col-lg-4 wow slideInUp" data-wow-delay="0.3s">
                 <div class="team-item">
                     <div class="position-relative rounded-top" style="z-index: 1;">
-                        {% if forloop.counter == 1 %}
-                        <img class="img-fluid rounded-top w-100" src="{% static 'assets/img/staff1.jpg' %}" alt="">
-                        {% else %}
-                        {% if forloop.counter == 2 %}
-                        <img class="img-fluid rounded-top w-100" src="{% static 'assets/img/staff2.jpg' %}" alt="">
-                        
-                        {% else %}
-                        {% if forloop.counter == 3 %}
-                        <img class="img-fluid rounded-top w-100" src="{% static 'assets/img/staff3.jpg' %}" alt="">
-                        
-                        {% else %}
-                        {% if forloop.counter == 4 %}
-                        <img class="img-fluid rounded-top w-100" src="{% static 'assets/img/staff4.jpg' %}" alt="">
-                        
-                        {% else %}
-                        {% if forloop.counter == 5 %}
-                        <img class="img-fluid rounded-top w-100" src="{% static 'assets/img/staff5.jpg' %}" alt="">
-                        {% endif %}
-                        {% endif %}
-                        {% endif %}
-                        {% endif %}
-                        {% endif %}
+                        {% if doctor.image_profile %}
+    <img class="img-fluid rounded-top w-100" src=" {{settings.MEDIA_URL}}{{ doctor.image_profile.url }}" alt="{{ doctor.mr_number }}">
+    {% else %}
+        Sin imagen
+    {% endif %}
+                       
                         <div class="position-absolute top-100 start-50 translate-middle bg-light rounded p-2 d-flex">
                             <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-twitter fw-normal"></i></a>
                             <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-facebook-f fw-normal"></i></a>
@@ -63,8 +47,8 @@
                         </div>
                     </div>
                     <div class="team-text position-relative bg-light text-center rounded-bottom p-4 pt-5">
-                        <h4 class="mb-2">Dr. {{ doctor.name }} {{ doctor.last_name }}</h4>
-                        <p class="text-primary mb-0">{{ doctor.speciality }}</p>
+                        <h4 class="mb-2">Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</h4>
+                        <p class="text-primary mb-0">{{ doctor.specialist.name }}</p>
                     </div>
                 </div>
             </div>

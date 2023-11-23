@@ -1,4 +1,8 @@
 {% extends 'clinica_app/admin/base.html' %}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
 {% block title %}
 	<title>Alta Médico</title>
 {% endblock title %}
@@ -12,8 +16,14 @@
     <h1>Alta Médico</h1>
     {{ error }}
     {% csrf_token %}
+<<<<<<< HEAD
     {{ doctor_form.as_p }}
     {{ user_form.as_p }}
+=======
+    {{ user_form.as_p }}
+    {{ doctor_form.as_p }}
+    
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-primary">Save</button>

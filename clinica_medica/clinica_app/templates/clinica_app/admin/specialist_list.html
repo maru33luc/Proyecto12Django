@@ -1,17 +1,33 @@
 {% extends 'clinica_app/admin/base.html' %}
 
 {% block content %}
+<<<<<<< HEAD
   <h1 class="mb-3">Specialists</h1>
+=======
+<main>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+  <h1 class="mb-3">Especialidades</h1>
+  <hr>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
   <table class="table table-striped">
 
     <thead>
     
     <tr>
     
+<<<<<<< HEAD
     <th scope="col">Name</th>
     
        
     <th scope="col">Action</th>
+=======
+    <th scope="col">Especialidad</th>
+    
+       
+    <th scope="col">Acción</th>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
     
     </tr>
     
@@ -29,9 +45,15 @@
     
     <td>
     
+<<<<<<< HEAD
     <a style="margin-right: 30px;" href="{% url 'specialist_update' specialist.id %}">Edit</a>
     
     <a href="{% url 'specialist_delete' specialist.id %}">Remove</a>
+=======
+    <a style="margin-right: 30px;" href="{% url 'specialist_update' specialist.id %}" class="btn btn-warning btn-sm">Editar</a>
+    
+    <a href="{% url 'specialist_delete' specialist.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
     
     </td>
     
@@ -39,7 +61,11 @@
     
     
     {% empty %}
+<<<<<<< HEAD
       <p>No specialists found.</p>
+=======
+      <p>No se encontraron especialidades.</p>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
     {% endfor %}
     </tbody>
     
@@ -47,12 +73,23 @@
     
     <div class="text-center">
     
+<<<<<<< HEAD
     <a href="{% url 'specialist_create' %}"><button type="button" class="btn btn-primary mb_3">Add Specialist</button></a>
     
     </div>
     
 
 
+=======
+    <a href="{% url 'specialist_create' %}"><button type="button" class="btn btn-success mb_3">Agregar Especialidad</button></a>
+    
+    </div>
+  </div>
+</div>
+</div>
+
+  </main>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
 
 
 

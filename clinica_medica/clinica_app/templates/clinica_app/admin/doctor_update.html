@@ -1,6 +1,7 @@
 {% extends 'clinica_app/admin/base.html' %}
 
 {% block title %}
+<<<<<<< HEAD
 	<title>Edit</title>
 {% endblock title %}
 {% block content %}
@@ -16,3 +17,59 @@
     </div>
     </form>
 {% endblock content %}
+=======
+    <title>Editar Médico</title>
+{% endblock title %}
+
+{% block content %}
+    <h1 style="text-align: center; padding-top: 1em; padding-bottom: 1em;">Editar Doctor</h1>
+
+    <div class="container" style="display: flex; align-items: center;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                    {% csrf_token %}
+                   
+                    {% for field in form %}
+                        {% if field.name != 'branch_offices' %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-8" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                <div class="col-sm-8">
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <p class="help-text">{{ field.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                            <br>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Sucursales:</label>
+                        <div class="col-sm-8">
+                            {% for branch_office in form.branch_offices %}
+                                <div class="checkbox">
+                                    <label>
+                                        {{ branch_office }} 
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                        <br>
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-8">
+                            <button type="submit" class="btn btn-success">Guardar cambios</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <style>
+        .form-control {
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock content %}
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09

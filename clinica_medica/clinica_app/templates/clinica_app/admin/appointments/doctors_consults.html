@@ -1,0 +1,94 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+{% block content %}
+<main>
+  <div class="container mt-5">
+    
+      <h2>Turnos</h2>
+      <div class="col-md-6">
+    
+        <div class="row mt-3">
+          <div class="col-md-6">
+            <form method="GET">
+                          
+                <div id="doctor_filter">
+                  <label for="doctor">Seleccionar doctor:</label>
+                
+                  <select name="doctor" id="doctor" class="form-control">
+                    <option value="">Todos los doctores</option>
+                    {% for doctor in doctors %}
+                      <option value="{{ doctor.id }}">{{ doctor.user.last_name }} {{ doctor.user.first_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              
+        
+              <label for="date">Filtrar por fecha:</label>
+              <input type="date" name="date" id="date" class="form-control" value="{{ request.GET.date }}">
+        
+              <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+              {% if request.GET.doctor or request.GET.date %}
+                <a href="?" class="btn btn-secondary mt-3">Limpiar filtros</a>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+        </div>
+  
+      
+       
+
+        <table class="table table-hover">
+          
+          <thead>
+            <tr class="table-title" style="background-color: #f5f5f5;">
+              {% if doctor %}
+                 <th colspan="2">Doctor: {{ doctor.user.last_name }} {{ doctor.user.first_name }}</th>
+              {% endif %}
+            </tr>
+            <tr>
+              {% if not doctor_id %}
+              <th>Doctor</th>
+              {% endif %}
+             
+              <th>Paciente</th>
+              
+              <th>Día</th>
+              <th>Desde</th>
+              <th>Hasta</th>
+              
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appointment in appointments %}
+              <tr>
+                {% if not doctor_id %}
+                <td>{{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</td>
+                {% endif %}
+               
+                <td>{{ appointment.patient.user.last_name }} {{ appointment.patient.user.first_name }} </td>
+               
+               <td>{{ appointment.date }}</td>
+                <td>{{ appointment.start_time|time:"g:i A" }}</td>
+                <td>{{ appointment.end_time|time:"g:i A" }}</td>
+                
+                <td>
+                  <a href="{% url 'appointment_detail' pk=appointment.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                  <a href="{% url 'cancel_appointment' pk=appointment.pk %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5">Sin turnos.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+       
+      </div>
+    </div>
+  </div>
+</main>
+
+{% endblock %}

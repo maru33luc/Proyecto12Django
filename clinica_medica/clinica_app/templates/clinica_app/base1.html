@@ -2,14 +2,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
    
        <!-- Load Bootstrap -->
-       
        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-      
        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
        <!--Fontawesome-->
        <script src="https://kit.fontawesome.com/f71012b10e.js" crossorigin="anonymous"></script>
@@ -19,6 +17,7 @@
     <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
     <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/mdb.min.map.css' %}" />
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 
     
@@ -28,25 +27,13 @@
     {% block styles %} {% endblock %}
 </head>
 <body>
-    <!--
-    <header>
-        <h1 class="logo">LOGO DE LA CLÍNICA</h1>
-        <nav>
-            <ul>
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#servicios">Servicios</a></li>
-                <li><a href="#equipo">Equipo</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
-        </nav>
-    </header>
-    -->
+ 
     <header>
      
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light fixed-top mask-custom shadow-0">
           <div class="container">
-            <a class="navbar-brand" href="{% url 'index' %}"><span style="color: #5083E5; font-size: 40px; ">Clínica</span><span style="color: #fff; font-size: 40px;"> Médica</span></a>
+            <a class="navbar-brand" href="{% url 'index' %}"><span  class="clinica">Clínica</span><span  class="medica"> Médica</span></a>
             <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
               data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
               aria-label="Toggle navigation">
@@ -59,6 +46,9 @@
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'staff' %}">Staff</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'branch' %}">Sucursales</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'appointment' %}">Turnos</a>
@@ -76,13 +66,22 @@
                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pacientes</a>
                   <div class="dropdown-menu">
                       <a href="{% url 'patient_detail' patient_id %}" class="dropdown-item">Tus Datos</a>
-                      <a href="#" class="dropdown-item">Drafts</a>
-                      <a href="#" class="dropdown-item">Sent Items</a>
-                      <div class="dropdown-divider"></div>
-                      <a href="#"class="dropdown-item">Trash</a>
+                      <a href="{% url 'patient_appointments' %}" class="dropdown-item">Tus turnos</a>
+                   
                   </div>
               </li>
               {% endif %}
+              {% if user.is_doctor %}
+              {% with doctor=user.doctor %}
+                  <li class="nav-item dropdown">
+                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Doctores</a>
+                      <div class="dropdown-menu">
+                          <a href="{% url 'doctor_detail' doctor.id %}" class="dropdown-item">Tus Datos</a>
+                          <a href="{% url 'doctor_appointments' %}" class="dropdown-item">Tus turnos</a>
+                      </div>
+                  </li>
+              {% endwith %}
+          {% endif %}
               {% if user.is_authenticated %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
@@ -133,12 +132,56 @@
 
   
 
-    <footer>Django - Grupo <span>12 - </span> Todos los derechos reservados 2023</footer>
+  <footer class="footer">
+    <div class="container"  >
+      <div class="row">
+        <div class="col-md-4">
+          <h4>Contacto</h4>
+          <p>
+            Dirección: 123 Calle Principal<br>
+            Ciudad, País<br>
+            Teléfono: (123) 456-7890<br>
+            Correo electrónico: info@clinicamedica.com
+          </p>
+        </div>
+        <div class="col-md-4">
+          <h4>Enlaces útiles</h4>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'index' %}">Inicio</a></li>
+            <li><a href="{% url 'services' %}">Servicios</a></li>
+            <li><a href="{% url 'staff' %}">Staff</a></li>
+            <li><a href="{% url 'branch' %}">Sucursales</a></li>
+            <li><a href="{% url 'appointment' %}">Turnos</a></li>
+            <li><a href="{% url 'about_us' %}">Acerca de</a></li>
+            <li><a href="{% url 'contact' %}">Contacto</a></li>
+           
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h4>Síguenos en redes sociales</h4>
+          <ul class="list-unstyled social-icons">
+            <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+           
+          </ul>
+        </div>
+      </div>
+    </div>
+   
+  </footer>
+
+
+    
+    
+    
+    
     <!-- Scripts de Bootstrap 5 -->
       <!-- JavaScript Libraries -->
-      <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://unpkg.com/@popperjs/core@2.10.1/dist/umd/popper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="{% static 'js/mdb.min.js' %}"></script>
 <script src="{% static 'js/script.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>

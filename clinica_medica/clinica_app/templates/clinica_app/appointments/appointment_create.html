@@ -1,0 +1,107 @@
+{% extends 'clinica_app/admin/base.html' %}
+{% load static %}
+
+
+{% block content %}
+  <h1>Reservar un turno</h1>
+  {% if form.errors %}
+  <div class="alert alert-danger">
+    <ul>
+      {% for field_errors in form.errors.values %}
+        {% for error in field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+
+  <div class="col-md-6">
+    <h3>Turnos disponibles</h3>
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <form method="GET">
+          <label for="specialist">Filtrar por especialidad:</label>
+          <select name="specialist" id="specialist" class="form-control">
+            <option value="">Todos las especialidades</option>
+            {% for specialist in specialist_list %}
+              <option value="{{ specialist.id }}">{{ specialist.name }}</option>
+            {% endfor %}
+          </select>
+          <label for="doctor">Filtrar por doctor:</label>
+          <select name="doctor" id="doctor" class="form-control">
+            <option value="">Todos los Dres.</option>
+            {% for doctor in doctor_list %}
+            {% if doctor_selected == doctor.id %}
+            <option value="{{ doctor.id }}" selected>{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+          {% else %}
+            <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+          {% endif %}
+            {% endfor %}
+        </select>
+
+          <label for="date">Filtrar por fecha:</label>
+          
+          <input type="date" name="date" id="date" class="form-control" min="{{ current_date|date:'Y-m-d' }}">
+
+
+
+
+          <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% if doctor_selec or date_selected or specialist_selected %}
+  <form method="post" action="{% url 'appointment_create' %}">
+    {% csrf_token %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Especialidad</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Termina</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slot in slot_list %}
+          <tr>
+            <td>{{ slot.doctor }}</td>
+            <td>{{ slot.doctor.specialist.name }}</td>
+            <td>{{ slot.date }}</td>
+            <td>{{ slot.start_time }}</td>
+            <td>{{ slot.end_time }}</td>
+            <td>{{ slot.get_status_display }}</td>
+            <td>
+              {% if slot.status == 'available' %}
+                <input type="hidden" name="doctor" value="{{ slot.doctor.id }}" id="doctor">
+                <input type="hidden" name="date" value="{{ slot.date }}" id="date">
+                <input type="hidden" name="start_time" value="{{ slot.start_time|time:'H:i' }}" id="start_time">
+<input type="hidden" name="end_time" value="{{ slot.end_time|time:'H:i' }}" id="end_time">
+
+                <input type="hidden" name="notes" value="" id="notes">
+                <input type="hidden" name="slot_id" value="{{ slot.id }}" id="slot_id">
+                <button type="submit" class="btn btn-primary">Book Appointment</button>
+                
+              {% else %}
+                Sin turnos disponibles
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6">No available slots found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+  {% endif %}
+{% endblock %}
+
+

@@ -1,0 +1,72 @@
+{% extends 'clinica_app/base1.html' %} {% block title %} Turnos {% endblock %}
+{% block main %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Tus pacientes</h1>
+            <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="{% url 'appointment' %}" class="h4 text-white">Turnos</a>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{{ message }}</strong>
+    
+</div>
+{% endfor %}
+{% endif %}
+  <!-- Appointment Start -->
+  <div class="container-fluid py-5">
+    <div class="container">
+        <h2>Turnos del Doctor: {{ doctor.user.get_full_name }}</h2>
+
+        <!-- Formulario para filtrar por fecha -->
+        <form method="GET" action="" class="mb-3">
+            <div class="form-group">
+                <label for="date">Filtrar por fecha:</label>
+                <input type="date" class="form-control" id="date" name="date" value="{{ request.GET.date }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            {% if request.GET.date %}
+            <a href="?" class="btn btn-secondary ml-2">Limpiar filtros</a>
+        {% endif %}
+        </form>
+
+        <!-- Tabla de turnos -->
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Paciente</th>
+                    <th>Fecha</th>
+                    <th>Hora de inicio</th>
+                    <th>Notas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                
+                    <tr>
+                        <td>{{ appointment.patient.user.get_full_name }}</td>
+                        <td>{{ appointment.date }}</td>
+                        <td>{{ appointment.start_time }}</td>
+                        <td>{{ appointment.notes }}</td>
+                    </tr>
+                    
+                {% empty %}
+                    <tr>
+                        <td colspan="4">No se encontraron turnos.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+
+
+{% endblock %}

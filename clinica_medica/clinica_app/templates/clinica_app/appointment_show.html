@@ -1,0 +1,55 @@
+{% extends 'clinica_app/base1.html' %} {% block title %} Turnos {% endblock %}
+{% block main %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Reserva de turnos</h1>
+            <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="{% url 'appointment' %}" class="h4 text-white">Turnos</a>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+<section class="appointment">
+  <!-- Appointment Start -->
+  <div class="container-fluid py-5">
+    <div class="container">
+      <div class="row gx-5">
+        <h3>Su turno</h3>
+        <table class="table table-striped">
+          <tr>
+            <td><strong>con el Doctor:</strong></td>
+            <td>{{ appointment.doctor }}</td>
+          </tr>
+          <tr>
+            <td><strong>Fecha:</strong></td>
+            <td>{{ appointment.date }}</td>
+          </tr>
+          <tr>
+            <td><strong>Empieza:</strong></td>
+            <td>{{ appointment.start_time }}</td>
+          </tr>
+          <tr>
+            <td><strong>Termina:</strong></td>
+            <td>{{ appointment.end_time }}</td>
+          </tr>
+          <tr>
+            <td><strong>Notas:</strong></td>
+            <td>{{ appointment.notes }}</td>
+          </tr>
+        </table>
+        <div class="col-sm-offset-2 col-sm-10">
+            
+            
+        <a href="{% url 'patient_appointments'  %}" class="btn btn-primary btn-sm rounded-pill py-3 px-5 me-3">Tus turnos</a>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment End -->
+</section>
+
+{% endblock %}

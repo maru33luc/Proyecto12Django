@@ -1,0 +1,52 @@
+{% extends 'clinica_app/base1.html' %}
+{% block title %}Contacto {% endblock %}
+{% block main %}
+{% load static %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-0">
+  <div class="row py-3">
+      <div class="col-12 text-center">
+          <h1 class="display-3 text-white animated zoomIn">Contacto</h1>
+          <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+          <i class="far fa-circle text-white px-2"></i>
+          <a href="{% url 'contact' %}" class="h4 text-white">Contacto</a>
+      </div>
+  </div>
+</div>
+<!-- Hero End -->
+
+<section id="contact">
+    <div class="contact-box">
+      <div class="contact-links">
+        <h2>CONTACTO</h2>
+        <div class="links">
+          <div class="link">
+            <a><img src="https://i.postimg.cc/m2mg2Hjm/linkedin.png" alt="linkedin"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/YCV2QBJg/github.png" alt="github"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/W4Znvrry/codepen.png" alt="codepen"></a>
+          </div>
+          <div class="link">
+            <a><img src="https://i.postimg.cc/NjLfyjPB/email.png" alt="email"></a>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form-wrapper">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="alert alert-success mt-5">
+                        <h5 class="display-4">¡Mensaje recibido con éxito!</h5>
+                        <p class="lead">Gracias por contactarnos. Tu mensaje ha sido recibido correctamente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+             
+{% endblock %}

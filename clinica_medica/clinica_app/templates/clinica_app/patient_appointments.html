@@ -1,0 +1,62 @@
+{% extends 'clinica_app/base1.html' %} {% block title %} Turnos {% endblock %}
+{% block main %}
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-1">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Reserva de turnos</h1>
+            <a href="{% url 'index' %}" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="{% url 'appointment' %}" class="h4 text-white">Turnos</a>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+<section class="appointment">
+  <!-- Appointment Start -->
+  <div class="container-fluid py-5">
+    <div class="container">
+      <div class="row gx-5">
+        <h1>Tus Turnos</h1>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+  
+        {% if patient_appointments %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora de inicio</th>
+                        <th>Doctor</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in patient_appointments %}
+                        {% if appointment.date >= current_date %}
+                            <tr>
+                                <td>{{ appointment.date|date:"d/m/Y" }}</td>
+                                <td>{{ appointment.start_time }}</td>
+                                <td>{{ appointment.doctor }}</td>
+                                <td><a href="{% url 'appointment_cancel' appointment.id %}" class="btn btn-sm btn-outline-danger">Cancelar</a></td>
+                            </tr>
+                        {% endif %}
+                        
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No tienes turnos programados.</p>
+    {% endif %}
+    </div>
+</div>
+</div>
+</section>
+{% endblock %}

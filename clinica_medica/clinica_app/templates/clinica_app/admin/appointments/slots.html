@@ -1,0 +1,84 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+{% block content %}
+<main>
+  <div class="container mt-5">
+    <h2>Turnos disponibles por doctor</h2>
+
+    <div class="row">
+      <div class="col-md-6">
+        <form method="POST">
+          {% csrf_token %}
+          {{ form.as_p }}
+
+          <button type="submit" class="btn btn-primary mt-3">Habilitar turnos</button>
+        </form>
+      </div>
+      
+      <div class="col-md-6">
+        <h3>Turnos disponibles</h3>
+        <div class="row mt-3">
+          <div class="col-md-6">
+            <form method="GET">
+                <label for="specialist">Filtrar por especialidad:</label>
+          <select name="specialist" id="specialist" class="form-control">
+            <option value="">Todos las especialidades</option>
+            {% for specialist in specialist_list %}
+              <option value="{{ specialist.id }}">{{ specialist.name }}</option>
+            {% endfor %}
+          </select>
+              <label for="doctor">Filtrar por médico:</label>
+              <select name="doctor" id="doctor" class="form-control">
+                <option value="">Todos los médicos</option>
+                
+                {% for doctor in doctor_list %}
+                  <option value="{{ doctor.id }}">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+                {% endfor %}
+              </select>
+
+              <label for="date">Filtrar por fecha:</label>
+              <input type="date" name="date" id="date" class="form-control">
+
+              <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+            </form>
+          </div>
+        </div>
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Especialidad</th>
+              <th>Día</th>
+              <th>Desde</th>
+              <th>Hasta</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for slot in slot_list %}
+              <tr>
+                <td>{{ slot.doctor }}</td>
+                <td>{{slot.doctor.specialist.name}}</td>
+                <td>{{ slot.date }}</td>
+                <td>{{ slot.start_time }}</td>
+                <td>{{ slot.end_time }}</td>
+                <td>{{ slot.get_status_display }}</td>
+                <td>
+                  <a href="{% url 'edit_slot' slot.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                  <a href="{% url 'delete_slot' slot.id %}" class="btn btn-sm btn-outline-danger">Borrar</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5">No availability found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

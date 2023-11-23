@@ -36,23 +36,22 @@
       </div>
       <div class="contact-form-wrapper">
         <form action="{% url 'contact' %}" method="post">
-          {% csrf_token %}
-          <div class="form-item">
-            <input type="text" name="sender" required>
-            <label class="label">Nombre:</label>
-          </div>
-          <div class="form-item">
-            <input type="text" name="email" required>
-            <label class="label">Email:</label>
-          </div>
-          <div class="form-item">
-            <textarea class="" name="message" required></textarea>
-            <label class="label">Mensaje:</label>
-          </div>
-          <button class="submit-btn">Send</button>  
-          <input type="submit" value="save">
+            {% csrf_token %}
+            <div class="form-item">
+                {{ contact_form.sender }}
+                <label class="label">Nombre:</label>
+            </div>
+            <div class="form-item">
+                {{ contact_form.email }}
+                <label class="label">Email:</label>
+            </div>
+            <div class="form-item">
+                {{ contact_form.message }}
+                <label class="label">Mensaje:</label>
+            </div>
+            <button type="submit" class="submit-btn">Enviar</button>
         </form>
-      </div>
+    </div>
     </div>
   </section>
              

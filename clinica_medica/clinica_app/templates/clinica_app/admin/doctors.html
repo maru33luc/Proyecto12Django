@@ -2,8 +2,19 @@
 {% block title %}
 	<title>Listado de Médicos</title>
 {% endblock title %}
+<<<<<<< HEAD
 {% block content %}
   <h1 class="mb-3">Médicos</h1>
+=======
+
+{% block content %}
+<main>
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-12">
+  <h1 class="mb-3">Médicos</h1>
+  <hr>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
   <table class="table table-striped">
 
     <thead>
@@ -12,6 +23,7 @@
     
     <th scope="col">Nombre</th>
     <th scope="col">Apellido</th>
+<<<<<<< HEAD
     <th scope="col">Email</th>
     <th scope="col">DNI</th>
     <th scope="col">Teléfono</th>
@@ -21,6 +33,15 @@
     <th scope="col">Especialidad</th>
     <th scope="col">Imagen</th>
     <th scope="col">Action</th>
+=======
+    <th scope="col">Sucursal</th>
+    <th scope="col">Teléfono</th>
+    <th scope="col">Dirección</th>
+    <th scope="col">N° Matrícula</th>
+    <th scope="col">Especialidad</th>
+    <th scope="col">Imagen</th>
+    <th scope="col">Acción</th>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
     
     </tr>
     
@@ -34,6 +55,7 @@
     
     <th scope="row">{{ doctor.user.first_name }}</th>
     <td>{{ doctor.user.last_name }}</td>
+<<<<<<< HEAD
     <td>{{ doctor.user.email }}</td>   
     <td>{{ doctor.dni }}</td>
     <td>{{ doctor.phone }}</td>
@@ -43,10 +65,22 @@
     <td>{{ doctor.specialist.name }}</td>
       <td>{% if doctor.image_profile %}
     <img width="50px" src=" {{settings.MEDIA_URL}}{{ doctor.image_profile.url }}" alt="{{ doctor.mr_number }}">
+=======
+    <td>{% for branch_office in doctor.branch_offices.all %}
+    <p>{{ branch_office.name }}</p> {% endfor %}</td>
+    
+    <td>{{ doctor.phone }}</td>
+    <td>{{ doctor.address }}</td>
+    <td>{{ doctor.mr_number }}</td>
+    <td>{{ doctor.specialist.name }}</td>
+      <td>{% if doctor.image_profile %}
+    <img width="100px" src=" {{settings.MEDIA_URL}}{{ doctor.image_profile.url }}" alt="{{ doctor.mr_number }}">
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
     {% else %}
         Sin imagen
     {% endif %}</td>
     
+<<<<<<< HEAD
 
 
 
@@ -61,6 +95,16 @@
     </tr>
     
     
+=======
+      <td>
+    <a style="margin-right: 30px;" href="{% url 'doctor_update' doctor.id %}" class="btn btn-warning btn-sm">Editar</a>
+    <a href="{% url 'doctor_delete' doctor.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+
+    </td>
+
+    </tr>
+
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
     {% empty %}
       <p>No doctors found.</p>
     {% endfor %}
@@ -70,6 +114,7 @@
     
     <div class="text-center">
     
+<<<<<<< HEAD
     <a href="{% url 'doctor_create' %}"><button type="button" class="btn btn-primary mb_3">Agregar Doctor</button></a>
     
     </div>
@@ -78,5 +123,17 @@
 
 
 
+=======
+    <a href="{% url 'doctor_create' %}"><button type="button" class="btn btn-success mb_3">Agregar Doctor</button></a>
+    
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+  </main>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
 
 {% endblock %}

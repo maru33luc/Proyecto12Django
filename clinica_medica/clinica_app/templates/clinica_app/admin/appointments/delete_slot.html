@@ -1,0 +1,16 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+{% block content %}
+<main>
+  <div class="container mt-5">
+  <h1>Borrar Turno disponible</h1>
+  <p>Esta seguro que quiere borrar el horario disponible de {{ slot.doctor }} en el día: {{ slot.date }} desde {{ slot.start_time }} hasta {{ slot.end_time }}?</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Borrar</button>
+    <a href="{% url 'slot_view' %}" class="btn btn-secondary">Cancel</a>
+
+  </form>
+  </div>
+</main>
+{% endblock %} 

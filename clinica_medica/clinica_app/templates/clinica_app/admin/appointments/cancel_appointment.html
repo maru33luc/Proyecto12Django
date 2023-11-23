@@ -1,0 +1,21 @@
+{% extends 'clinica_app/admin/base.html' %}
+{% block title %} Turnos {% endblock %}
+{% block content %}
+
+<div class="container">
+  <div class="col-12 text-center">
+  <h1>Cancelar su turno</h1>
+
+  <p>Esta seguro que quiere cancelar el turno?</p>
+  <p>con el Dr. {{ appointment.doctor.user.last_name }} {{ appointment.doctor.user.first_name }}</p>
+  <p> el día: {{appointment.date }}</p>
+  <p>de: {{ appointment.start_time|time:"g:i A" }}</p>
+  <p>hasta: {{ appointment.end_time|time:"g:i A" }}</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, Cancelar Turno</button>
+    <a href="{% url 'appointment_detail' pk=appointment.pk %}" class="btn btn-secondary">No, Volver</a>
+  </form>
+</div>
+</div>
+{% endblock %}

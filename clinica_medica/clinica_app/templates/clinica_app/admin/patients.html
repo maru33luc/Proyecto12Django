@@ -1,0 +1,72 @@
+{% extends 'clinica_app/admin/base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static 'css/style_signin.css' %}" />
+{% endblock %}
+{% block title %}Pacientes {% endblock %}
+{% block content %}
+
+<main>
+
+
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Pacientes</h1>
+        <hr>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>DNI</th>
+              <th>Fecha de nacimiento</th>
+              <th>Teléfono</th>
+              <th>Email</th>
+              <th>Dirección</th>
+              <th>Localidad</th>
+              <th>Obra Social</th>
+              <th>N°Afiliado</th>
+
+
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for patient in patients %}
+              <tr>
+                <td>{{ patient.user.first_name }}</td>
+                <td>{{ patient.user.last_name }}</td>
+                <td>{{ patient.dni }}</td>
+                <td>{{ patient.date_of_birth }}</td>
+                <td>{{ patient.phone }}</td>
+                <td>{{ patient.user.email }}</td>
+                <td>{{ patient.address }}</td>
+                <td>{{ patient.city }}</td>
+                <td>{{ patient.social_work }}</td>
+                <td>{{ patient.sw_number }}</td>
+                
+                <td>
+                  <!-- <a href="{% url 'patient_detail' patient.pk %}" class="btn btn-primary btn-sm">Ver</a> -->
+                  <a href="{% url 'patient_update_admin' patient.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                  <a href="{% url 'patient_delete' patient.pk %}" class="btn btn-danger btn-sm" >Eliminar</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="7">No hay pacientes registrados.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="text-center">
+        <a href="{% url 'patient_create_admin' %}" class="btn btn-success mb_3">Agregar Paciente</a>
+      </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+

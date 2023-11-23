@@ -5,10 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ADMIN</title>
+<<<<<<< HEAD
+=======
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" integrity="sha512-8oY3p/TjREGrLhh8kTczsY/fUdWmkPzqHnJ48LsSdY/YSG6L4lBpk4tOYxOj7UxXArVNEQUzVhVcRvUR9udtFg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
     />
+<<<<<<< HEAD
+=======
+     <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css">
+  
+  
+
+  <!-- Datetimepicker CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
+  
+ 
+    <!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datetimepicker@latest/build/css/bootstrap-datetimepicker.min.css">
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
   </head>
   <body>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
@@ -44,6 +62,23 @@
                     <a class="nav-link" href="{% url 'specialist_list' %}">Especialidades</a>
                   </li>
                   <li class="nav-item">
+<<<<<<< HEAD
+=======
+                    <a class="nav-link" href="{% url 'branch_offices' %}">Sucursales</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Turnos</a>
+                    <div class="dropdown-menu">
+                        <a href="{% url 'slot_view'  %}" class="dropdown-item">Slots</a>
+                        <a href="{% url 'appointment_list' %}" class="dropdown-item">turnos</a>
+                        <a href="{% url 'appointment_create' %}" class="dropdown-item">alta</a>                       
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'doctors_consults' %}" class="dropdown-item">Doctores</a>
+                        <a href="{% url 'patients_consults' %}" class="dropdown-item">Pacientes</a>
+                    </div>
+                </li>
+                  <li class="nav-item">
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
                     <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                   </li>
             {% else %}
@@ -59,7 +94,44 @@
         </div>
       </div>
     </nav>
+<<<<<<< HEAD
     {% block content %}
      {% endblock %}
+=======
+    <!-- Messages -->
+
+    {% block content %}
+     {% endblock %}
+     <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+   
+ <!-- Datetimepicker JS -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+ <script>
+  $(document).ready(function(){
+    $('.datetimepicker').datetimepicker({
+      format: 'YYYY-MM-DD HH:mm',
+      autoclose: true,
+      todayBtn: true,
+      minuteStep: 10,
+      useCurrent: false,
+      icons: {
+        time: 'far fa-clock',
+        date: 'far fa-calendar',
+        up: 'fas fa-arrow-up',
+        down: 'fas fa-arrow-down',
+        previous: 'fas fa-chevron-left',
+        next: 'fas fa-chevron-right',
+        today: 'fas fa-calendar-check-o',
+        clear: 'fas fa-trash',
+        close: 'fas fa-times'
+      }
+    });
+  });
+</script>
+>>>>>>> 4fa42ffe4c10a36e80bed4186940516e2a690e09
   </body>
 </html>

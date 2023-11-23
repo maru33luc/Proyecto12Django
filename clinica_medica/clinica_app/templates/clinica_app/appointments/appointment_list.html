@@ -1,0 +1,43 @@
+{% extends 'clinica_app/admin/base.html' %}
+
+
+
+{% block content %}
+  <h1>Turnos dados</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Doctor</th>
+        <th>Paciente</th>
+        <th>Fecha</th>
+        <th>hora</th>
+        <th>termina</th>
+        
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appointment in appointments %}
+        <tr>
+          <td>Dr. {{ appointment.doctor.user.last_name }} {{ appointment.doctor.user.first_name }} </td>
+          <td>{{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}</td>
+         <td>{{ appointment.date }}</td>
+          <td>{{ appointment.start_time|time:"g:i A" }}</td>
+          <td>{{ appointment.end_time|time:"g:i A" }}</td>
+          
+          <td>
+            
+            <a href="{% url 'appointment_detail' pk=appointment.pk %}" class="btn btn-success">Ver</a>
+            <!-- <a href="{% url 'appointment_edit' pk=appointment.pk %}" class="btn btn-primary">Editar</a> -->
+              <a href="{% url 'cancel_appointment' pk=appointment.pk %}" class="btn btn-danger">Cancel</a>
+           
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="7">No appointments found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

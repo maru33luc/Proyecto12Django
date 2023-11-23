@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-
-
+from datetime import time
+import datetime
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -53,9 +53,17 @@ class Patient(models.Model):
     city = models.CharField(max_length=40, verbose_name='Ciudad', null=True, blank=True)
     social_work = models.CharField(max_length=20, verbose_name='Obra Social', null=True, blank=True)
     sw_number = models.CharField(max_length=20, verbose_name='Número de Obra Social', null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
     date_of_birth = models.DateField()
-   
+    
+    def has_appointment_with_doctor(self, doctor_id):
+        return self.appointments.filter(doctor_id=doctor_id).exists()
+    
+    def has_appointment_with_specialist(self, specialist):
+        doctors = Doctor.objects.filter(specialist=specialist)
+        appointments = self.appointments.filter(doctor__in=doctors)
+        return appointments.exists()
+    
     def __str__(self):
         
         return self.user.get_full_name()
@@ -63,6 +71,15 @@ class Patient(models.Model):
 class Specialist(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return self.name
+    
+#ManytoMany
+
+class Branch_office(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Branch_office', unique=True)    
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     def __str__(self):
         return self.name
 
@@ -75,10 +92,75 @@ class Doctor(models.Model):
     city = models.CharField(max_length=40, verbose_name='Ciudad', null=True, blank=True)
     mr_number = models.CharField(max_length=20, verbose_name='Número de Matrícula', null=True, blank=True)
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank= True, on_delete=models.CASCADE)
     image_profile = models.ImageField(upload_to='doctor_images/', null=True, blank=True)
-   
+    #ManytoMany
+    branch_offices = models.ManyToManyField(Branch_office, related_name='doctors')
+       
     def __str__(self):
-        return self.mr_number
+        return self.user.get_full_name()
     
-        
+# SLOTS #
+class DoctorAvailability(models.Model):
+   
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    class Meta:
+        abstract = True
+
+
+class Slot(DoctorAvailability):   
+    STATUS_CHOICES = [
+        ('available', 'Available'),
+        ('booked', 'Booked'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
+    #con unique_together estos campos son unicos, no puede haber dos slots iguales
+    class Meta:
+        unique_together = ['doctor', 'date', 'start_time', 'end_time']
+
+    def __str__(self):
+        return f"{self.doctor} - {self.date} - {self.start_time} to {self.end_time}"
+    
+    # TURNOS #
+
+class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('stand_by', 'Stand_by'),
+        ('registered', 'Registered'),
+        ('waiting', 'Waiting'),
+        ('inside', 'Inside'),
+        ('finished', 'Finished'),
+        ('missed', 'Missed')
+    ]
+    STATUS_ORIGIN = [
+        ('web', 'Web'),
+        ('phone','Phone'),
+    ]
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,  related_name='appointments')
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    date = models.DateField()
+    start_time = models.TimeField(default=datetime.time(9, 0)) # Add default start time
+    end_time = models.TimeField(null=True)
+    notes = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='stand_by') 
+    origin = models.CharField(max_length=10, choices=STATUS_ORIGIN, default='web' )
+    
+    def has_appointment_with_other_doctor(self):
+        conflicting_appointments = Appointment.objects.exclude(id=self.id).filter(
+            date=self.date,
+         start_time=self.start_time
+        )
+        if conflicting_appointments.exists():
+            conflicting_appointment = conflicting_appointments.first()
+            doctor_name = conflicting_appointment.doctor.__str__()  # Obtener la representación del doctor
+            formatted_date = self.date.strftime('%d %b %Y')  # Formatear la fecha como "día mes año"
+            return f"Usted ya tiene un turno con el Dr. {doctor_name} el día {formatted_date} a las {self.start_time}."
+                        
+        return None
+
+    def __str__(self):
+        return f"{self.patient.user.get_full_name()} - {self.date} - {self.start_time} "

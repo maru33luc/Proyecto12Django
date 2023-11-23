@@ -1,0 +1,36 @@
+{% extends 'clinica_app/admin/base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static 'css/style_signin.css' %}" />
+{% endblock %}
+
+{% block title %}Alta paciente {% endblock %}
+
+{% block content %}
+<main class="container my-5">
+    <div class="row">
+        <div class="col-md-4 offset-md-4 mt-5">
+{% if message %}
+    <div>{{message}}</div>
+{% endif %}
+
+<form action="" method="post" class="card card-body">
+    <h1>Alta Paciente</h1>
+    {{ error }}
+    {% csrf_token %}
+    {{ user_form.as_p}}
+    {{ form.as_p }}
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{% url 'patients' %}" class="btn btn-default">Cancel</a>
+        </div>
+      </div>
+    
+    
+</form>
+</div>
+</div>
+</main>
+{% endblock %}
